@@ -1,6 +1,9 @@
 pipeline {
   agent any
-  tools {nodejs "npm"}
+  tools {
+    nodejs "npm",
+    docker "docker"
+  }
   stages {
 
     // Stage for test on the developer branch
@@ -25,6 +28,7 @@ pipeline {
         // Add your deployment steps for the developer branch here
         script {
           sh 'npm run build-dev'
+          sh 'docker build -t my-node-app:latest .'
         }
       }
     }
@@ -35,7 +39,7 @@ pipeline {
       steps {
         // Add your deployment steps for the developer branch here
         script {
-          sh 'npm run start-dev'
+          sh 'docker run -p 3000:3000 my-node-app:latest'
         }
       }
     }

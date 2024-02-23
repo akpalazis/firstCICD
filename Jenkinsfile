@@ -2,28 +2,27 @@ pipeline {
   agent any
 
   stages {
-    // Stage for building on the developer branch
-    stage('Developer Build') {
+    // Stage for test on the developer branch
+    stage('Developer Test') {
       when {
         expression { env.BRANCH_NAME == 'developer' } // Only run this stage for the developer branch
       }
       steps {
-        // Add your build steps for the developer branch here, such as compiling, testing, etc.
         script {
-          echo 'Building on the developer branch'
+          sh npm run test
         }
       }
     }
 
-    // Stage for deploying to development environment
-    stage('Developer Deploy') {
+    // Stage for Build to development environment
+    stage('Developer Build') {
       when {
         expression { env.BRANCH_NAME == 'developer' } // Only run this stage for the developer branch
       }
       steps {
         // Add your deployment steps for the developer branch here
         script {
-          echo 'Deploying to the development environment'
+          sh npm run build-dev
         }
       }
     }

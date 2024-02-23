@@ -2,13 +2,7 @@ pipeline {
   agent any
 
   stages {
-    stage{'init'}{
-      steps{
-        script{
-          echo env.BRANCH_NAME
-        }
-      }
-    }
+
     // Stage for test on the developer branch
     stage('Developer Test') {
       when {
@@ -33,5 +27,15 @@ pipeline {
         }
       }
     }
+
+    stage('Simple Test') {
+      steps {
+        // Add your deployment steps for the developer branch here
+        script {
+          echo env.BRANCH_NAME
+        }
+      }
+    }
+
   }
 }

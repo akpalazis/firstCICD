@@ -1,8 +1,6 @@
 pipeline {
   agent any
-  tools {nodejs "npm",
-         docker"docker"
-         }
+  tools {nodejs "npm"}
   stages {
 
     // Stage for test on the developer branch

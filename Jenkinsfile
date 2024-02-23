@@ -39,7 +39,7 @@ pipeline {
       steps {
         // Add your deployment steps for the developer branch here
         script {
-          sh 'docker run -p 3000:3000 my-node-app:latest'
+          sh 'docker run -d -p 3000:3000 my-node-app:latest'
         }
       }
     }

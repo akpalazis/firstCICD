@@ -28,5 +28,16 @@ pipeline {
         }
       }
     }
+    stage('Developer Run v1') {
+      when {
+        expression { env.BRANCH_NAME == 'developer' } // Only run this stage for the developer branch
+      }
+      steps {
+        // Add your deployment steps for the developer branch here
+        script {
+          sh 'npm run start-dev'
+        }
+      }
+    }
   }
 }

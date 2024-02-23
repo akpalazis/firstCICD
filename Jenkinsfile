@@ -27,15 +27,5 @@ pipeline {
         }
       }
     }
-
-    stage('Simple Test') {
-      steps {
-        // Add your deployment steps for the developer branch here
-        script {
-          echo env.BRANCH_NAME
-        }
-      }
-    }
-
   }
 }

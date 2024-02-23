@@ -1,70 +1,62 @@
 pipeline {
-    agent any
+  agent any
 
-    triggers {
-        // Trigger build on push to main branch
-        githubPush(branchFilter: 'main')
-        // Trigger build on push to developer branch
-        githubPush(branchFilter: 'developer')
+  triggers {
+    githubPush(branches: [[name: 'main'], [name: 'developer']])
+  }
+
+  stages {
+    // Build stage for main branch
+    stage('Main Build') {
+      when {
+        expression { branch == 'main' } // Only run this stage for main branch
+      }
+      steps {
+        // Add your build steps for the main branch here, such as:
+        script {
+          sh 'npm install' // Install dependencies
+          sh 'npm test' // Run unit tests
+          sh 'npm run build-prod' // Build for production (assuming you have a build script)
+        }
+      }
     }
 
-    environment {
-        // Define environment variables if needed
-        // For example:
-        // MY_VARIABLE = 'some_value'
+    // Build stage for developer branch
+    stage('Developer Build') {
+      when {
+        expression { branch == 'developer' } // Only run this stage for developer branch
+      }
+      steps {
+        // Add your build steps for the developer branch here, such as:
+        script {
+          sh 'npm install' // Install dependencies
+          sh 'npm test' // Run unit tests
+          sh 'npm run build-dev' // Build for development (assuming you have a build script)
+        }
+      }
     }
 
-    stages {
-        // Build stage for main branch
-        stage('Main Build') {
-            when {
-                expression { env.BRANCH_NAME == 'main' }
-            }
-            steps {
-                script {
-                    sh 'npm install' // Install dependencies
-                    sh 'npm test' // Run unit tests
-                    sh 'npm run build-prod' // Build for production
-                }
-            }
+    // Run stage (optional)
+    stage('Developer Run') {
+      when{
+        expression {branch == 'developer'}
+      }
+      steps {
+        // Add your steps to run the API, such as:
+        script {
+          sh 'npm run start-dev' // Start the API
         }
-
-        // Build stage for developer branch
-        stage('Developer Build') {
-            when {
-                expression { env.BRANCH_NAME == 'developer' }
-            }
-            steps {
-                script {
-                    sh 'npm install' // Install dependencies
-                    sh 'npm test' // Run unit tests
-                    sh 'npm run build-dev' // Build for development
-                }
-            }
-        }
-
-        // Run stage for developer branch
-        stage('Developer Run') {
-            when {
-                expression { env.BRANCH_NAME == 'developer' }
-            }
-            steps {
-                script {
-                    sh 'npm run start-dev' // Start the API for development
-                }
-            }
-        }
-
-        // Run stage for main branch
-        stage('Production Run') {
-            when {
-                expression { env.BRANCH_NAME == 'main' }
-            }
-            steps {
-                script {
-                    sh 'npm run start-prod' // Start the API for production
-                }
-            }
-        }
+      }
     }
+    stage('Production Run'){
+      when{
+        expression {branch == 'main'}
+      }
+      steps{
+        script{
+          sh 'npm run start-prod'
+        }
+      }
+    }
+  }
 }

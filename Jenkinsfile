@@ -1,10 +1,6 @@
 pipeline {
   agent any
 
-  triggers {
-    githubPush(branch: [[name: 'main'], [name: 'developer']])
-  }
-
   stages {
     // Build stage for main branch
     stage('Main Build') {

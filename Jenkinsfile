@@ -10,7 +10,6 @@ pipeline {
       }
       steps {
         script {
-          echo "it is running"
           sh 'npm run test'
         }
       }

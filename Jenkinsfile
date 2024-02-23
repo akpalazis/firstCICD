@@ -9,7 +9,7 @@ pipeline {
       }
       steps {
         script {
-          sh npm run test
+          sh 'npm run test'
         }
       }
     }
@@ -22,7 +22,7 @@ pipeline {
       steps {
         // Add your deployment steps for the developer branch here
         script {
-          sh npm run build-dev
+          sh 'npm run build-dev'
         }
       }
     }

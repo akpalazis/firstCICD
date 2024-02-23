@@ -2,9 +2,15 @@ pipeline {
   agent any
 
   stages {
+    stage{'init'}{
+      steps{
+        script{
+          echo env.BRANCH_NAME
+        }
+      }
+    }
     // Stage for test on the developer branch
     stage('Developer Test') {
-      echo env.BRANCH_NAME
       when {
         expression { env.BRANCH_NAME == 'origin/developer' } // Only run this stage for the developer branch
       }

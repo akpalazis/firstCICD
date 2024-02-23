@@ -28,7 +28,7 @@ pipeline {
         // Add your deployment steps for the developer branch here
         script {
           sh 'npm run build-dev'
-          docker.build('my-node-app:latest', '.')
+          sh 'docker build -t my-node-app:latest .'
         }
       }
     }

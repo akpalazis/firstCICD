@@ -11,4 +11,4 @@ COPY dist ./dist
 EXPOSE 3000
 
 # Command to run the application
-CMD ["node", "dist/server.js"]
+CMD ["node", "dist/dev_index.js"]

@@ -4,7 +4,7 @@ pipeline {
   stages {
 
     // Stage for test on the developer branch
-    stage('Developer Test') {
+    stage('Developer Test ') {
       when {
         expression { env.BRANCH_NAME == 'origin/developer' } // Only run this stage for the developer branch
       }

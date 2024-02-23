@@ -2,21 +2,6 @@ pipeline {
   agent any
 
   stages {
-    // Build stage for main branch
-    stage('Main Build') {
-      when {
-        expression { branch == 'main' } // Only run this stage for main branch
-      }
-      steps {
-        // Add your build steps for the main branch here, such as:
-        script {
-          sh 'npm install' // Install dependencies
-          sh 'npm test' // Run unit tests
-          sh 'npm run build-prod' // Build for production (assuming you have a build script)
-        }
-      }
-    }
-
     // Build stage for developer branch
     stage('Developer Build') {
       when {

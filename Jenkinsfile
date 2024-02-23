@@ -2,8 +2,6 @@ pipeline {
   agent any
 
   triggers {
-    // Trigger build on push to main branch
-    githubPush(branchFilter: 'main')
     // Trigger build on push to developer branch
     githubPush(branchFilter: 'developer')
   }
@@ -19,7 +17,7 @@ pipeline {
         script {
           sh 'npm install' // Install dependencies
           sh 'npm test' // Run unit tests
-          sh 'npm run build:production' // Build for production (assuming you have a build script)
+          sh 'npm run build-prod' // Build for production (assuming you have a build script)
         }
       }
     }
@@ -34,17 +32,30 @@ pipeline {
         script {
           sh 'npm install' // Install dependencies
           sh 'npm test' // Run unit tests
-          sh 'npm run build:development' // Build for development (assuming you have a build script)
+          sh 'npm run build-dev' // Build for development (assuming you have a build script)
         }
       }
     }
 
     // Run stage (optional)
-    stage('Run') {
+    stage('Developer Run') {
+      when{
+        expression {branch == 'developer'}
+      }
       steps {
         // Add your steps to run the API, such as:
         script {
-          sh 'npm start' // Start the API
+          sh 'npm run start-dev' // Start the API
+        }
+      }
+    }
+    stage('Production Run'){
+      when{
+        expression {branch == 'main'}
+      }
+      steps{
+        script{
+          sh 'npm run start-prod'
         }
       }
     }

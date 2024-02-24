@@ -7,10 +7,22 @@ describe('Testing POST /login endpoint', () => {
   it('User Exists: responds with valid status code', () => {
     return request(app)
       .post('/login') // Specify the POST method
-      .send({ username: "admin"}) // Attach username and password in the request body
+      .send({ username: "admin",password:"pass"}) // Attach username and password in the request body
       .then((response) => {
         expect(response.status).toBe(200);
         expect(response.text).toBe('Login Successful') // Check for expected status code
+      })
+      .catch((err) => {
+        return done(err); // Handle potential errors
+      });
+  });
+  it('Incorrect Password: responds with valid status code', () => {
+    return request(app)
+      .post('/login') // Specify the POST method
+      .send({ username: "admin",password:"passs"}) // Attach username and password in the request body
+      .then((response) => {
+        expect(response.status).toBe(400);
+        expect(response.text).toBe('Wrong Password') // Check for expected status code
       })
       .catch((err) => {
         return done(err); // Handle potential errors

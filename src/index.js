@@ -15,13 +15,18 @@ db.connect()
     console.error('Error connecting to the database:', err);
   });
 
+//TODO: Validate password the same way as username
 
 app.post('/login', async (req, res) => {
   try {
     const username = req.body.username
+    const password = req.body.password
     if (username) {
       if (await isUsernameExists(username)) {
-        res.status(200).send('Login Successful');
+        if (await isValidUser(username,password)){
+          res.status(200).send('Login Successful');
+        }
+        res.status(400).send('Wrong Password')
       }
       res.status(400).send("Username not Found")
     }
@@ -39,6 +44,7 @@ app.post('/signup', async (req, res) => {
       if (await isUsernameExists(username)) {
         res.status(400).send('User Already Exists');
       }
+      //TODO: Create User
       res.status(200).send("User Successfully Created")
     }
     res.status(400).send('Empty Username Field')
@@ -52,6 +58,15 @@ const isUsernameExists = async (username) => {
   // Execute the query
   const dbResult = await db.query(query, [username])
   return dbResult.rows.length > 0;
+}
+
+const isValidUser = async (username,password) => {
+  const query = 'SELECT * FROM users WHERE username = $1'
+  // Execute the query
+  const dbResult = await db.query(query, [username])
+  const user = dbResult.rows[0]
+  console.log(user)
+  return ((user.username === username) & (user.password === password))
 }
 
 const port = process.env.PORT || 3000;

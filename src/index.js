@@ -9,13 +9,21 @@ app.post('/login', async (req, res) => {
     const username = req.body.username
     console.log(username)
     if (username) {
-      res.status(200).send('Login Successful');
+      if (isUsernameExists(username)) {
+        res.status(200).send('Login Successful');
+      }
+      res.status(400).send("Username not Found")
     }
     res.status(400).send('Empty Username Field')
   } catch (err) {
     res.status(400).send(err.message);
   }
 });
+
+const isUsernameExists = (username) => {
+  //TODO: write the function to check if username is in postgresql database
+  return username === "admin";
+}
 
 
 const port = process.env.PORT || 3000;

@@ -53,19 +53,20 @@ app.post('/signup', async (req, res) => {
   }
 });
 
-const isUsernameExists = async (username) => {
+
+const fetchEntries = async (username) => {
   const query = 'SELECT * FROM users WHERE username = $1'
-  // Execute the query
-  const dbResult = await db.query(query, [username])
-  return dbResult.rows.length > 0;
+  return  await db.query(query, [username])
+}
+
+const isUsernameExists = async (username) => {
+  const entries = await fetchEntries(username)
+  return entries.rows.length > 0;
 }
 
 const isValidUser = async (username,password) => {
-  const query = 'SELECT * FROM users WHERE username = $1'
-  // Execute the query
-  const dbResult = await db.query(query, [username])
-  const user = dbResult.rows[0]
-  console.log(user)
+  const entries = await fetchEntries(username)
+  const user = entries.rows[0]
   return ((user.username === username) & (user.password === password))
 }
 

@@ -55,3 +55,48 @@ describe('Testing POST /login endpoint', () => {
       });
   });
 });
+
+describe('Test POST /signup endpoint', () => {
+  it("Empty Username: responds with invalid status", ()=> {
+    return request(app)
+      .post('/signup')
+      .send("")
+      .then((response) => {
+        expect(response.status).toBe(400);
+        expect(response.text).toBe('Empty Username Field') // Check for expected status code
+      })
+  });
+  it("No Username: responds with invalid status", ()=> {
+    return request(app)
+      .post('/signup')
+      .send()
+      .then((response) => {
+        expect(response.status).toBe(400);
+        expect(response.text).toBe('Empty Username Field') // Check for expected status code
+      })
+  });
+  it("User Already exists: responds with invalid status", ()=> {
+    return request(app)
+      .post('/signup') // Specify the POST method
+      .send({ username: "admin"}) // Attach username and password in the request body
+      .then((response) => {
+        expect(response.status).toBe(400);
+        expect(response.text).toBe('User Already Exists') // Check for expected status code
+      })
+      .catch((err) => {
+        return done(err); // Handle potential errors
+      });
+  });
+  it("User Created: responds with valid status", ()=> {
+    return request(app)
+      .post('/signup') // Specify the POST method
+      .send({ username: "new_user"}) // Attach username and password in the request body
+      .then((response) => {
+        expect(response.status).toBe(200);
+        expect(response.text).toBe('User Successfully Created') // Check for expected status code
+      })
+      .catch((err) => {
+        return done(err); // Handle potential errors
+      });
+  });
+});

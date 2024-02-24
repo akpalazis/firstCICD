@@ -7,7 +7,6 @@ app.use(bodyParser.json());
 app.post('/login', async (req, res) => {
   try {
     const username = req.body.username
-    console.log(username)
     if (username) {
       if (isUsernameExists(username)) {
         res.status(200).send('Login Successful');
@@ -20,11 +19,26 @@ app.post('/login', async (req, res) => {
   }
 });
 
+
+app.post('/signup', async (req, res) => {
+  try {
+    const username = req.body.username
+    if (username) {
+      if (isUsernameExists(username)) {
+        res.status(400).send('User Already Exists');
+      }
+      res.status(200).send("User Successfully Created")
+    }
+    res.status(400).send('Empty Username Field')
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
 const isUsernameExists = (username) => {
   //TODO: write the function to check if username is in postgresql database
   return username === "admin";
 }
-
 
 const port = process.env.PORT || 3000;
 const address = app.listen(port, function() {

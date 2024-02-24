@@ -16,7 +16,7 @@ describe('Testing POST /login endpoint', () => {
         return done(err); // Handle potential errors
       });
   });
-  it('User doesnt exists: responds with valid status code', () => {
+  it('User doesnt exists: responds with invalid status code', () => {
     return request(app)
       .post('/login') // Specify the POST method
       .send({ username: "invalid_user"}) // Attach username and password in the request body

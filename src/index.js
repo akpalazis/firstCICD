@@ -24,15 +24,15 @@ app.post('/login', async (req, res) => {
     if (username) {
       if (await isUsernameExists(username)) {
         if (await isValidUser(username,password)){
-          res.status(200).send('Login Successful');
+          return res.status(200).send('Login Successful');
         }
-        res.status(400).send('Wrong Password')
+        return res.status(400).send('Wrong Password')
       }
-      res.status(400).send("Username not Found")
+      return res.status(400).send("Username not Found")
     }
-    res.status(400).send('Empty Username Field')
+    return res.status(400).send('Empty Username Field')
   } catch (err) {
-    res.status(400).send(err.message);
+    return res.status(400).send(err.message);
   }
 });
 
@@ -42,14 +42,14 @@ app.post('/signup', async (req, res) => {
     const username = req.body.username
     if (username) {
       if (await isUsernameExists(username)) {
-        res.status(400).send('User Already Exists');
+        return res.status(400).send('User Already Exists');
       }
       //TODO: Create User
-      res.status(200).send("User Successfully Created")
+      return res.status(200).send("User Successfully Created")
     }
-    res.status(400).send('Empty Username Field')
+    return res.status(400).send('Empty Username Field')
   } catch (err) {
-    res.status(400).send(err.message);
+    return res.status(400).send(err.message);
   }
 });
 

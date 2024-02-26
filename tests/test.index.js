@@ -1,8 +1,9 @@
 const request = require('supertest');
 const { expect } = require('expect');
 
-const app = require('../src/index.js');
+//const app = require('../src/index.js');
 
+const app  = "http://localhost:3000"
 describe('Testing POST /login endpoint', () => {
   it('User Exists: responds with valid status code', () => {
     return request(app)

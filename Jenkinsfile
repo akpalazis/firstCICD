@@ -21,6 +21,17 @@ pipeline {
         }
       }
     }
+    stage('Developer Docker v1') {
+      when {
+        expression { env.BRANCH_NAME == 'developer' } // Only run this stage for the developer branch
+      }
+      steps {
+        // Add your deployment steps for the developer branch here
+        script {
+          sh 'docker build -t my-node-app:latest .'
+        }
+      }
+    }
     // Stage for test on the developer branch
     stage('Developer Test v1') {
       when {

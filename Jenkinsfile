@@ -32,13 +32,5 @@ pipeline {
         }
       }
     }
-    stage('Stop Docker Container') {
-            steps {
-                script {
-                    sh 'docker stop my-node-app:latest'
-                    sh 'docker rm my-node-app:latest'
-                }
-            }
-        }
   }
 }

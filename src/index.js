@@ -16,44 +16,36 @@ db.connect()
     console.error('Error connecting to the database:', err);
   });
 
-//TODO: Validate password the same way as username
+const validateData = async (username, password) => {
+    if ((username === undefined) && (password === undefined)) {
+      throw new Error("Username and Password field not found");
+    }
+    if (username === undefined){
+      throw new Error("Username field not found")
+    }
+    if (password === undefined){
+      throw new Error("Password field not found")
+    }
+
+    if ((!username) && (!password)){
+      throw new Error("Empty Username and Password Field")
+    }
+    if (!username){
+      throw new Error("Empty Username Field")
+    }
+
+    if (!password){
+      throw new Error("Empty Password Field")
+    }
+};
 
 app.post('/login', async (req, res) => {
   try {
     const username = req.body.username
     const password = req.body.password
-    if ((username === undefined) && (password === undefined)){
-      return res.status(400).send("Username and Password field not found")
-    }
-    if (username === undefined){
-      return res.status(400).send("Username field not found")
-    }
-
-    if (password === undefined){
-      return res.status(400).send("Password field not found")
-    }
-
-    if ((!username) && (!password)){
-      return res.status(400).send("Empty Username and Password Field")
-    }
-    if (!username){
-      return res.status(400).send("Empty Username Field")
-    }
-
-    if (!password){
-      return res.status(400).send("Empty Password Field")
-    }
-
-    if (username) {
-      if (await isUsernameExists(username)) {
-        if (await isValidUser(username,password)){
-          return res.status(200).send('Login Successful');
-        }
-        return res.status(400).send('Wrong Password')
-      }
-      return res.status(400).send("Username not Found")
-    }
-    return res.status(400).send('Empty Username Field')
+    await validateData(username, password)
+    await isValidUser(username,password)
+    return res.status(200).send('Login Successful');
   } catch (err) {
     return res.status(400).send(err.message);
   }
@@ -63,14 +55,10 @@ app.post('/login', async (req, res) => {
 app.post('/signup', async (req, res) => {
   try {
     const username = req.body.username
-    if (username) {
-      if (await isUsernameExists(username)) {
-        return res.status(400).send('User Already Exists');
-      }
-      //TODO: Create User
-      return res.status(200).send("User Successfully Created")
-    }
-    return res.status(400).send('Empty Username Field')
+    const password = req.body.password
+    await validateData(username,password)
+    await isUserExists(username,password)
+    return res.status(200).send("User Successfully Created")
   } catch (err) {
     return res.status(400).send(err.message);
   }
@@ -82,15 +70,22 @@ const fetchEntries = async (username) => {
   return  await db.query(query, [username])
 }
 
-const isUsernameExists = async (username) => {
-  const entries = await fetchEntries(username)
-  return entries.rows.length > 0;
+const isUserExists = async (username) =>{
+    const entries = await fetchEntries(username)
+    if(entries.rows.length>0){
+      throw new Error("User Already Exists")
+    }
 }
 
 const isValidUser = async (username,password) => {
   const entries = await fetchEntries(username)
+  if (entries.rows.length===0){
+    throw new Error("Username not Found")
+  }
   const user = entries.rows[0]
-  return ((user.username === username) & (user.password === password))
+  if ((user.username !== username) || (user.password !== password)){
+    throw new Error("Username does not match with password")
+  }
 }
 
 const port = process.env.PORT || 3000;

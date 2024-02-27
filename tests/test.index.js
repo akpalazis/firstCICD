@@ -32,7 +32,7 @@ describe('Testing POST /login endpoint', () => {
       .send({ username: "admin",password:"passs"}) // Attach username and password in the request body
       .then((response) => {
         expect(response.status).toBe(400);
-        expect(response.text).toBe('Wrong Password') // Check for expected status code
+        expect(response.text).toBe('Username does not match with password') // Check for expected status code
       })
       .catch((err) => {
         return done(err); // Handle potential errors
@@ -137,16 +137,16 @@ describe('Test POST /signup endpoint', () => {
   it("Empty Username: responds with invalid status", ()=> {
     return request(app)
       .post('/signup')
-      .send("")
+      .send({password:"1234"})
       .then((response) => {
         expect(response.status).toBe(400);
-        expect(response.text).toBe('Empty Username Field') // Check for expected status code
+        expect(response.text).toBe('Username field not found') // Check for expected status code
       })
   });
   it("No Username: responds with invalid status", ()=> {
     return request(app)
       .post('/signup')
-      .send()
+      .send({username:'', password:"1234"})
       .then((response) => {
         expect(response.status).toBe(400);
         expect(response.text).toBe('Empty Username Field') // Check for expected status code
@@ -155,7 +155,7 @@ describe('Test POST /signup endpoint', () => {
   it("User Already exists: responds with invalid status", ()=> {
     return request(app)
       .post('/signup') // Specify the POST method
-      .send({ username: "admin"}) // Attach username and password in the request body
+      .send({ username: "admin",password:"1234"}) // Attach username and password in the request body
       .then((response) => {
         expect(response.status).toBe(400);
         expect(response.text).toBe('User Already Exists') // Check for expected status code
@@ -167,7 +167,7 @@ describe('Test POST /signup endpoint', () => {
   it("User Created: responds with valid status", ()=> {
     return request(app)
       .post('/signup') // Specify the POST method
-      .send({ username: "new_user"}) // Attach username and password in the request body
+      .send({ username: "new_user",password:"test"}) // Attach username and password in the request body
       .then((response) => {
         expect(response.status).toBe(200);
         expect(response.text).toBe('User Successfully Created') // Check for expected status code

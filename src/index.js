@@ -6,7 +6,7 @@ const app = express();
 app.use(bodyParser.json());
 
 const db = new Client({
-  connectionString: 'postgres://postgres:pass@postgres-db:5432/postgres',
+  connectionString: 'postgres://postgres:pass@192.168.1.182:5433/postgres',
 });
 db.connect()
   .then(() => {

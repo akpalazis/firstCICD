@@ -17,7 +17,8 @@ pipeline {
         script {
           sh 'npm install'
           sh 'npm run build-dev'
-          sh '/usr/local/bin/docker-compose up'
+          sh 'docker build -t my_node:latest .'
+          sh 'docker run -d -p 3000:3000 my_node:latest'
         }
       }
     }
@@ -39,7 +40,9 @@ pipeline {
       steps {
         // Add your deployment steps for the developer branch here
         script {
-          sh '/usr/local/bin/docker-compose down'
+          sh 'docker stop my-node:latest'
+          sh 'docker rm my-node:latest'
+          sh 'docker rmi my-node:latest'
         }
       }
     }

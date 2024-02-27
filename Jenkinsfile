@@ -17,8 +17,7 @@ pipeline {
         script {
           sh 'npm install'
           sh 'npm run build-dev'
-          sh 'docker build -t my-node-app:latest .'
-          sh 'docker run -d --name my-node-app my-node-app'
+          sh 'docker-compose up --build -d'
         }
       }
     }
@@ -40,7 +39,7 @@ pipeline {
       steps {
         // Add your deployment steps for the developer branch here
         script {
-          sh 'docker stop my-node-app:latest'
+          sh 'docker-compose down'
 
         }
       }

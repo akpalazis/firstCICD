@@ -16,7 +16,7 @@ if (isJenkins){
 describe('Testing POST /validate endpoint', () => {
   it('No Username and password: responds with invalid status code', () => {
     return request(app)
-      .post('/login') // Specify the POST method
+      .post('/validate') // Specify the POST method
       .send({}) // Attach username and password in the request body
       .then((response) => {
         expect(response.status).toBe(400); // Check for expected status code
@@ -28,7 +28,7 @@ describe('Testing POST /validate endpoint', () => {
 });
   it('No Username: responds with invalid status code', () => {
     return request(app)
-      .post('/login') // Specify the POST method
+      .post('/validate') // Specify the POST method
       .send({password: "1234"}) // Attach username and password in the request body
       .then((response) => {
         expect(response.status).toBe(400); // Check for expected status code
@@ -40,7 +40,7 @@ describe('Testing POST /validate endpoint', () => {
   });
   it('No Password: responds with invalid status code', () => {
     return request(app)
-      .post('/login') // Specify the POST method
+      .post('/validate') // Specify the POST method
       .send({username: "1234"}) // Attach username and password in the request body
       .then((response) => {
         expect(response.status).toBe(400); // Check for expected status code
@@ -52,7 +52,7 @@ describe('Testing POST /validate endpoint', () => {
   });
   it('Empty username and password: responds with invalid status code', () => {
     return request(app)
-      .post('/login')
+      .post('/validate')
       .send({username:"", password:""})// Specify the POST method
       .then((response) => {
         expect(response.status).toBe(400); // Check for expected status code
@@ -66,7 +66,7 @@ describe('Testing POST /validate endpoint', () => {
   });
   it('Empty username: responds with invalid status code', () => {
     return request(app)
-      .post('/login')
+      .post('/validate')
       .send({username:"", password:"1234"})// Specify the POST method
       .then((response) => {
         expect(response.status).toBe(400); // Check for expected status code
@@ -80,7 +80,7 @@ describe('Testing POST /validate endpoint', () => {
   });
   it('Empty password: responds with invalid status code', () => {
     return request(app)
-      .post('/login')
+      .post('/validate')
       .send({username:"admin", password:""})// Specify the POST method
       .then((response) => {
         expect(response.status).toBe(400); // Check for expected status code
@@ -92,11 +92,25 @@ describe('Testing POST /validate endpoint', () => {
         return done(err); // Handle potential errors
       });
   });
+  it('Successful Validation: responds with invalid status code', () => {
+    return request(app)
+      .post('/validate')
+      .send({username:"admin", password:"1234"})// Specify the POST method
+      .then((response) => {
+        expect(response.status).toBe(200); // Check for expected status code
+        expect(response.text).toBe('Valid User') // Check for expected status code
+
+      })
+      .catch((err) => {
+        console.log(err)
+        return done(err); // Handle potential errors
+      });
+  });
 });
 
 
 describe('Testing POST /login endpoint', () => {
-  it('User Exists: responds with valid status code', () => {
+  it('Login Successful: responds with valid status code', () => {
     return request(app)
       .post('/login') // Specify the POST method
       .send({ username: "admin",password:"pass"}) // Attach username and password in the request body

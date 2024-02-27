@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const app = express();
 app.use(bodyParser.json());
 
-const db = new Client({ user: 'postgres', host: 'localhost', database: '', password: 'pass', port: '5432'});
+const db = new Client({ user: 'postgres', host: '0.0.0.0', database: '', password: 'pass', port: '5432'});
 
 db.connect()
   .then(() => {

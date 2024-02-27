@@ -1,5 +1,9 @@
 pipeline {
   agent any
+  environment {
+    JENKINS = 'true'
+  }
+
   tools {
     nodejs "npm"
     dockerTool "docker"

@@ -1,9 +1,13 @@
 const request = require('supertest');
 const { expect } = require('expect');
 
-//const app = require('../src/index.js');
+const isJenkins = process.env.JENKINS === 'true';
 
-const app  = "http://localhost:3000"
+const app = require('../src/index.js');
+if (isJenkins){
+  const app  = "http://localhost:3000"
+}
+
 
 describe('Testing POST /login endpoint', () => {
   it('User Exists: responds with valid status code', async () => {

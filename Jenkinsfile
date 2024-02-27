@@ -40,8 +40,8 @@ pipeline {
       steps {
         // Add your deployment steps for the developer branch here
         script {
-          sh 'docker stop my_node'
-          sh 'docker rm my_node'
+          sh 'docker stop my-node'
+          sh 'docker rm my-node'
           sh 'docker rmi my_node:latest'
         }
       }

@@ -5,8 +5,9 @@ const bodyParser = require('body-parser');
 const app = express();
 app.use(bodyParser.json());
 
-const db = new Client({ user: 'postgres', host: '0.0.0.0', database: '', password: 'pass', port: '5432'});
-
+const db = new Client({
+  connectionString: 'postgres://postgres:pass@postgres-db:5432/postgres',
+});
 db.connect()
   .then(() => {
     console.log('Connected to PostgreSQL database!');
@@ -76,3 +77,9 @@ const address = app.listen(port, function() {
 });
 
 module.exports = address
+
+// TODO: Recreate the db and make sure the admin pass is in there
+// TODO: upload the db to the docker
+// TODO: make sure the tests are running as expected
+// TODO: crate the Jenkins file and make sure that the docker works and the tests are running on docker
+// TODO: Kill docker and finish the pipeline.

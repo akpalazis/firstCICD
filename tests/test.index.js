@@ -6,8 +6,8 @@ const { expect } = require('expect');
 const app  = "http://localhost:3000"
 
 describe('Testing POST /login endpoint', () => {
-  it('User Exists: responds with valid status code', () => {
-    return request(app)
+  it('User Exists: responds with valid status code', async () => {
+    return await request(app)
       .post('/login') // Specify the POST method
       .send({ username: "admin",password:"pass"}) // Attach username and password in the request body
       .then((response) => {

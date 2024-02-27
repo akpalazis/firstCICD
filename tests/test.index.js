@@ -3,10 +3,15 @@ const { expect } = require('expect');
 
 const isJenkins = process.env.JENKINS === 'true';
 
+
+let app;
+
 if (isJenkins){
-  const app  = "http://localhost:3000"
+  app  = "http://localhost:3000"
+  console.log("JENKINS")
 } else{
-  const app = require('../src/index.js');
+  app = require('../src/index.js');
+  console.log("LOCAL")
 }
 
 

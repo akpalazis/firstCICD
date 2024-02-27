@@ -18,7 +18,7 @@ pipeline {
           sh 'npm install'
           sh 'npm run build-dev'
           sh 'docker build -t my-node-app:latest .'
-          hs 'docker run -d --name my-node-app:latest my-node-app:latest'
+          sh 'docker run -d --name my-node-app my-node-app'
         }
       }
     }

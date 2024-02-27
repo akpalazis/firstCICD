@@ -3,6 +3,7 @@ const { expect } = require('expect');
 
 const isJenkins = process.env.JENKINS === 'true';
 
+console.log(isJenkins)
 const app = require('../src/index.js');
 if (isJenkins){
   const app  = "http://localhost:3000"

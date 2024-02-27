@@ -152,18 +152,6 @@ describe('Test POST /signup endpoint', () => {
         expect(response.text).toBe('Empty Username Field') // Check for expected status code
       })
   });
-  it("User Already exists: responds with invalid status", ()=> {
-    return request(app)
-      .post('/signup') // Specify the POST method
-      .send({ username: "admin",password:"1234"}) // Attach username and password in the request body
-      .then((response) => {
-        expect(response.status).toBe(400);
-        expect(response.text).toBe('User Already Exists') // Check for expected status code
-      })
-      .catch((err) => {
-        return done(err); // Handle potential errors
-      });
-  });
   it("User Created: responds with valid status", ()=> {
     return request(app)
       .post('/signup') // Specify the POST method
@@ -175,5 +163,29 @@ describe('Test POST /signup endpoint', () => {
       .catch((err) => {
         return done(err); // Handle potential errors
       });
+  });
+  it("User Already exists: responds with invalid status", ()=> {
+    return request(app)
+      .post('/signup') // Specify the POST method
+      .send({ username: "new_user",password:"test"}) // Attach username and password in the request body
+      .then((response) => {
+        expect(response.status).toBe(400);
+        expect(response.text).toBe('User Already Exists') // Check for expected status code
+      })
+      .catch((err) => {
+        return done(err); // Handle potential errors
+      });
+  });
+});
+
+describe('Test DELETE /delete endpoint', () => {
+  it("Delete Username: responds with valid status", ()=> {
+    return request(app)
+      .delete('/delete/new_user')
+      .send()
+      .then((response) => {
+        expect(response.status).toBe(200);
+        expect(response.text).toBe("User Deleted Successfully") // Check for expected status code
+      })
   });
 });

@@ -57,13 +57,32 @@ app.post('/signup', async (req, res) => {
     const username = req.body.username
     const password = req.body.password
     await validateData(username,password)
-    await isUserExists(username,password)
+    await isUserExists(username)
+    await createUser(username,password)
     return res.status(200).send("User Successfully Created")
   } catch (err) {
     return res.status(400).send(err.message);
   }
 });
 
+app.delete('/delete/:userId', async (req, res) => {
+  try {
+    const username = req.params.userId
+    await deleteUser(username)
+    return res.status(200).send("User Deleted Successfully")
+  } catch (err) {
+    return res.status(400).send(err.message);
+  }
+});
+
+const createUser = async (username,password) => {
+  try {
+    const query = 'INSERT INTO users(username, password) VALUES($1, $2)'
+    await db.query(query, [username, password]);
+  } catch (err) {
+    throw new Error(err)
+  }
+}
 
 const fetchEntries = async (username) => {
   const query = 'SELECT * FROM users WHERE username = $1'
@@ -87,6 +106,18 @@ const isValidUser = async (username,password) => {
     throw new Error("Username does not match with password")
   }
 }
+
+const deleteUser = async (username) => {
+  try {
+    const query = 'DELETE FROM users WHERE username = $1'
+    await db.query(query, [username]);
+  } catch (e) {
+    throw new Error(e)
+  }
+}
+
+
+
 
 const port = process.env.PORT || 3000;
 const address = app.listen(port, function() {

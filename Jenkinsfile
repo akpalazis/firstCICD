@@ -18,17 +18,7 @@ pipeline {
           sh 'npm install'
           sh 'npm run build-dev'
           sh 'docker build -t my-node-app:latest .'
-        }
-      }
-    }
-    stage('Developer Docker v1') {
-      when {
-        expression { env.BRANCH_NAME == 'developer' } // Only run this stage for the developer branch
-      }
-      steps {
-        // Add your deployment steps for the developer branch here
-        script {
-          sh 'docker build -t my-node-app:latest .'
+          hs 'docker run -d --name my-node-app my-node-app'
         }
       }
     }
@@ -40,6 +30,18 @@ pipeline {
       steps {
         script {
           sh 'npm run test'
+        }
+      }
+    }
+    stage('Docker Stop v1') {
+      when {
+        expression { env.BRANCH_NAME == 'developer' } // Only run this stage for the developer branch
+      }
+      steps {
+        // Add your deployment steps for the developer branch here
+        script {
+          sh 'docker stop my-node-app'
+
         }
       }
     }

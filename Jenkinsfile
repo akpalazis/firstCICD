@@ -18,7 +18,7 @@ pipeline {
           sh 'npm install'
           sh 'npm run build-dev'
           sh 'docker build -t my_node:latest .'
-          sh 'docker run -d -p 3000:3000 my_node:latest'
+          sh 'docker run -d -p 3000:3000 --name my-node my_node:latest'
         }
       }
     }
@@ -40,8 +40,8 @@ pipeline {
       steps {
         // Add your deployment steps for the developer branch here
         script {
-          sh 'docker stop my_node:latest'
-          sh 'docker rm my_node:latest'
+          sh 'docker stop my_node'
+          sh 'docker rm my_node'
           sh 'docker rmi my_node:latest'
         }
       }

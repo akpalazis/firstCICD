@@ -17,7 +17,7 @@ pipeline {
         script {
           sh 'npm install'
           sh 'npm run build-dev'
-          sh 'docker-compose up --build -d'
+          sh '/usr/local/bin/docker-compose up --build -d'
         }
       }
     }
@@ -39,8 +39,7 @@ pipeline {
       steps {
         // Add your deployment steps for the developer branch here
         script {
-          sh 'docker-compose down'
-
+          sh '/usr/local/bin/docker-compose down'
         }
       }
     }

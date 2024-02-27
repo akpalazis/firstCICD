@@ -17,7 +17,7 @@ pipeline {
         script {
           sh 'npm install'
           sh 'npm run build-dev'
-          sh '/usr/local/bin/docker-compose up --build -d'
+          sh '/usr/local/bin/docker-compose up'
         }
       }
     }

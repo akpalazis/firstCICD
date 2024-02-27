@@ -39,6 +39,17 @@ const validateData = async (username, password) => {
     }
 };
 
+app.post('/validate', async (req,res)=> {
+  try {
+    const username = req.body.username
+    const password = req.body.password
+    await validateData(username, password)
+    return res.status(200).send('Valid User');
+  } catch (err) {
+    return res.status(400).send(err.message);
+  }
+})
+
 app.post('/login', async (req, res) => {
   try {
     const username = req.body.username
@@ -68,12 +79,24 @@ app.post('/signup', async (req, res) => {
 app.delete('/delete/:userId', async (req, res) => {
   try {
     const username = req.params.userId
+    await canDelete(username)
     await deleteUser(username)
     return res.status(200).send("User Deleted Successfully")
   } catch (err) {
     return res.status(400).send(err.message);
   }
 });
+
+app.delete('/delete', async (req, res) => {
+    return res.status(400).send("No User provided");
+});
+
+const canDelete = async (username) =>{
+  const entries = await fetchEntries(username)
+    if(entries.rows.length===0){
+      throw new Error("Username not Found")
+    }
+}
 
 const createUser = async (username,password) => {
   try {

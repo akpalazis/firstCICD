@@ -22,6 +22,28 @@ app.post('/login', async (req, res) => {
   try {
     const username = req.body.username
     const password = req.body.password
+    if ((username === undefined) && (password === undefined)){
+      return res.status(400).send("Username and Password field not found")
+    }
+    if (username === undefined){
+      return res.status(400).send("Username field not found")
+    }
+
+    if (password === undefined){
+      return res.status(400).send("Password field not found")
+    }
+
+    if ((!username) && (!password)){
+      return res.status(400).send("Empty Username and Password Field")
+    }
+    if (!username){
+      return res.status(400).send("Empty Username Field")
+    }
+
+    if (!password){
+      return res.status(400).send("Empty Password Field")
+    }
+
     if (username) {
       if (await isUsernameExists(username)) {
         if (await isValidUser(username,password)){

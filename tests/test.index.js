@@ -8,16 +8,14 @@ let app;
 
 if (isJenkins){
   app  = "http://localhost:3000"
-  console.log("JENKINS")
 } else{
   app = require('../src/index.js');
-  console.log("LOCAL")
 }
 
 
 describe('Testing POST /login endpoint', () => {
-  it('User Exists: responds with valid status code', async () => {
-    return await request(app)
+  it('User Exists: responds with valid status code', () => {
+    return request(app)
       .post('/login') // Specify the POST method
       .send({ username: "admin",password:"pass"}) // Attach username and password in the request body
       .then((response) => {
@@ -43,7 +41,7 @@ describe('Testing POST /login endpoint', () => {
   it('User doesnt exists: responds with invalid status code', () => {
     return request(app)
       .post('/login') // Specify the POST method
-      .send({ username: "invalid_user"}) // Attach username and password in the request body
+      .send({ username: "invalid_user" , password: "1234"}) // Attach username and password in the request body
       .then((response) => {
         expect(response.status).toBe(400);
         expect(response.text).toBe('Username not Found') // Check for expected status code
@@ -52,22 +50,60 @@ describe('Testing POST /login endpoint', () => {
         return done(err); // Handle potential errors
       });
   });
-  it('Empty Username: responds with invalid status code', () => {
+  it('No Username and password: responds with invalid status code', () => {
     return request(app)
       .post('/login') // Specify the POST method
-      .send({ username: ""}) // Attach username and password in the request body
+      .send({}) // Attach username and password in the request body
       .then((response) => {
         expect(response.status).toBe(400); // Check for expected status code
-        expect(response.text).toBe('Empty Username Field') // Check for expected status code
+        expect(response.text).toBe('Username and Password field not found') // Check for expected status code
+      })
+      .catch((err) => {
+        return done(err); // Handle potential errors
+      });
+});
+  it('No Username: responds with invalid status code', () => {
+    return request(app)
+      .post('/login') // Specify the POST method
+      .send({password: "1234"}) // Attach username and password in the request body
+      .then((response) => {
+        expect(response.status).toBe(400); // Check for expected status code
+        expect(response.text).toBe('Username field not found') // Check for expected status code
       })
       .catch((err) => {
         return done(err); // Handle potential errors
       });
   });
-  it('No username: responds with invalid status code', () => {
+  it('No Password: responds with invalid status code', () => {
+    return request(app)
+      .post('/login') // Specify the POST method
+      .send({username: "1234"}) // Attach username and password in the request body
+      .then((response) => {
+        expect(response.status).toBe(400); // Check for expected status code
+        expect(response.text).toBe('Password field not found') // Check for expected status code
+      })
+      .catch((err) => {
+        return done(err); // Handle potential errors
+      });
+  });
+  it('Empty username and password: responds with invalid status code', () => {
     return request(app)
       .post('/login')
-      .send("")// Specify the POST method
+      .send({username:"", password:""})// Specify the POST method
+      .then((response) => {
+        expect(response.status).toBe(400); // Check for expected status code
+        expect(response.text).toBe('Empty Username and Password Field') // Check for expected status code
+
+      })
+      .catch((err) => {
+        console.log(err)
+        return done(err); // Handle potential errors
+      });
+  });
+  it('Empty username: responds with invalid status code', () => {
+    return request(app)
+      .post('/login')
+      .send({username:"", password:"1234"})// Specify the POST method
       .then((response) => {
         expect(response.status).toBe(400); // Check for expected status code
         expect(response.text).toBe('Empty Username Field') // Check for expected status code
@@ -78,6 +114,23 @@ describe('Testing POST /login endpoint', () => {
         return done(err); // Handle potential errors
       });
   });
+  it('Empty password: responds with invalid status code', () => {
+    return request(app)
+      .post('/login')
+      .send({username:"admin", password:""})// Specify the POST method
+      .then((response) => {
+        expect(response.status).toBe(400); // Check for expected status code
+        expect(response.text).toBe('Empty Password Field') // Check for expected status code
+
+      })
+      .catch((err) => {
+        console.log(err)
+        return done(err); // Handle potential errors
+      });
+  });
+  // empty password
+  // no password
+  // empty both username and password
 });
 
 describe('Test POST /signup endpoint', () => {

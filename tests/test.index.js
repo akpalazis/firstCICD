@@ -176,7 +176,7 @@ describe('Test POST /signup endpoint', () => {
 });
 
 describe('Test DELETE /delete endpoint', () => {
-    it("No Username: responds with invalid status", ()=> {
+  it("No Username: responds with invalid status", ()=> {
     return request(app)
       .delete('/delete')
       .send()

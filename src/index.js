@@ -1,6 +1,8 @@
 const { Client } = require('pg');
 const express = require('express');
 const bodyParser = require('body-parser');
+const bcrypt = require("bcrypt")
+
 
 const app = express();
 app.use(bodyParser.json());
@@ -66,7 +68,7 @@ app.post('/login', async (req, res) => {
 app.post('/signup', async (req, res) => {
   try {
     const username = req.body.username
-    const password = req.body.password
+    const password = await hashPassword(req.body.password)
     await validateData(username,password)
     await isUserExists(username)
     await createUser(username,password)
@@ -125,7 +127,7 @@ const isValidUser = async (username,password) => {
     throw new Error("Username not Found")
   }
   const user = entries.rows[0]
-  if ((user.username !== username) || (user.password !== password)){
+  if ((user.username !== username) || (!await validateUser(password,user.password))){
     throw new Error("Username does not match with password")
   }
 }
@@ -139,9 +141,6 @@ const deleteUser = async (username) => {
   }
 }
 
-
-
-
 const port = process.env.PORT || 3000;
 const address = app.listen(port, function() {
   console.log(`Server listening on port ${port}`);
@@ -149,8 +148,21 @@ const address = app.listen(port, function() {
 
 module.exports = address
 
-// TODO: Recreate the db and make sure the admin pass is in there
-// TODO: upload the db to the docker
-// TODO: make sure the tests are running as expected
-// TODO: crate the Jenkins file and make sure that the docker works and the tests are running on docker
-// TODO: Kill docker and finish the pipeline.
+
+
+const hashPassword = async (password) => {
+  try{
+    return await bcrypt.hash(password,10)
+  } catch (e) {
+    throw new Error(e)
+  }
+}
+
+const validateUser = async (password,hash)=> {
+  try{
+    const test = await bcrypt.compare(password, hash)
+    return test
+  } catch(e) {
+    throw new Error(e)
+  }
+}

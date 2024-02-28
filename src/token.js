@@ -13,9 +13,9 @@ app.post('/generateTokens/:user', async (req, res) => {
   try {
     const username = req.params.user
     const accessToken = jwt.sign({ username:username }, accessSecretKey, { expiresIn: '15m' });
-    res.cookie('accessToken', accessToken, { httpOnly: true, secure: true, sameSite: 'strict' });
+    res.cookie('accessToken', accessToken, { httpOnly: true, secure: false, sameSite: 'strict' });
     const refreshToken = jwt.sign({ username: username }, refreshSecretKey);
-    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'strict' });
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: false, sameSite: 'strict' });
 
     return res.status(200).send("Token Generated Successfully")
   } catch (err) {

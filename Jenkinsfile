@@ -34,7 +34,7 @@ pipeline {
           sh 'docker build -f Dockerfile.index -t my_node:latest .'
           sh 'docker build -f Dockerfile.tokens -t my_node2:latest .'
           sh 'docker run -d -p 3000:3000 --name my-node my_node:latest'
-          sh 'docker run -d -p 3001:3000 --name my-node2 my_node2:latest'
+          sh 'docker run -d -p 3001:3001 --name my-node2 my_node2:latest'
         }
       }
     }

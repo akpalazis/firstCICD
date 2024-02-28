@@ -25,7 +25,7 @@ describe('Testing POST /validate endpoint', () => {
       .catch((err) => {
         return done(err); // Handle potential errors
       });
-});
+  });
   it('No Username: responds with invalid status code', () => {
     return request(app)
       .post('/validate') // Specify the POST method
@@ -108,8 +108,8 @@ describe('Testing POST /validate endpoint', () => {
   });
 });
 
-
 describe('Testing POST /login endpoint', () => {
+  // TODO: Return authentication token
   it('Login Successful: responds with valid status code', () => {
     return request(app)
       .post('/login') // Specify the POST method
@@ -149,6 +149,7 @@ describe('Testing POST /login endpoint', () => {
 });
 
 describe('Test POST /signup endpoint', () => {
+  // TODO: Add authentication token
   it("User Created: responds with valid status", ()=> {
     return request(app)
       .post('/signup') // Specify the POST method
@@ -176,6 +177,10 @@ describe('Test POST /signup endpoint', () => {
 });
 
 describe('Test DELETE /delete endpoint', () => {
+  // TODO: use password to validate the delete of the user
+  // TODO: validate first that user exists
+  // TODO: validate that the password is correct and then delete
+  // TODO: if not correct dont delete
   it("No Username: responds with invalid status", ()=> {
     return request(app)
       .delete('/delete')
@@ -205,3 +210,5 @@ describe('Test DELETE /delete endpoint', () => {
       })
   });
 });
+
+// TODO: Add permitions for each endpoint for example if signed in no need to see signup/login page

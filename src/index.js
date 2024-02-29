@@ -102,7 +102,7 @@ const canDelete = async (username) =>{
 
 const createUser = async (username,password) => {
   try {
-    const query = 'INSERT INTO users(username, password) VALUES($1, $2)'
+    const query = 'INSERT INTO users(username, password_hash) VALUES($1, $2)'
     await db.query(query, [username, password]);
   } catch (err) {
     throw new Error(err)
@@ -127,7 +127,7 @@ const isValidUser = async (username,password) => {
     throw new Error("Username not Found")
   }
   const user = entries.rows[0]
-  if ((user.username !== username) || (!await validateUser(password,user.password))){
+  if ((user.username !== username) || (!await validateUser(password,user.password_hash))){
     throw new Error("Username does not match with password")
   }
 }

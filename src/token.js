@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const express = require('express');
 const router = express.Router();
+const {storeRefreshToken, deleteToken} = require('./db')
 
 // Secret keys for access and refresh tokens
 const accessSecretKey = 'access-secret-key';
@@ -10,6 +11,7 @@ const storeTokens = async (res,accessToken,refreshToken) =>
 {
   try {
     res.cookie('accessToken', accessToken, {httpOnly: true, secure: false, sameSite: 'strict'});
+    await storeRefreshToken(refreshToken)
   } catch (e) {
     throw new Error(e)
   }
@@ -35,6 +37,16 @@ router.get('/clearCookies', (req, res) => {
   res.clearCookie('refreshToken');
 
   return res.status(200).send("Cookies Cleared Successfully");
+});
+
+router.delete('/delete_token/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId
+    await deleteToken(userId)
+    return res.status(200).send("Token Deleted Successfully")
+  } catch (err) {
+    return res.status(400).send(err.message);
+  }
 });
 
 module.exports = router

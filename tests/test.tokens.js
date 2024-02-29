@@ -65,4 +65,14 @@ describe('Testing POST /generateTokens endpoint', () => {
       });
   });
 
+  it("Delete token: responds with valid status", ()=> {
+    return request(app)
+      .delete('/delete_token/1')
+      .send()
+      .then((response) => {
+        expect(response.status).toBe(200);
+        expect(response.text).toBe("Token Deleted Successfully") // Check for expected status code
+      })
+  });
+
 });

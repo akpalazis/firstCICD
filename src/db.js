@@ -1,5 +1,7 @@
 const { Client } = require('pg');
 const bcrypt = require("bcryptjs")
+const jwt = require('jsonwebtoken');
+const refreshSecretKey = 'refresh-secret-key';
 
 const db = new Client({
   connectionString: 'postgres://postgres:pass@192.168.1.182:5433/postgres',
@@ -55,6 +57,16 @@ const deleteUser = async (username) => {
     throw new Error(e)
   }
 }
+
+const deleteToken = async (userId) => {
+  try {
+    const query = 'DELETE FROM refresh_tokens WHERE user_id = $1'
+    await db.query(query, [userId]);
+  } catch (e) {
+    throw new Error(e)
+  }
+}
+
 const validateUser = async (password,hash)=> {
   try{
     const test = await bcrypt.compare(password, hash)
@@ -64,11 +76,25 @@ const validateUser = async (password,hash)=> {
   }
 }
 
+const storeRefreshToken = async (refreshToken) => {
+   try {
+   const decoded = jwt.verify(refreshToken, refreshSecretKey);
+    const userId = decoded.userId;
+    const expirationDate = new Date(decoded.exp * 1000);
+    const query = 'INSERT INTO refresh_tokens(user_id, token, expire_date) VALUES($1, $2, $3)'
+    await db.query(query, [userId,refreshToken,expirationDate]);
+  } catch (err) {
+    throw new Error(err)
+  }
+}
+
 module.exports = {
   connectDB,
   createUser,
   isUserExists,
   isValidUser,
   deleteUser,
-  fetchEntries
+  fetchEntries,
+  storeRefreshToken,
+  deleteToken
 }

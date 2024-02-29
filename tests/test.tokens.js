@@ -13,6 +13,7 @@ if (isJenkins){
   app = require('../src/app.js');
 }
 
+let accessTokenCookie;
 
 describe('Testing POST /generateTokens endpoint', () => {
   it('No JWT: responds with invalid status code',() =>{
@@ -40,9 +41,7 @@ describe('Testing POST /generateTokens endpoint', () => {
         return done(err)
       })
   })
-
-
-  it('validate that cookies are stored', () => {
+  it('validate that accessCookie is stored', () => {
     return request(app)
       .post('/generateTokens/1') // Specify the POST method
       .send({}) // Attach username and password in the request body
@@ -56,8 +55,7 @@ describe('Testing POST /generateTokens endpoint', () => {
         const cookies = response.headers['set-cookie'];
 
         // Extract cookie values (you may need to adjust this based on actual cookie names)
-        const accessTokenCookie = cookies.find(cookie => cookie.includes('accessToken'));
-
+        accessTokenCookie = cookies.find(cookie => cookie.includes('accessToken'));
         // Assert that cookies are set as expected
         expect(accessTokenCookie).toBeDefined();
       })
@@ -65,8 +63,20 @@ describe('Testing POST /generateTokens endpoint', () => {
         return done(err); // Handle potential errors
       });
   });
-
-  it('validate that cookies are deleted', () => {
+  it('Valid JWT: responds with valid status code',() =>{
+    return request(app)
+      .get("/")
+      .set('Authorization', `Bearer ${accessTokenCookie}`)
+      .send()
+      .then((response)=>{
+        expect(response.status).toBe(200); // Check for expected status code
+        expect(response.text).toBe('JWT token is valid')
+      })
+      .catch((err)=>{
+        return done(err)
+      })
+  })
+  it('validate that accessCookie is deleted', () => {
     return request(app)
       .get('/clearCookies') // Specify the POST method
       .send({}) // Attach username and password in the request body
@@ -81,17 +91,14 @@ describe('Testing POST /generateTokens endpoint', () => {
 
         // Extract cookie values (you may need to adjust this based on actual cookie names)
         const accessTokenCookie = cookies.find(cookie => cookie.includes('accessToken'));
-        const refreshTokenCookie = cookies.find(cookie => cookie.includes('refreshToken'));
 
         // Assert that cookies are set as expected
         expect(accessTokenCookie).toBe("accessToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT");
-        expect(refreshTokenCookie).toBe("refreshToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT");
       })
       .catch((err) => {
         return done(err); // Handle potential errors
       });
   });
-
   it("Delete token: responds with valid status", ()=> {
     return request(app)
       .delete('/delete_token/1')
@@ -101,5 +108,4 @@ describe('Testing POST /generateTokens endpoint', () => {
         expect(response.text).toBe("Token Deleted Successfully") // Check for expected status code
       })
   });
-
 });

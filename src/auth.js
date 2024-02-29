@@ -18,7 +18,7 @@ router.post('/validate', async (req,res)=> {
 })
 
 router.get('/',validateJWT,async (req,res)=>{
-
+    return res.status(200).send("JWT token is valid");
 })
 
 router.post('/login', async (req, res) => {

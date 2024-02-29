@@ -31,10 +31,8 @@ pipeline {
       steps {
         // Add your deployment steps for the developer branch here
         script {
-          sh 'docker build -f Dockerfile.index -t my_node:latest .'
-          sh 'docker build -f Dockerfile.tokens -t my_node2:latest .'
+          sh 'docker build -t my_node:latest .'
           sh 'docker run -d -p 3000:3000 --name my-node my_node:latest'
-          sh 'docker run -d -p 3001:3001 --name my-node2 my_node2:latest'
         }
       }
     }
@@ -57,11 +55,8 @@ pipeline {
         // Add your deployment steps for the developer branch here
         script {
           sh 'docker stop my-node'
-          sh 'docker stop my-node2'
           sh 'docker rm my-node'
-          sh 'docker rm my-node2'
           sh 'docker rmi my_node:latest'
-          sh 'docker rmi my_node2:latest'
         }
       }
     }

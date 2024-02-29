@@ -1,22 +1,13 @@
-const { Client } = require('pg');
-const express = require('express');
-const bodyParser = require('body-parser');
 const bcrypt = require("bcryptjs")
+const express = require('express');
+const router = express.Router();
+const {
+  createUser,
+  isUserExists,
+  isValidUser,
+  deleteUser,
+  fetchEntries} = require("./db")
 
-
-const app = express();
-app.use(bodyParser.json());
-
-const db = new Client({
-  connectionString: 'postgres://postgres:pass@192.168.1.182:5433/postgres',
-});
-db.connect()
-  .then(() => {
-    console.log('Connected to PostgreSQL database!');
-  })
-  .catch((err) => {
-    console.error('Error connecting to the database:', err);
-  });
 
 const validateData = async (username, password) => {
     if ((username === undefined) && (password === undefined)) {
@@ -41,7 +32,7 @@ const validateData = async (username, password) => {
     }
 };
 
-app.post('/validate', async (req,res)=> {
+router.post('/validate', async (req,res)=> {
   try {
     const username = req.body.username
     const password = req.body.password
@@ -52,7 +43,7 @@ app.post('/validate', async (req,res)=> {
   }
 })
 
-app.post('/login', async (req, res) => {
+router.post('/login', async (req, res) => {
   try {
     const username = req.body.username
     const password = req.body.password
@@ -65,7 +56,7 @@ app.post('/login', async (req, res) => {
 });
 
 
-app.post('/signup', async (req, res) => {
+router.post('/signup', async (req, res) => {
   try {
     const username = req.body.username
     const password = await hashPassword(req.body.password)
@@ -78,7 +69,7 @@ app.post('/signup', async (req, res) => {
   }
 });
 
-app.delete('/delete/:userId', async (req, res) => {
+router.delete('/delete/:userId', async (req, res) => {
   try {
     const username = req.params.userId
     await canDelete(username)
@@ -89,7 +80,7 @@ app.delete('/delete/:userId', async (req, res) => {
   }
 });
 
-app.delete('/delete', async (req, res) => {
+router.delete('/delete', async (req, res) => {
     return res.status(400).send("No User provided");
 });
 
@@ -100,53 +91,8 @@ const canDelete = async (username) =>{
     }
 }
 
-const createUser = async (username,password) => {
-  try {
-    const query = 'INSERT INTO users(username, password_hash) VALUES($1, $2)'
-    await db.query(query, [username, password]);
-  } catch (err) {
-    throw new Error(err)
-  }
-}
 
-const fetchEntries = async (username) => {
-  const query = 'SELECT * FROM users WHERE username = $1'
-  return  await db.query(query, [username])
-}
-
-const isUserExists = async (username) =>{
-    const entries = await fetchEntries(username)
-    if(entries.rows.length>0){
-      throw new Error("User Already Exists")
-    }
-}
-
-const isValidUser = async (username,password) => {
-  const entries = await fetchEntries(username)
-  if (entries.rows.length===0){
-    throw new Error("Username not Found")
-  }
-  const user = entries.rows[0]
-  if ((user.username !== username) || (!await validateUser(password,user.password_hash))){
-    throw new Error("Username does not match with password")
-  }
-}
-
-const deleteUser = async (username) => {
-  try {
-    const query = 'DELETE FROM users WHERE username = $1'
-    await db.query(query, [username]);
-  } catch (e) {
-    throw new Error(e)
-  }
-}
-
-const port = process.env.PORT || 3000;
-const address = app.listen(port, function() {
-  console.log(`Server listening on port ${port}`);
-});
-
-module.exports = address
+module.exports = router
 
 
 
@@ -158,11 +104,3 @@ const hashPassword = async (password) => {
   }
 }
 
-const validateUser = async (password,hash)=> {
-  try{
-    const test = await bcrypt.compare(password, hash)
-    return test
-  } catch(e) {
-    throw new Error(e)
-  }
-}

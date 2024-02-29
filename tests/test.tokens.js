@@ -8,9 +8,9 @@ const isJenkins = process.env.JENKINS === 'true';
 let app;
 
 if (isJenkins){
-  app  = "http://localhost:3001"
+  app  = "http://localhost:3000"
 } else{
-  app = require('../src/token.js');
+  app = require('../src/app.js');
 }
 
 

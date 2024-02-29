@@ -9,7 +9,7 @@ let app;
 if (isJenkins){
   app  = "http://localhost:3000"
 } else{
-  app = require('../src/index.js');
+  app = require('../src/app.js');
 }
 
 

@@ -2,10 +2,10 @@
   "name": "package.json",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.js",
+  "main": "src/auth.js",
   "scripts": {
     "test": "mocha tests/test.*.js --exit",
-    "start": "node src/index.js",
+    "start": "node src/app.js",
     "start-dev": "concurrently \"node dist/dev_index.js\" \"node dist/dev_token.js\"",
     "start-prod": "node dist/prod_index.js",
     "build-dev": "webpack --config=./webpack/webpack.config.dev.js",

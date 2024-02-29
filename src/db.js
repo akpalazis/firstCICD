@@ -18,25 +18,22 @@ async function connectDB() {
 }
 
 class UserDatabase {
+  constructor() {
+    this.createQuery = 'INSERT INTO users(username, password_hash) VALUES($1, $2)';
+    this.deleteQuery = 'DELETE FROM users WHERE username = $1';
+    this.fetchQuery =  'SELECT * FROM users WHERE username = $1';
+  }
   async createUser(username, password) {
     try {
-      const query = 'INSERT INTO users(username, password_hash) VALUES($1, $2)';
-      await db.query(query,[username,password])
+      await db.query(this.createQuery,[username,password])
     } catch (err) {
       throw new Error(err);
-    }
-  }
-  async canDelete(username){
-  const entries = await this.fetchEntries(username)
-    if(entries.rows.length===0){
-      throw new Error("Username not Found")
     }
   }
 
   async deleteUser(username) {
     try {
-      const query = 'DELETE FROM users WHERE username = $1';
-      await db.query(query,[username])
+      await db.query(this.deleteQuery,[username])
     } catch (e) {
       throw new Error(e);
     }
@@ -44,10 +41,16 @@ class UserDatabase {
 
   async fetchEntries(username) {
     try {
-      const query = 'SELECT * FROM users WHERE username = $1';
-      return await db.query(query,[username])
+      return await db.query(this.fetchQuery,[username])
     } catch (err) {
       throw new Error(err);
+    }
+  }
+
+  async canDelete(username){
+  const entries = await this.fetchEntries(username)
+    if(entries.rows.length===0){
+      throw new Error("Username not Found")
     }
   }
 
@@ -59,15 +62,15 @@ class UserDatabase {
   }
 
   async isValidUser(username,password){
-  const entries = await this.fetchEntries(username)
-  if (entries.rows.length===0){
-    throw new Error("Username not Found")
+    const entries = await this.fetchEntries(username)
+    if (entries.rows.length===0){
+      throw new Error("Username not Found")
+    }
+    const user = entries.rows[0]
+    if ((user.username !== username) || (!await validateUser(password,user.password_hash))){
+      throw new Error("Username does not match with password")
+    }
   }
-  const user = entries.rows[0]
-  if ((user.username !== username) || (!await validateUser(password,user.password_hash))){
-    throw new Error("Username does not match with password")
-  }
-}
 }
 
 const deleteToken = async (userId) => {

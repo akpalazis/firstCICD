@@ -28,19 +28,6 @@ describe('Testing POST /generateTokens endpoint', () => {
         return done(err)
       })
   })
-  it('Invalid JWT: responds with invalid status code',() =>{
-    return request(app)
-      .get("/")
-      .set('Authorization', `Bearer xxxx`)
-      .send()
-      .then((response)=>{
-        expect(response.status).toBe(401); // Check for expected status code
-        expect(response.text).toBe('Unauthorized - Invalid JWT')
-      })
-      .catch((err)=>{
-        return done(err)
-      })
-  })
   it('validate that accessCookie is stored', () => {
     return request(app)
       .post('/generateTokens/1') // Specify the POST method
@@ -99,6 +86,19 @@ describe('Testing POST /generateTokens endpoint', () => {
         return done(err); // Handle potential errors
       });
   });
+  it('Invalid JWT: responds with invalid status code',() =>{
+    return request(app)
+      .get("/")
+      .set('Authorization', `Bearer xxxx`)
+      .send()
+      .then((response)=>{
+        expect(response.status).toBe(401); // Check for expected status code
+        expect(response.text).toBe('Unauthorized - Invalid JWT')
+      })
+      .catch((err)=>{
+        return done(err)
+      })
+  })
   it("Delete token: responds with valid status", ()=> {
     return request(app)
       .delete('/delete_token/1')

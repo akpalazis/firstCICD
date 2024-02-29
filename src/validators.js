@@ -32,9 +32,9 @@ const validateJWT = (req, res, next) => {
   try {
     const tokenStartIndex = token.indexOf('=') + 1; // Find the index after '='
     const tokenEndIndex = token.indexOf(';'); // Find the index before ';'
-    const new_token = token.slice(tokenStartIndex, tokenEndIndex);
+    const token_to_check = token.slice(tokenStartIndex, tokenEndIndex);
     // Verify the JWT
-    jwt.verify(new_token, accessSecretKey);
+    jwt.verify(token_to_check, accessSecretKey);
   } catch (err) {
     return res.status(401).send('Unauthorized - Invalid JWT' );
   }

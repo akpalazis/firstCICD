@@ -11,6 +11,7 @@ const storeTokens = async (res,accessToken,refreshToken) =>
 {
   try {
     res.cookie('accessToken', accessToken, {httpOnly: true, secure: false, sameSite: 'strict'});
+    res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: false, sameSite: 'strict'});
     await storeRefreshToken(refreshToken)
   } catch (e) {
     throw new Error(e)

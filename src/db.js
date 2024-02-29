@@ -103,9 +103,23 @@ const storeRefreshToken = async (refreshToken) => {
   }
 }
 
+
+const fetchRefreshToken = async (userId) => {
+   try {
+     const fetchQuery =  'SELECT * FROM refresh_tokens WHERE user_id = $1';
+     const entries = await db.query(fetchQuery,[userId])
+     return entries.rows[0]
+  } catch (err) {
+    throw new Error(err)
+  }
+}
+
+
+
 module.exports = {
   connectDB,
   UserDatabase,
   storeRefreshToken,
+  fetchRefreshToken,
   deleteToken
 }

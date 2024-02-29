@@ -14,6 +14,7 @@ if (isJenkins){
 }
 
 let accessTokenCookie;
+let refreshTokenCookie;
 
 describe('Testing POST /generateTokens endpoint', () => {
   it('No JWT: responds with invalid status code',() =>{
@@ -28,7 +29,7 @@ describe('Testing POST /generateTokens endpoint', () => {
         return done(err)
       })
   })
-  it('validate that accessCookie is stored', () => {
+  it('validate that tokens are stored', () => {
     return request(app)
       .post('/generateTokens/1') // Specify the POST method
       .send({}) // Attach username and password in the request body
@@ -43,8 +44,10 @@ describe('Testing POST /generateTokens endpoint', () => {
 
         // Extract cookie values (you may need to adjust this based on actual cookie names)
         accessTokenCookie = cookies.find(cookie => cookie.includes('accessToken'));
+        refreshTokenCookie = cookies.find(cookie => cookie.includes('refreshToken'));
         // Assert that cookies are set as expected
         expect(accessTokenCookie).toBeDefined();
+        expect(refreshTokenCookie).toBeDefined();
       })
       .catch((err) => {
         return done(err); // Handle potential errors
@@ -53,7 +56,7 @@ describe('Testing POST /generateTokens endpoint', () => {
   it('Valid JWT: responds with valid status code',() =>{
     return request(app)
       .get("/")
-      .set('Authorization', `Bearer ${accessTokenCookie}`)
+      .set('Authorization', `Bearer ${accessTokenCookie}, Bearer ${refreshTokenCookie}`)
       .send()
       .then((response)=>{
         expect(response.status).toBe(200); // Check for expected status code
@@ -89,7 +92,7 @@ describe('Testing POST /generateTokens endpoint', () => {
   it('Invalid JWT: responds with invalid status code',() =>{
     return request(app)
       .get("/")
-      .set('Authorization', `Bearer xxxx`)
+      .set('Authorization', `Bearer xxxx, Bearer yyyy`)
       .send()
       .then((response)=>{
         expect(response.status).toBe(401); // Check for expected status code

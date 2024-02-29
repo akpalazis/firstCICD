@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const {fetchRefreshToken} = require('./db')
 
 const validateData = async (username, password) => {
     if ((username === undefined) && (password === undefined)) {
@@ -23,18 +24,41 @@ const validateData = async (username, password) => {
     }
 };
 
-const validateJWT = (req, res, next) => {
-  const token = req.headers.authorization;
+const stripToken = (token) => {
+  const tokenStartIndex = token.indexOf('=') + 1; // Find the index after '='
+  const tokenEndIndex = token.indexOf(';'); // Find the index before ';'
+  return token.slice(tokenStartIndex, tokenEndIndex);
+}
+
+const validateJWT = async (req, res, next) => {
+  const tokens = req.headers.authorization;
   const accessSecretKey = 'access-secret-key';
-  if (!token) {
+  const refreshSecretKey = 'refresh-secret-key';
+
+  if (!tokens) {
     return res.status(401).send('Unauthorized - JWT is missing' );
   }
   try {
-    const tokenStartIndex = token.indexOf('=') + 1; // Find the index after '='
-    const tokenEndIndex = token.indexOf(';'); // Find the index before ';'
-    const token_to_check = token.slice(tokenStartIndex, tokenEndIndex);
-    // Verify the JWT
-    jwt.verify(token_to_check, accessSecretKey);
+    const [accessTokenCookie, refreshTokenCookie] = tokens.split(',');
+    const accessToken = stripToken(accessTokenCookie)
+    const refreshToken = stripToken(refreshTokenCookie)
+    const accessUserJWT = jwt.verify(accessToken, accessSecretKey)
+
+    if (accessUserJWT){
+      return res.status(200).send('JWT token is valid' );
+    }
+    const refreshUserJWT = jwt.verify(refreshToken, refreshSecretKey)
+
+    if (!refreshUserJWT){
+        console.log("Cannot reload tokens sing in")
+    } else {
+        const dbRefreshToken = await fetchRefreshToken(refreshUserJWT.userId)
+        if (dbRefreshToken !== refreshToken){
+          console.log("Danger sign in")
+        }
+        console.log("reload tokens")
+    }
+
   } catch (err) {
     return res.status(401).send('Unauthorized - Invalid JWT' );
   }

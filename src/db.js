@@ -17,6 +17,35 @@ async function connectDB() {
   }
 }
 
+class UserDatabase {
+  async createUser(username, password) {
+    try {
+      const query = 'INSERT INTO users(username, password_hash) VALUES($1, $2)';
+      await db.query(query,[username,password])
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
+
+  async deleteUser(username) {
+    try {
+      const query = 'DELETE FROM users WHERE username = $1';
+      await db.query(query,[username])
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+
+  async fetchEntries(username) {
+    try {
+      const query = 'SELECT * FROM users WHERE username = $1';
+      return await db.query(query,[username])
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
+}
+
 const createUser = async (username,password) => {
   try {
     const query = 'INSERT INTO users(username, password_hash) VALUES($1, $2)'
@@ -90,6 +119,7 @@ const storeRefreshToken = async (refreshToken) => {
 
 module.exports = {
   connectDB,
+  UserDatabase,
   createUser,
   isUserExists,
   isValidUser,

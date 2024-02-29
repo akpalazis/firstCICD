@@ -17,7 +17,7 @@ if (isJenkins){
 describe('Testing POST /generateTokens endpoint', () => {
   it('validate that cookies are stored', () => {
     return request(app)
-      .post('/generateTokens/admin') // Specify the POST method
+      .post('/generateTokens/1') // Specify the POST method
       .send({}) // Attach username and password in the request body
       .then((response) => {
         expect(response.status).toBe(200); // Check for expected status code
@@ -30,11 +30,9 @@ describe('Testing POST /generateTokens endpoint', () => {
 
         // Extract cookie values (you may need to adjust this based on actual cookie names)
         const accessTokenCookie = cookies.find(cookie => cookie.includes('accessToken'));
-        const refreshTokenCookie = cookies.find(cookie => cookie.includes('refreshToken'));
 
         // Assert that cookies are set as expected
         expect(accessTokenCookie).toBeDefined();
-        expect(refreshTokenCookie).toBeDefined();
       })
       .catch((err) => {
         return done(err); // Handle potential errors

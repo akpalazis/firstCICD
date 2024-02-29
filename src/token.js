@@ -6,14 +6,21 @@ const router = express.Router();
 const accessSecretKey = 'access-secret-key';
 const refreshSecretKey = 'refresh-secret-key';
 
-router.post('/generateTokens/:user', async (req, res) => {
+const storeTokens = async (res,accessToken,refreshToken) =>
+{
   try {
-    const username = req.params.user
-    const accessToken = jwt.sign({ username:username }, accessSecretKey, { expiresIn: '15m' });
-    res.cookie('accessToken', accessToken, { httpOnly: true, secure: false, sameSite: 'strict' });
-    const refreshToken = jwt.sign({ username: username }, refreshSecretKey);
-    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: false, sameSite: 'strict' });
+    res.cookie('accessToken', accessToken, {httpOnly: true, secure: false, sameSite: 'strict'});
+  } catch (e) {
+    throw new Error(e)
+  }
+}
 
+router.post('/generateTokens/:userID', async (req, res) => {
+  try {
+    const userID = req.params.userID
+    const accessToken = jwt.sign({ userId:userID }, accessSecretKey, { expiresIn: '15m' });
+    const refreshToken = jwt.sign({ userId: userID }, refreshSecretKey, {expiresIn: '7d'});
+    await storeTokens(res,accessToken,refreshToken)
     return res.status(200).send("Token Generated Successfully")
   } catch (err) {
     return res.status(400).send(err.message);

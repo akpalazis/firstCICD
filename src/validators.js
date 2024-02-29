@@ -1,3 +1,5 @@
+const jwt = require('jsonwebtoken');
+
 const validateData = async (username, password) => {
     if ((username === undefined) && (password === undefined)) {
       throw new Error("Username and Password field not found");
@@ -21,4 +23,20 @@ const validateData = async (username, password) => {
     }
 };
 
-module.exports = {validateData}
+const validateJWT = (req, res, next) => {
+  const token = req.headers.authorization;
+  const accessSecretKey = 'access-secret-key';
+
+  if (!token) {
+    return res.status(401).send('Unauthorized - JWT is missing' );
+  }
+
+  try {
+    // Verify the JWT
+    jwt.verify(token, accessSecretKey);
+  } catch (err) {
+    return res.status(401).send('Unauthorized - Invalid JWT' );
+  }
+};
+
+module.exports = {validateData, validateJWT}

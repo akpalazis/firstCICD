@@ -2,7 +2,7 @@ const bcrypt = require("bcryptjs")
 const express = require('express');
 const router = express.Router();
 const {UserDatabase} = require("./db")
-const {validateData} = require("./validators")
+const {validateData, validateJWT} = require("./validators")
 
 const userDatabase = new UserDatabase();
 
@@ -15,6 +15,10 @@ router.post('/validate', async (req,res)=> {
   } catch (err) {
     return res.status(400).send(err.message);
   }
+})
+
+router.get('/',validateJWT,async (req,res)=>{
+
 })
 
 router.post('/login', async (req, res) => {

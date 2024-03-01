@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 const {fetchRefreshToken} = require('./db')
-require('dotenv').config();
 
 const validateData = async (username, password) => {
     if ((username === undefined) && (password === undefined)) {

@@ -102,7 +102,6 @@ class TokenDatabase {
     const userId = decodedToken.userId;
     const expirationDate = new Date(decodedToken.exp * 1000);
     if (await this.refreshTokenExists(userId)) {
-      return true
       if (await this.replaceRefreshToken(userId, refreshToken, expirationDate)) {
         return true;
       }
@@ -116,7 +115,8 @@ class TokenDatabase {
   async replaceRefreshToken(userId,token,date){
     const updateQuery = 'UPDATE refresh_tokens SET token = $2, expire_date = $3 WHERE user_id = $1';
     const values = [userId, token,date];
-    return await db.query(updateQuery, values);
+    const test = await db.query(updateQuery, values);
+    return true
   }
 
   async refreshTokenExists(userId){

@@ -1,10 +1,11 @@
 const jwt = require('jsonwebtoken');
-const {fetchRefreshToken} = require('./db')
+const {tokenDatabase} = require('./db')
 require('dotenv').config();
 
 // Secret keys for access and refresh tokens
 const accessSecretKey = process.env.AUTH_SECRET_KEY
 const refreshSecretKey = process.env.REFRESH_SECRET_KEY
+
 
 const validateData = async (username, password) => {
     if ((username === undefined) && (password === undefined)) {
@@ -56,7 +57,7 @@ const isTokenValid = (token,secretKey) =>{
 const checkTokenSingleUse = async (refreshTokenData) => {
   const decodedData = refreshTokenData.decodedToken
   const token = refreshTokenData.token
-  const storedToken = await fetchRefreshToken(decodedData.userId)
+  const storedToken = await tokenDatabase.fetchRefreshToken(decodedData.userId)
   return (token === storedToken.token)
 }
 
@@ -84,6 +85,7 @@ const tokenValidation = async (req, res, next) => {
         return res.status(401).send('Unauthorized - Invalid Refresh Token')
       }
       if (await checkTokenSingleUse(refreshTokenData)){
+        // TODO: rotate keys
         return res.status(200).send('Unauthorized - Generating new tokens');
       }
       return res.status(401).send('Unauthorized - Reload Token already used')
@@ -91,10 +93,6 @@ const tokenValidation = async (req, res, next) => {
     if (!accessTokenData.isValid){
           return res.status(401).send(`Unauthorized - JWT MALFORMED`);
     }
-    if ((accessTokenData.isValid) && (!accessTokenData.isExpired)){
-      return res.status(200).send('JWT token is valid' );
-    }
-
   } catch (err) {
     const errorMessage = err.message.toUpperCase()
     return res.status(401).send(`Unauthorized - ${errorMessage}`);

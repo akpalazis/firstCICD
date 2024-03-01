@@ -96,7 +96,7 @@ class TokenDatabase {
   }
 
 
-  async storeRefreshToken(refreshToken){
+  async refreshTokenNewEntry(refreshToken){
    try {
     const decoded = jwt.decode(refreshToken, refreshSecretKey);
     const userId = decoded.userId;
@@ -118,12 +118,11 @@ class TokenDatabase {
   }
 }
 
-
-
+tokenDatabase = new TokenDatabase()
 // TODO: create class for RefreshToken create,replace,delete
 
 module.exports = {
   connectDB,
   UserDatabase,
-  TokenDatabase
+  tokenDatabase
 }

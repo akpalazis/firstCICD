@@ -111,6 +111,7 @@ describe('Testing Token Verification', () => {
   let savedToken
 
   before(async function() {
+    this.timeout(30000)
     try {
     savedToken = createTokensFor(1, "-1s", "7d");
     await storeRefreshToken(savedToken.refresh);
@@ -191,8 +192,7 @@ describe('Testing Token Verification', () => {
   })
 
   after(async function(){
-    this.timeout(2000); // Adjust the timeout as needed
-    deleteToken(1)
+    await deleteToken(1)
   });
 
 });

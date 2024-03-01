@@ -77,7 +77,7 @@ class UserDatabase {
 const deleteToken = async (userId) => {
   try {
     const query = 'DELETE FROM refresh_tokens WHERE user_id = $1'
-    await db.query(query, [userId]);
+    return await db.query(query, [userId]);
   } catch (e) {
     throw new Error(e)
   }
@@ -94,11 +94,13 @@ const validateUser = async (password,hash)=> {
 
 const storeRefreshToken = async (refreshToken) => {
    try {
-   const decoded = jwt.decode(refreshToken, refreshSecretKey);
+    const decoded = jwt.decode(refreshToken, refreshSecretKey);
     const userId = decoded.userId;
     const expirationDate = new Date(decoded.exp * 1000);
     const query = 'INSERT INTO refresh_tokens(user_id, token, expire_date) VALUES($1, $2, $3)'
-    return await db.query(query, [userId,refreshToken,expirationDate]);
+    const promise =  await db.query(query, [userId,refreshToken,expirationDate]);
+    console.log(promise)
+     return promise
   } catch (err) {
     throw new Error(err)
   }

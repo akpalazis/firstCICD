@@ -1,6 +1,9 @@
 pipeline {
   agent any
-
+  environment {
+        AUTH_SECRET_KEY = credentials('access-token')
+        REFRESH_SECRET_KEY = credentials('refresh-token')
+    }
   tools {
     nodejs "npm"
     dockerTool "docker"
@@ -28,8 +31,10 @@ pipeline {
       steps {
         // Add your deployment steps for the developer branch here
         script {
+          echo "Using AUTH_SECRET_KEY key: ${AUTH_SECRET_KEY}"
+          echo "Using REFRESH_SECRET_KEY key: ${REFRESH_SECRET_KEY}"
           sh 'docker build -t my_node:latest .'
-          sh 'docker run -d -p 3000:3000 --name my-node my_node:latest'
+          sh 'docker run -d -p 3000:3000 -e AUTH_SECRET_KEY=${AUTH_SECRET_KEY} -e REFRESH_SECRET_KEY=${REFRESH_SECRET_KEY} --name my-node my_node:latest'
         }
       }
     }

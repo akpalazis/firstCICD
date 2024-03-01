@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const {fetchRefreshToken} = require('./db')
+require('dotenv').config();
 
 const validateData = async (username, password) => {
     if ((username === undefined) && (password === undefined)) {
@@ -32,8 +33,8 @@ const stripToken = (token) => {
 
 const validateJWT = async (req, res, next) => {
   const tokens = req.headers.authorization;
-  const accessSecretKey = 'access-secret-key';
-  const refreshSecretKey = 'refresh-secret-key';
+  const accessSecretKey = process.env.AUTH_SECRET_KEY;
+  const refreshSecretKey = process.env.REFRESH_SECRET_KEY
 
   if (!tokens) {
     return res.status(401).send('Unauthorized - JWT is missing' );

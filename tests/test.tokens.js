@@ -182,8 +182,5 @@ describe('Testing Token Verification', async () => {
       })
   })
 
-  after(async function(){
-    await deleteToken(1)
-  });
-
+  await deleteToken(1)
 });

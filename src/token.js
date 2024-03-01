@@ -13,7 +13,7 @@ const storeTokens = async (res,accessToken,refreshToken) =>
   try {
     res.cookie('accessToken', accessToken, {httpOnly: true, secure: false, sameSite: 'strict'});
     res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: false, sameSite: 'strict'});
-    await tokenDatabase.refreshTokenNewEntry(refreshToken)
+    await tokenDatabase.storeToken(refreshToken)
   } catch (e) {
     throw new Error(e)
   }

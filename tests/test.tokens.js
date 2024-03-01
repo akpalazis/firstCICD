@@ -1,4 +1,4 @@
-const {deleteToken, storeRefreshToken} = require("../src/db")
+const {tokenDatabase} = require("../src/db")
 
 const { expect } = require('expect');
 const request = require('supertest');
@@ -15,13 +15,6 @@ if (isJenkins){
   app = require('../src/app.js');
 }
 
-function delay(milliseconds) {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve();
-    }, milliseconds);
-  });
-}
 describe('Testing POST /generateTokens endpoint', () => {
   it('No JWT: responds with invalid status code',() =>{
     return request(app)
@@ -62,8 +55,8 @@ describe('Testing POST /generateTokens endpoint', () => {
         const cookies = response.headers['set-cookie'];
 
         // Extract cookie values (you may need to adjust this based on actual cookie names)
-        accessTokenCookie = cookies.find(cookie => cookie.includes('accessToken'));
-        refreshTokenCookie = cookies.find(cookie => cookie.includes('refreshToken'));
+        const accessTokenCookie = cookies.find(cookie => cookie.includes('accessToken'));
+        const refreshTokenCookie = cookies.find(cookie => cookie.includes('refreshToken'));
         // Assert that cookies are set as expected
         expect(accessTokenCookie).toBeDefined();
         expect(refreshTokenCookie).toBeDefined();
@@ -72,7 +65,7 @@ describe('Testing POST /generateTokens endpoint', () => {
         return done(err); // Handle potential errors
       });
   });
-  it('validate that accessCookie is deleted', () => {
+  it('validate that accessCookie are cleared', () => {
     return request(app)
       .get('/clearCookies') // Specify the POST method
       .send({}) // Attach username and password in the request body
@@ -107,10 +100,12 @@ describe('Testing POST /generateTokens endpoint', () => {
 });
 
 
-describe('Testing Token Verification', async () => {
+describe('Testing Token Verification',  () => {
   let savedToken
   savedToken = createTokensFor(1, "-1s", "7d");
-  await storeRefreshToken(savedToken.refresh);
+  it('Store Token',async () => {
+    await tokenDatabase.storeToken(savedToken.refresh);
+  });
 
   it('Expired Access and Valid Refresh JWT First Use: responds with valid status code',() =>{
     return request(app)
@@ -181,7 +176,8 @@ describe('Testing Token Verification', async () => {
         return done(err)
       })
   })
-
-  await deleteToken(1)
+  it('Delete Token',async () => {
+    await tokenDatabase.deleteToken(1);
+  });
 });
 

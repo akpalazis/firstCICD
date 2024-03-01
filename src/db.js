@@ -86,7 +86,8 @@ class UserDatabase {
 class TokenDatabase {
   constructor() {
   }
-  async deleteToken(userId){
+
+  async deleteToken(userId) {
     try {
       const query = 'DELETE FROM refresh_tokens WHERE user_id = $1'
       return await db.query(query, [userId]);
@@ -95,14 +96,35 @@ class TokenDatabase {
     }
   }
 
+  async storeToken(refreshToken) {
+    const decodedToken = jwt.decode(refreshToken)
+    const userId = decodedToken.userId;
+    const expirationDate = new Date(decodedToken.exp * 1000);
+    if (await this.refreshTokenExists(userId)) {
+      return this.replaceRefreshToken(userId,refreshToken,expirationDate)
+    }
+    return this.refreshTokenNewEntry(userId,refreshToken,expirationDate)
+  }
 
-  async refreshTokenNewEntry(refreshToken){
+  async replaceRefreshToken(userId,token,date){
+    const updateQuery = 'UPDATE refresh_tokens SET token = $2, expire_date = $3 WHERE user_id = $1';
+    const values = [userId, token,date];
+    return await db.query(updateQuery, values);
+  }
+
+  async refreshTokenExists(userId){
+    const fetchQuery =  'SELECT * FROM refresh_tokens WHERE user_id = $1';
+    const entries = await db.query(fetchQuery,[userId])
+    if (entries.rows.length===0){
+      return false
+    }
+    return true
+    }
+
+  async refreshTokenNewEntry(userId,token,date){
    try {
-    const decoded = jwt.decode(refreshToken, refreshSecretKey);
-    const userId = decoded.userId;
-    const expirationDate = new Date(decoded.exp * 1000);
     const query = 'INSERT INTO refresh_tokens(user_id, token, expire_date) VALUES($1, $2, $3)'
-    return  await db.query(query, [userId,refreshToken,expirationDate]);
+    return  await db.query(query, [userId,token,date]);
     } catch (err) {
       throw new Error(err)
     }
@@ -118,8 +140,7 @@ class TokenDatabase {
   }
 }
 
-tokenDatabase = new TokenDatabase()
-// TODO: create class for RefreshToken create,replace,delete
+const tokenDatabase = new TokenDatabase()
 
 module.exports = {
   connectDB,

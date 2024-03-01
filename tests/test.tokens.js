@@ -1,7 +1,5 @@
 const { expect } = require('expect');
 const request = require('supertest');
-require('dotenv').config();
-
 
 const isJenkins = process.env.JENKINS === 'true';
 
@@ -12,6 +10,7 @@ if (isJenkins){
   app  = process.env.HOST
 } else{
   app = require('../src/app.js');
+  require('dotenv').config();
 }
 
 let accessTokenCookie;

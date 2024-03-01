@@ -2,8 +2,12 @@ const { Client } = require('pg');
 const bcrypt = require("bcryptjs")
 const jwt = require('jsonwebtoken');
 const refreshSecretKey = 'refresh-secret-key';
-require('dotenv').config();
 
+const isJenkins = process.env.JENKINS === 'true';
+
+if (!isJenkins){
+  require('dotenv').config();
+}
 // Access environment variables
 
 const db = new Client({

@@ -25,9 +25,7 @@ class UserDatabase {
   }
   async createUser(username, password) {
     try {
-      console.log("Before")
       await db.query(this.createQuery,[username,password])
-      console.log("HERE")
     } catch (err) {
       throw new Error(err);
     }
@@ -130,7 +128,6 @@ class TokenDatabase {
   async refreshTokenExists(userId){
     const fetchQuery =  'SELECT * FROM refresh_tokens WHERE user_id = $1';
     const entries = await db.query(fetchQuery,[userId])
-    console.log("After query")
     if (entries.rows.length===0){
       console.log("Before return False")
       return false
@@ -141,8 +138,11 @@ class TokenDatabase {
 
   async refreshTokenNewEntry(userId,token,date){
    try {
+     console.log("In the refres token new entry")
     const query = 'INSERT INTO refresh_tokens(user_id, token, expire_date) VALUES($1, $2, $3)'
-    return  await db.query(query, [userId,token,date]);
+    await db.query(query, [userId,token,date]);
+     console.log("After the query")
+    return true
     } catch (err) {
       throw new Error(err)
     }

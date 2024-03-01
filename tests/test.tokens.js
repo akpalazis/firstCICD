@@ -1,5 +1,6 @@
 const { expect } = require('expect');
 const request = require('supertest');
+const {createTokensFor} = require('../src/token')
 
 const isJenkins = process.env.JENKINS === 'true';
 
@@ -14,6 +15,7 @@ if (isJenkins){
 
 let accessTokenCookie;
 let refreshTokenCookie;
+
 
 describe('Testing POST /generateTokens endpoint', () => {
   it('No JWT: responds with invalid status code',() =>{
@@ -110,6 +112,21 @@ describe('Testing POST /generateTokens endpoint', () => {
         expect(response.text).toBe("Token Deleted Successfully") // Check for expected status code
       })
   });
+  it('Expired JWT: responds with invalid status code',() =>{
+    let tokens = createTokensFor(1,"-1s","7d")
+    return request(app)
+      .get("/")
+      .set('Authorization', `Bearer ${tokens.access}, Bearer ${tokens.refresh}`)
+      .send()
+      .then((response)=>{
+        expect(response.status).toBe(401); // Check for expected status code
+        expect(response.text).toBe('Unauthorized - JWT EXPIRED')
+      })
+      .catch((err)=>{
+        return done(err)
+      })
+  })
+
   // TODO: test with an expire token and valid refresh token - generate new token
   // TODO: test with an expire token and expired refresh token - go to sign in page
   // TODO: test with an expire token and already used refresh token - go to sign in page mark as dangerous

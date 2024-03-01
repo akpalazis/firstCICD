@@ -1,14 +1,13 @@
 const jwt = require('jsonwebtoken');
 const express = require('express');
-const router = express.Router();
+const tokenRouter = express.Router();
 const {storeRefreshToken, deleteToken} = require('./db')
 require('dotenv').config();
 
 // Secret keys for access and refresh tokens
 const accessSecretKey = process.env.AUTH_SECRET_KEY
 const refreshSecretKey = process.env.REFRESH_SECRET_KEY
-console.log(accessSecretKey)
-console.log(refreshSecretKey)
+
 const storeTokens = async (res,accessToken,refreshToken) =>
 {
   try {
@@ -20,11 +19,19 @@ const storeTokens = async (res,accessToken,refreshToken) =>
   }
 }
 
-router.post('/generateTokens/:userID', async (req, res) => {
+const createTokensFor =  (userId,accessTokenTime,refreshTokenTime) => {
+    const accessToken = jwt.sign({ userId:userId }, accessSecretKey, { expiresIn: accessTokenTime });
+    const refreshToken = jwt.sign({ userId: userId }, refreshSecretKey, {expiresIn: refreshTokenTime});
+    return {access:accessToken,
+            refresh:refreshToken}
+}
+
+tokenRouter.post('/generateTokens/:userID', async (req, res) => {
   try {
     const userID = req.params.userID
-    const accessToken = jwt.sign({ userId:userID }, accessSecretKey, { expiresIn: '1s' });
-    const refreshToken = jwt.sign({ userId: userID }, refreshSecretKey, {expiresIn: '7d'});
+    const tokens = await createTokensFor(userID,"15m","7d")
+    const accessToken = tokens.access
+    const refreshToken = tokens.refresh
     await storeTokens(res,accessToken,refreshToken)
     return res.status(200).send("Token Generated Successfully")
   } catch (err) {
@@ -32,7 +39,7 @@ router.post('/generateTokens/:userID', async (req, res) => {
   }
 });
 
-router.get('/clearCookies', (req, res) => {
+tokenRouter.get('/clearCookies', (req, res) => {
   // Clear the access token cookie
   res.clearCookie('accessToken');
 
@@ -42,7 +49,7 @@ router.get('/clearCookies', (req, res) => {
   return res.status(200).send("Cookies Cleared Successfully");
 });
 
-router.delete('/delete_token/:userId', async (req, res) => {
+tokenRouter.delete('/delete_token/:userId', async (req, res) => {
   try {
     const userId = req.params.userId
     await deleteToken(userId)
@@ -52,4 +59,4 @@ router.delete('/delete_token/:userId', async (req, res) => {
   }
 });
 
-module.exports = router
+module.exports = {tokenRouter,createTokensFor}

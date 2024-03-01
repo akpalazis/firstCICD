@@ -30,9 +30,13 @@ const validateData = async (username, password) => {
 };
 
 const stripToken = (token) => {
-  const tokenStartIndex = token.indexOf('=') + 1; // Find the index after '='
-  const tokenEndIndex = token.indexOf(';'); // Find the index before ';'
-  return token.slice(tokenStartIndex, tokenEndIndex);
+  if (token.includes("=")) {
+    const tokenStartIndex = token.indexOf('=') + 1; // Find the index after '='
+    const tokenEndIndex = token.indexOf(';'); // Find the index before ';'
+    return token.slice(tokenStartIndex, tokenEndIndex);
+  }else{
+    return token.replace("Bearer ","")
+  }
 }
 
 const validateJWT = async (req, res, next) => {
@@ -64,7 +68,6 @@ const validateJWT = async (req, res, next) => {
 
   } catch (err) {
     const errorMessage = err.message.toUpperCase()
-    console.log(`Unauthorized - ${errorMessage}`)
     return res.status(401).send(`Unauthorized - ${errorMessage}`);
   }
   next()

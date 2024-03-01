@@ -110,8 +110,8 @@ class TokenDatabase {
       }
     }
     console.log('Before refreshTokenNewEntry');
-    return !!(await this.refreshTokenNewEntry(userId, refreshToken, expirationDate));
-
+    const test = !!(await this.refreshTokenNewEntry(userId, refreshToken, expirationDate));
+    console.log(test)
      // Handle the case where neither condition is met
   } catch (error) {
     console.error('Error in storeToken:', error);

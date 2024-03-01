@@ -3,12 +3,6 @@ const express = require('express');
 const router = express.Router();
 const {storeRefreshToken, deleteToken} = require('./db')
 
-const isJenkins = process.env.JENKINS === 'true';
-
-if (!isJenkins){
-  require('dotenv').config();
-}
-
 // Secret keys for access and refresh tokens
 const accessSecretKey = process.env.AUTH_SECRET_KEY
 const refreshSecretKey = process.env.REFRESH_SECRET_KEY

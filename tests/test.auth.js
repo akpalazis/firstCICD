@@ -10,7 +10,6 @@ if (isJenkins){
   app  = process.env.HOST
 } else{
   app = require('../src/app.js');
-  require('dotenv').config();
 }
 
 

@@ -3,11 +3,6 @@ const bcrypt = require("bcryptjs")
 const jwt = require('jsonwebtoken');
 const refreshSecretKey = 'refresh-secret-key';
 
-const isJenkins = process.env.JENKINS === 'true';
-
-if (!isJenkins){
-  require('dotenv').config();
-}
 // Access environment variables
 console.log(process.env.JENKINS)
 console.log(process.env.DB_URL)

@@ -97,11 +97,11 @@ class TokenDatabase {
   }
 
   async storeToken(refreshToken) {
-  return true
     try {
     const decodedToken = jwt.decode(refreshToken);
     const userId = decodedToken.userId;
     const expirationDate = new Date(decodedToken.exp * 1000);
+    return true
     if (await this.refreshTokenExists(userId)) {
       if (await this.replaceRefreshToken(userId, refreshToken, expirationDate)) {
         return true;

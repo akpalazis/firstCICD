@@ -106,7 +106,6 @@ describe('Testing Token Verification',  () => {
   return tokenDatabase.storeToken(savedToken.refresh)
     .then(result=>{
       expect(result).toBe(true)
-      console.log(result)
     })
     .catch((err)=>{
         return done(err)

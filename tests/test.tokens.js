@@ -112,7 +112,6 @@ describe('Testing Token Verification', () => {
   before(async () => {
     savedToken = createTokensFor(1,"-1s","7d")
     await storeRefreshToken(savedToken.refresh)
-    await delay(1000)
   });
 
   it('Expired Access and Valid Refresh JWT First Use: responds with valid status code',() =>{

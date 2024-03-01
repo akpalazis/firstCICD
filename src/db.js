@@ -106,6 +106,7 @@ class TokenDatabase {
         return true;
       }
     }
+    console.log("2")
     return  !!(await this.refreshTokenNewEntry(userId, refreshToken, expirationDate));
   } catch (error) {
     throw new Error(error);
@@ -131,6 +132,7 @@ class TokenDatabase {
    try {
     const query = 'INSERT INTO refresh_tokens(user_id, token, expire_date) VALUES($1, $2, $3)'
     await db.query(query, [userId,token,date]);
+    console.log("3")
     return true
     } catch (err) {
       throw new Error(err)

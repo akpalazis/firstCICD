@@ -104,6 +104,7 @@ describe('Testing Token Verification',  () => {
   let savedToken
   savedToken = createTokensFor(1, "-1s", "7d");
   it('Store Token', () => {
+    console.log("1")
   return tokenDatabase.storeToken(savedToken.refresh)
     .then(result=>{
       console.log(result)

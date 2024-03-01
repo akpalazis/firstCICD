@@ -2,8 +2,8 @@ pipeline {
   agent any
   environment {
     JENKINS = "true"
-    AUTH_SECRET_KEY=credentials("access-token")
-    REFRESH_SECRET_KEY=credentials("refresh-token")
+    AUTH_SECRET_KEY=credentials('access-token')
+    REFRESH_SECRET_KEY=credentials('refresh-token')
   }
 
   tools {

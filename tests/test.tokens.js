@@ -104,7 +104,7 @@ describe('Testing Token Verification',  () => {
   let savedToken
   savedToken = createTokensFor(1, "-1s", "7d");
   it('Store Token', async () => {
-  const test = await tokenDatabase.storeToken(savedToken.refresh);
+  const test = tokenDatabase.storeToken(savedToken.refresh);
   console.log(test)
   // Additional assertions or code as needed
   });

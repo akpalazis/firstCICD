@@ -108,7 +108,6 @@ class TokenDatabase {
     }
     return  !!(await this.refreshTokenNewEntry(userId, refreshToken, expirationDate));
   } catch (error) {
-    console.error('Error in storeToken:', error);
     throw new Error(error);
   }
 }

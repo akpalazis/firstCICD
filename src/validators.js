@@ -33,13 +33,34 @@ const stripToken = (token) => {
   if (token.includes("=")) {
     const tokenStartIndex = token.indexOf('=') + 1; // Find the index after '='
     const tokenEndIndex = token.indexOf(';'); // Find the index before ';'
-    return token.slice(tokenStartIndex, tokenEndIndex);
+    return token.slice(tokenStartIndex, tokenEndIndex).trim();
   }else{
-    return token.replace("Bearer ","")
+    return token.replace("Bearer ","").trim()
   }
 }
 
-const validateJWT = async (req, res, next) => {
+
+const isTokenValid = (token,secretKey) =>{
+  return jwt.verify(token,secretKey,(err,decoded)=>{
+    if(err){
+      if (err.name == 'TokenExpiredError'){
+        return  {isValid:false,isExpired:true}
+      }
+      return  {isValid: false,isExpired: false}
+    } else{
+      return  {isValid: true,isExpired: false, decodedToken:decoded, token:token}
+    }
+  })
+}
+
+const checkTokenSingleUse = async (refreshTokenData) => {
+  const decodedData = refreshTokenData.decodedToken
+  const token = refreshTokenData.token
+  const storedToken = await fetchRefreshToken(decodedData.userId)
+  return (token === storedToken.token)
+}
+
+const tokenValidation = async (req, res, next) => {
   const tokens = req.headers.authorization;
 
 
@@ -48,22 +69,30 @@ const validateJWT = async (req, res, next) => {
   }
   try {
     const [accessTokenCookie, refreshTokenCookie] = tokens.split(',');
+    if ((!accessTokenCookie) ||(!refreshTokenCookie)){
+        return res.status(401).send(`Unauthorized - Found Only Single JWT`);
+    }
     const accessToken = stripToken(accessTokenCookie)
     const refreshToken = stripToken(refreshTokenCookie)
-    const accessUserJWT = jwt.verify(accessToken, accessSecretKey)
-    if (accessUserJWT){
-      return res.status(200).send('JWT token is valid' );
+    const accessTokenData = isTokenValid(accessToken,accessSecretKey)
+    const refreshTokenData = isTokenValid(refreshToken,refreshSecretKey)
+    if (accessTokenData.isExpired){
+      if(refreshTokenData.isExpired){
+        return res.status(401).send('Unauthorized - Refresh Token Expired')
+      }
+      if (!refreshTokenData.isValid){
+        return res.status(401).send('Unauthorized - Invalid Refresh Token')
+      }
+      if (await checkTokenSingleUse(refreshTokenData)){
+        return res.status(200).send('Unauthorized - Generating new tokens');
+      }
+      return res.status(401).send('Unauthorized - Reload Token already used')
     }
-    const refreshUserJWT = jwt.verify(refreshToken, refreshSecretKey)
-
-    if (!refreshUserJWT){
-    return res.status(401).send('Unauthorized - JWT expired' );
-    } else {
-        const dbRefreshToken = await fetchRefreshToken(refreshUserJWT.userId)
-        if (dbRefreshToken !== refreshToken){
-          console.log("Danger sign in")
-        }
-        console.log("reload tokens")
+    if (!accessTokenData.isValid){
+          return res.status(401).send(`Unauthorized - JWT MALFORMED`);
+    }
+    if ((accessTokenData.isValid) && (!accessTokenData.isExpired)){
+      return res.status(200).send('JWT token is valid' );
     }
 
   } catch (err) {
@@ -73,4 +102,4 @@ const validateJWT = async (req, res, next) => {
   next()
 };
 
-module.exports = {validateData, validateJWT}
+module.exports = {validateData, validateJWT: tokenValidation}

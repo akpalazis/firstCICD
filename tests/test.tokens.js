@@ -48,86 +48,6 @@ describe('Testing POST /generateTokens endpoint', () => {
         return done(err)
       })
     })
-  it('Expired Access and Valid Refresh JWT First Use: responds with valid status code', async () =>{
-    const tokens = createTokensFor(1,"-1s","7d")
-    await storeRefreshToken(tokens.refresh)
-    return request(app)
-      .get("/")
-      .set('Authorization', `Bearer ${tokens.access}, Bearer ${tokens.refresh}`)
-      .send()
-      .then((response)=>{
-        expect(response.status).toBe(200); // Check for expected status code
-        expect(response.text).toBe('Unauthorized - Generating new tokens')
-        deleteToken(1)
-      })
-      .catch((err)=>{
-        deleteToken(1)
-        return done(err)
-      })
-  })
-
-  it('Expired Access and Valid Refresh JWT Already Used: responds with invalid status code',async () =>{
-    const init_tokens = createTokensFor(1,"-1s","7d")
-    await storeRefreshToken(init_tokens.refresh)
-    await delay(1050)
-    const tokens = createTokensFor(1,"-1s","7d")
-    return request(app)
-      .get("/")
-      .set('Authorization', `Bearer ${tokens.access}, Bearer ${tokens.refresh}`)
-      .send()
-      .then((response)=>{
-        expect(response.status).toBe(401); // Check for expected status code
-        expect(response.text).toBe('Unauthorized - Reload Token already used')
-      })
-      .catch((err)=>{
-        return done(err)
-      })
-  })
-  it('Expired Access and Expired Refresh JWT: responds with invalid status code',() =>{
-    const tokens = createTokensFor(1,"-1s","-1s")
-    return request(app)
-      .get("/")
-      .set('Authorization', `Bearer ${tokens.access}, Bearer ${tokens.refresh}`)
-      .send()
-      .then((response)=>{
-        expect(response.status).toBe(401); // Check for expected status code
-        expect(response.text).toBe('Unauthorized - Refresh Token Expired')
-      })
-      .catch((err)=>{
-        return done(err)
-      })
-  })
-  it('Expired Access and Invalid Refresh JWT: responds with invalid status code',() =>{
-    const tokens = createTokensFor(1,"-1s","-1s")
-    return request(app)
-      .get("/")
-      .set('Authorization', `Bearer ${tokens.access}, Bearer yyyy`)
-      .send()
-      .then((response)=>{
-        expect(response.status).toBe(401); // Check for expected status code
-        expect(response.text).toBe('Unauthorized - Invalid Refresh Token')
-      })
-      .catch((err)=>{
-        return done(err)
-      })
-  })
-
-  it('Invalid Access: responds with invalid status code',() =>{
-    const tokens = createTokensFor(1,"-1s","7d")
-    return request(app)
-      .get("/")
-      .set('Authorization', `Bearer xxxx, Bearer ${tokens.refresh}`)
-      .send()
-      .then((response)=>{
-        expect(response.status).toBe(401); // Check for expected status code
-        expect(response.text).toBe('Unauthorized - JWT MALFORMED')
-      })
-      .catch((err)=>{
-        return done(err)
-      })
-  })
-
-
   it('validate that tokens are stored', () => {
     return request(app)
       .post('/generateTokens/1') // Specify the POST method
@@ -184,4 +104,89 @@ describe('Testing POST /generateTokens endpoint', () => {
         expect(response.text).toBe("Token Deleted Successfully") // Check for expected status code
       })
   });
+});
+
+
+describe('Testing Token Verification', () => {
+  let savedToken
+  before(async () => {
+    savedToken = createTokensFor(1,"-1s","7d")
+    await storeRefreshToken(savedToken.refresh)
+    await delay(1000)
+  });
+
+  it('Expired Access and Valid Refresh JWT First Use: responds with valid status code',() =>{
+    return request(app)
+      .get("/")
+      .set('Authorization', `Bearer ${savedToken.access}, Bearer ${savedToken.refresh}`)
+      .send()
+      .then((response)=>{
+        expect(response.status).toBe(200); // Check for expected status code
+        expect(response.text).toBe('Unauthorized - Generating new tokens')
+      })
+      .catch((err)=>{
+        return done(err)
+      })
+  })
+  it('Expired Access and Valid Refresh JWT Already Used: responds with invalid status code',async () =>{
+    const tokens = createTokensFor(1,"-1s","7d")
+    return request(app)
+      .get("/")
+      .set('Authorization', `Bearer ${tokens.access}, Bearer ${tokens.refresh}`)
+      .send()
+      .then((response)=>{
+        expect(response.status).toBe(401); // Check for expected status code
+        expect(response.text).toBe('Unauthorized - Reload Token already used')
+      })
+      .catch((err)=>{
+        return done(err)
+      })
+  })
+  it('Expired Access and Expired Refresh JWT: responds with invalid status code',() =>{
+    const tokens = createTokensFor(1,"-1s","-1s")
+    return request(app)
+      .get("/")
+      .set('Authorization', `Bearer ${tokens.access}, Bearer ${tokens.refresh}`)
+      .send()
+      .then((response)=>{
+        expect(response.status).toBe(401); // Check for expected status code
+        expect(response.text).toBe('Unauthorized - Refresh Token Expired')
+      })
+      .catch((err)=>{
+        return done(err)
+      })
+  })
+  it('Expired Access and Invalid Refresh JWT: responds with invalid status code',() =>{
+    const tokens = createTokensFor(1,"-1s","-1s")
+    return request(app)
+      .get("/")
+      .set('Authorization', `Bearer ${tokens.access}, Bearer yyyy`)
+      .send()
+      .then((response)=>{
+        expect(response.status).toBe(401); // Check for expected status code
+        expect(response.text).toBe('Unauthorized - Invalid Refresh Token')
+      })
+      .catch((err)=>{
+        return done(err)
+      })
+  })
+  it('Invalid Access: responds with invalid status code',() =>{
+    const tokens = createTokensFor(1,"-1s","7d")
+    return request(app)
+      .get("/")
+      .set('Authorization', `Bearer xxxx, Bearer ${tokens.refresh}`)
+      .send()
+      .then((response)=>{
+        expect(response.status).toBe(401); // Check for expected status code
+        expect(response.text).toBe('Unauthorized - JWT MALFORMED')
+      })
+      .catch((err)=>{
+        return done(err)
+      })
+  })
+
+  after(async () => {
+    await deleteToken(1)
+  });
+
 });

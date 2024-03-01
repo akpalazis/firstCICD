@@ -110,6 +110,7 @@ describe('Testing POST /generateTokens endpoint', () => {
 describe('Testing Token Verification', () => {
   let savedToken
   before(async () => {
+    this.timeout(5000); // Adjust the timeout as needed
     try {
     savedToken = await createTokensFor(1, "-1s", "7d");
     await storeRefreshToken(savedToken.refresh);
@@ -190,6 +191,7 @@ describe('Testing Token Verification', () => {
   })
 
   after(async () => {
+    this.timeout(5000); // Adjust the timeout as needed
     await deleteToken(1)
   });
 

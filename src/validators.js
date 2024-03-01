@@ -1,6 +1,10 @@
 const jwt = require('jsonwebtoken');
 const {fetchRefreshToken} = require('./db')
 
+// Secret keys for access and refresh tokens
+const accessSecretKey = process.env.AUTH_SECRET_KEY
+const refreshSecretKey = process.env.REFRESH_SECRET_KEY
+
 const validateData = async (username, password) => {
     if ((username === undefined) && (password === undefined)) {
       throw new Error("Username and Password field not found");
@@ -32,8 +36,7 @@ const stripToken = (token) => {
 
 const validateJWT = async (req, res, next) => {
   const tokens = req.headers.authorization;
-  const accessSecretKey = 'access-secret-key';
-  const refreshSecretKey = 'refresh-secret-key';
+
 
   if (!tokens) {
     return res.status(401).send('Unauthorized - JWT is missing' );

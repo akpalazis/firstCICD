@@ -88,7 +88,7 @@ describe('Testing POST /validate endpoint', () => {
         return done(err); // Handle potential errors
       });
   });
-  it('Successful Validation: responds with invalid status code', () => {
+  it('Successful Validation: responds with valid status code', () => {
     return request(app)
       .post('/validate')
       .send({username:"admin", password:"1234"})// Specify the POST method

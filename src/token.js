@@ -1,19 +1,22 @@
 const jwt = require('jsonwebtoken');
 const express = require('express');
 const tokenRouter = express.Router();
-const {storeRefreshToken, deleteToken} = require('./db')
+const {TokenDatabase} = require('./db')
 require('dotenv').config();
 
 // Secret keys for access and refresh tokens
 const accessSecretKey = process.env.AUTH_SECRET_KEY
 const refreshSecretKey = process.env.REFRESH_SECRET_KEY
 
+const tokenDatabase = new TokenDatabase();
+
+
 const storeTokens = async (res,accessToken,refreshToken) =>
 {
   try {
     res.cookie('accessToken', accessToken, {httpOnly: true, secure: false, sameSite: 'strict'});
     res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: false, sameSite: 'strict'});
-    await storeRefreshToken(refreshToken)
+    await tokenDatabase.storeRefreshToken(refreshToken)
   } catch (e) {
     throw new Error(e)
   }
@@ -52,7 +55,7 @@ tokenRouter.get('/clearCookies', (req, res) => {
 tokenRouter.delete('/delete_token/:userId', async (req, res) => {
   try {
     const userId = req.params.userId
-    await deleteToken(userId)
+    await tokenDatabase.deleteToken(userId)
     return res.status(200).send("Token Deleted Successfully")
   } catch (err) {
     return res.status(400).send(err.message);

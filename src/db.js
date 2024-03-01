@@ -26,7 +26,7 @@ class UserDatabase {
   }
   async createUser(username, password) {
     try {
-      await db.query(this.createQuery,[username,password])
+      return await db.query(this.createQuery,[username,password])
     } catch (err) {
       throw new Error(err);
     }
@@ -34,7 +34,7 @@ class UserDatabase {
 
   async deleteUser(username) {
     try {
-      await db.query(this.deleteQuery,[username])
+      return await db.query(this.deleteQuery,[username])
     } catch (e) {
       throw new Error(e);
     }
@@ -68,44 +68,46 @@ class UserDatabase {
       throw new Error("Username not Found")
     }
     const user = entries.rows[0]
-    if ((user.username !== username) || (!await validateUser(password,user.password_hash))){
+    if ((user.username !== username) || (!await this.validateUser(password,user.password_hash))){
       throw new Error("Username does not match with password")
     }
   }
-}
-
-const deleteToken = async (userId) => {
-  try {
-    const query = 'DELETE FROM refresh_tokens WHERE user_id = $1'
-    return await db.query(query, [userId]);
-  } catch (e) {
-    throw new Error(e)
-  }
-}
-
-const validateUser = async (password,hash)=> {
-  try{
+  async validateUser(password,hash){
+    try{
     const test = await bcrypt.compare(password, hash)
     return test
   } catch(e) {
     throw new Error(e)
   }
+  }
 }
 
-const storeRefreshToken = async (refreshToken) => {
+
+class TokenDatabase {
+  constructor() {
+  }
+  async deleteToken(userId){
+    try {
+      const query = 'DELETE FROM refresh_tokens WHERE user_id = $1'
+      return await db.query(query, [userId]);
+    } catch (e) {
+      throw new Error(e)
+    }
+  }
+
+
+  async storeRefreshToken(refreshToken){
    try {
     const decoded = jwt.decode(refreshToken, refreshSecretKey);
     const userId = decoded.userId;
     const expirationDate = new Date(decoded.exp * 1000);
     const query = 'INSERT INTO refresh_tokens(user_id, token, expire_date) VALUES($1, $2, $3)'
     return  await db.query(query, [userId,refreshToken,expirationDate]);
-  } catch (err) {
-    throw new Error(err)
+    } catch (err) {
+      throw new Error(err)
+    }
   }
-}
-
-
-const fetchRefreshToken = async (userId) => {
+  async fetchRefreshToken(userId){
    try {
      const fetchQuery =  'SELECT * FROM refresh_tokens WHERE user_id = $1';
      const entries = await db.query(fetchQuery,[userId])
@@ -113,14 +115,15 @@ const fetchRefreshToken = async (userId) => {
   } catch (err) {
     throw new Error(err)
   }
+  }
 }
+
+
 
 // TODO: create class for RefreshToken create,replace,delete
 
 module.exports = {
   connectDB,
   UserDatabase,
-  storeRefreshToken,
-  fetchRefreshToken,
-  deleteToken
+  TokenDatabase
 }

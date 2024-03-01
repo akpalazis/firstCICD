@@ -7,6 +7,9 @@ WORKDIR .
 # Copy only the necessary files (built artifacts) into the container
 COPY dist ./dist
 
+ENV DB_URL postgres://postgres:pass@192.168.1.182:5433/postgres
+
+
 # Expose the port on which the app is listening
 EXPOSE 3000
 

@@ -25,7 +25,9 @@ class UserDatabase {
   }
   async createUser(username, password) {
     try {
-      return await db.query(this.createQuery,[username,password])
+      console.log("Before")
+      await db.query(this.createQuery,[username,password])
+      console.log("HERE")
     } catch (err) {
       throw new Error(err);
     }

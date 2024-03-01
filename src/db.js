@@ -101,9 +101,9 @@ class TokenDatabase {
     const userId = decodedToken.userId;
     const expirationDate = new Date(decodedToken.exp * 1000);
     if (await this.refreshTokenExists(userId)) {
-      return this.replaceRefreshToken(userId,refreshToken,expirationDate)
+      return await this.replaceRefreshToken(userId,refreshToken,expirationDate)
     }
-    return this.refreshTokenNewEntry(userId,refreshToken,expirationDate)
+    return await this.refreshTokenNewEntry(userId,refreshToken,expirationDate)
   }
 
   async replaceRefreshToken(userId,token,date){

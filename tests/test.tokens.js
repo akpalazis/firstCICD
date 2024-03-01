@@ -104,7 +104,8 @@ describe('Testing Token Verification',  () => {
   let savedToken
   savedToken = createTokensFor(1, "-1s", "7d");
   it('Store Token',async () => {
-    return tokenDatabase.storeToken(savedToken.refresh);
+    return await tokenDatabase.storeToken(savedToken.refresh)
+    .then((response)=>response)
   });
 
   it('Expired Access and Valid Refresh JWT First Use: responds with valid status code',() =>{
@@ -177,7 +178,8 @@ describe('Testing Token Verification',  () => {
       })
   })
   it('Delete Token',async () => {
-    return tokenDatabase.deleteToken(1);
+    return await tokenDatabase.deleteToken(1)
+      .then((response) => response)
   });
 });
 

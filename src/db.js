@@ -1,7 +1,6 @@
 const { Client } = require('pg');
 const bcrypt = require("bcryptjs")
 const jwt = require('jsonwebtoken');
-const refreshSecretKey = 'refresh-secret-key';
 require('dotenv').config();
 
 const db = new Client({

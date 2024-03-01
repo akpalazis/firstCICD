@@ -113,7 +113,7 @@ describe('Testing Token Verification', () => {
   before(async function() {
     try {
     savedToken = createTokensFor(1, "-1s", "7d");
-    storeRefreshToken(savedToken.refresh);
+    await storeRefreshToken(savedToken.refresh);
   } catch (error) {
     console.error("Error during setup:", error);
     throw error; // Rethrow the error to fail the test setup

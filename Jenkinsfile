@@ -4,6 +4,8 @@ pipeline {
     JENKINS = "true"
     AUTH_SECRET_KEY=credentials('access-token')
     REFRESH_SECRET_KEY=credentials('refresh-token')
+    DB_URL=credentials('db-url')
+    HOST=credentials('host-url')
   }
 
   tools {

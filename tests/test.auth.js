@@ -1,5 +1,6 @@
 const request = require('supertest');
 const { expect } = require('expect');
+require('dotenv').config();
 
 const isJenkins = process.env.JENKINS === 'true';
 
@@ -7,7 +8,7 @@ const isJenkins = process.env.JENKINS === 'true';
 let app;
 
 if (isJenkins){
-  app  = "http://localhost:3000"
+  app  = process.env.HOST
 } else{
   app = require('../src/app.js');
 }

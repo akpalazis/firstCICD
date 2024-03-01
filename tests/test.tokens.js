@@ -99,16 +99,11 @@ describe('Testing POST /generateTokens endpoint', () => {
   });
 });
 
-const test = async () => {
-  return true
-}
-
 describe('Testing Token Verification',  () => {
   let savedToken
   savedToken = createTokensFor(1, "-1s", "7d");
   it('Store Token', () => {
-  //return tokenDatabase.storeToken(savedToken.refresh)
-    return test()
+  return tokenDatabase.storeToken(savedToken.refresh)
     .then(result=>{
       expect(result).toBe(true)
       console.log(result)

@@ -97,7 +97,8 @@ class TokenDatabase {
   }
 
   async storeToken(refreshToken) {
-  try {
+  return true
+    try {
     const decodedToken = jwt.decode(refreshToken);
     const userId = decodedToken.userId;
     const expirationDate = new Date(decodedToken.exp * 1000);

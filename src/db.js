@@ -115,14 +115,13 @@ class TokenDatabase {
   async replaceRefreshToken(userId,token,date){
     const updateQuery = 'UPDATE refresh_tokens SET token = $2, expire_date = $3 WHERE user_id = $1';
     const values = [userId, token,date];
-    const test = await db.query(updateQuery, values);
-    return true
+    return await db.query(updateQuery, values);
   }
 
   async refreshTokenExists(userId){
     const fetchQuery =  'SELECT * FROM refresh_tokens WHERE user_id = $1';
     const entries = await db.query(fetchQuery,[userId])
-    return true
+    return false
     if (entries.rows.length===0){
       return false
     }

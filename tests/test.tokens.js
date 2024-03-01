@@ -113,7 +113,7 @@ describe('Testing Token Verification', () => {
   before(async function() {
     try {
     savedToken = createTokensFor(1, "-1s", "7d");
-    await storeRefreshToken(savedToken.refresh);
+    storeRefreshToken(savedToken.refresh);
   } catch (error) {
     console.error("Error during setup:", error);
     throw error; // Rethrow the error to fail the test setup
@@ -192,7 +192,7 @@ describe('Testing Token Verification', () => {
 
   after(async function(){
     this.timeout(2000); // Adjust the timeout as needed
-    await deleteToken(1)
+    deleteToken(1)
   });
 
 });

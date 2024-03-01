@@ -2,10 +2,11 @@ const jwt = require('jsonwebtoken');
 const express = require('express');
 const router = express.Router();
 const {storeRefreshToken, deleteToken} = require('./db')
+require('dotenv').config();
 
 // Secret keys for access and refresh tokens
-const accessSecretKey = "access-secret-key"
-const refreshSecretKey = "refresh-secret-key"
+const accessSecretKey = process.env.AUTH_SECRET_KEY
+const refreshSecretKey = process.env.REFRESH_SECRET_KEY
 const storeTokens = async (res,accessToken,refreshToken) =>
 {
   try {
@@ -22,7 +23,6 @@ router.post('/generateTokens/:userID', async (req, res) => {
     const userID = req.params.userID
     const accessToken = jwt.sign({ userId:userID }, accessSecretKey, { expiresIn: '1s' });
     const refreshToken = jwt.sign({ userId: userID }, refreshSecretKey, {expiresIn: '7d'});
-    console.log(accessToken)
     await storeTokens(res,accessToken,refreshToken)
     return res.status(200).send("Token Generated Successfully")
   } catch (err) {

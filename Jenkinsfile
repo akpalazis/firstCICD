@@ -51,7 +51,7 @@ pipeline {
       }
     }
   }
-    /*post {
+    post {
         always {
             script {
                 // Cleanup Docker image if the environment is set to "developer"
@@ -62,5 +62,5 @@ pipeline {
                 }
             }
         }
-    }*/
+    }
 }

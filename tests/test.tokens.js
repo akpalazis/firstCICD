@@ -103,9 +103,11 @@ describe('Testing POST /generateTokens endpoint', () => {
 describe('Testing Token Verification',  () => {
   let savedToken
   savedToken = createTokensFor(1, "-1s", "7d");
-  it('Store Token',async () => {
-    return await tokenDatabase.storeToken(savedToken.refresh)
-    .then((response)=>response)
+  it('Store Token', () => {
+    return tokenDatabase.storeToken(savedToken.refresh)
+    .then((response)=>{
+      expect(response.status).toBe(200)
+    })
   });
 
   it('Expired Access and Valid Refresh JWT First Use: responds with valid status code',() =>{
@@ -177,9 +179,11 @@ describe('Testing Token Verification',  () => {
         return done(err)
       })
   })
-  it('Delete Token',async () => {
-    return await tokenDatabase.deleteToken(1)
-      .then((response) => response)
+  it('Delete Token', () => {
+    return tokenDatabase.deleteToken(1)
+      .then((response)=>{
+      expect(response.status).toBe(200)
+    })
   });
 });
 

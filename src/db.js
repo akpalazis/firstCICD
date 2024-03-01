@@ -90,7 +90,9 @@ class TokenDatabase {
   async deleteToken(userId) {
     try {
       const query = 'DELETE FROM refresh_tokens WHERE user_id = $1'
-      return await db.query(query, [userId]);
+      await db.query(query, [userId]);
+      return Promise.resolve({status:200})
+
     } catch (e) {
       throw new Error(e)
     }
@@ -101,9 +103,11 @@ class TokenDatabase {
     const userId = decodedToken.userId;
     const expirationDate = new Date(decodedToken.exp * 1000);
     if (await this.refreshTokenExists(userId)) {
-      return await this.replaceRefreshToken(userId,refreshToken,expirationDate)
+      await this.replaceRefreshToken(userId,refreshToken,expirationDate)
+      return Promise.resolve({status:200})
     }
-    return await this.refreshTokenNewEntry(userId,refreshToken,expirationDate)
+    await this.refreshTokenNewEntry(userId,refreshToken,expirationDate)
+    return Promise.resolve({status:200})
   }
 
   async replaceRefreshToken(userId,token,date){

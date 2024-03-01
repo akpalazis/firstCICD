@@ -102,17 +102,20 @@ class TokenDatabase {
     const decodedToken = jwt.decode(refreshToken);
     const userId = decodedToken.userId;
     const expirationDate = new Date(decodedToken.exp * 1000);
-
+    console.log('Before refreshTokenExists');
     if (await this.refreshTokenExists(userId)) {
+      console.log('Before replaceRefreshToken');
       if (await this.replaceRefreshToken(userId, refreshToken, expirationDate)) {
+        console.log('replaceRefreshToken succeeded');
         return true;
       }
     }
-
+    console.log('Before refreshTokenNewEntry');
     return !!(await this.refreshTokenNewEntry(userId, refreshToken, expirationDate));
 
      // Handle the case where neither condition is met
   } catch (error) {
+    console.error('Error in storeToken:', error);
     throw new Error(error);
   }
 }

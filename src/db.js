@@ -9,7 +9,8 @@ if (!isJenkins){
   require('dotenv').config();
 }
 // Access environment variables
-
+console.log(process.env.JENKINS)
+console.log(process.env.DB_URL)
 const db = new Client({
   connectionString: process.env.DB_URL,
 });

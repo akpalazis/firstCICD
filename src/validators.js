@@ -43,14 +43,13 @@ const validateJWT = async (req, res, next) => {
     const accessToken = stripToken(accessTokenCookie)
     const refreshToken = stripToken(refreshTokenCookie)
     const accessUserJWT = jwt.verify(accessToken, accessSecretKey)
-
     if (accessUserJWT){
       return res.status(200).send('JWT token is valid' );
     }
     const refreshUserJWT = jwt.verify(refreshToken, refreshSecretKey)
 
     if (!refreshUserJWT){
-        console.log("Cannot reload tokens sing in")
+    return res.status(401).send('Unauthorized - JWT expired' );
     } else {
         const dbRefreshToken = await fetchRefreshToken(refreshUserJWT.userId)
         if (dbRefreshToken !== refreshToken){
@@ -60,7 +59,9 @@ const validateJWT = async (req, res, next) => {
     }
 
   } catch (err) {
-    return res.status(401).send('Unauthorized - Invalid JWT' );
+    const errorMessage = err.message.toUpperCase()
+    console.log(`Unauthorized - ${errorMessage}`)
+    return res.status(401).send(`Unauthorized - ${errorMessage}`);
   }
   next()
 };

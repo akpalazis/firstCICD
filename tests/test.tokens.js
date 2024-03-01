@@ -96,7 +96,7 @@ describe('Testing POST /generateTokens endpoint', () => {
       .send()
       .then((response)=>{
         expect(response.status).toBe(401); // Check for expected status code
-        expect(response.text).toBe('Unauthorized - Invalid JWT')
+        expect(response.text).toBe('Unauthorized - JWT MALFORMED')
       })
       .catch((err)=>{
         return done(err)
@@ -111,4 +111,9 @@ describe('Testing POST /generateTokens endpoint', () => {
         expect(response.text).toBe("Token Deleted Successfully") // Check for expected status code
       })
   });
+  // TODO: test with an expire token and valid refresh token - generate new token
+  // TODO: test with an expire token and expired refresh token - go to sign in page
+  // TODO: test with an expire token and already used refresh token - go to sign in page mark as dangerous
+  // TODO: test with valid auth token but expired refresh token - nothing happens
+  // TODO: if valid token dont access signup page
 });

@@ -21,7 +21,7 @@ const storeTokens = async (res,accessToken,refreshToken) =>
 router.post('/generateTokens/:userID', async (req, res) => {
   try {
     const userID = req.params.userID
-    const accessToken = jwt.sign({ userId:userID }, accessSecretKey, { expiresIn: '15m' });
+    const accessToken = jwt.sign({ userId:userID }, accessSecretKey, { expiresIn: '1s' });
     const refreshToken = jwt.sign({ userId: userID }, refreshSecretKey, {expiresIn: '7d'});
     await storeTokens(res,accessToken,refreshToken)
     return res.status(200).send("Token Generated Successfully")

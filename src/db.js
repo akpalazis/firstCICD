@@ -114,7 +114,7 @@ const fetchRefreshToken = async (userId) => {
   }
 }
 
-
+// TODO: create class for RefreshToken create,replace,delete
 
 module.exports = {
   connectDB,

@@ -103,9 +103,11 @@ describe('Testing POST /generateTokens endpoint', () => {
 describe('Testing Token Verification',  () => {
   let savedToken
   savedToken = createTokensFor(1, "-1s", "7d");
-  it('Store Token',  () => {
-  const test = tokenDatabase.storeToken(savedToken.refresh);
-  console.log(test)
+  it('Store Token', () => {
+  return tokenDatabase.storeToken(savedToken.refresh)
+    .then(result=>{
+      console.log(result)
+    })
   // Additional assertions or code as needed
   });
 

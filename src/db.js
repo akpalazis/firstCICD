@@ -94,7 +94,7 @@ const validateUser = async (password,hash)=> {
 
 const storeRefreshToken = async (refreshToken) => {
    try {
-   const decoded = jwt.verify(refreshToken, refreshSecretKey);
+   const decoded = jwt.decode(refreshToken, refreshSecretKey);
     const userId = decoded.userId;
     const expirationDate = new Date(decoded.exp * 1000);
     const query = 'INSERT INTO refresh_tokens(user_id, token, expire_date) VALUES($1, $2, $3)'

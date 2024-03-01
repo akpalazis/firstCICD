@@ -2,9 +2,10 @@ const { Client } = require('pg');
 const bcrypt = require("bcryptjs")
 const jwt = require('jsonwebtoken');
 const refreshSecretKey = 'refresh-secret-key';
+require('dotenv').config();
 
 const db = new Client({
-  connectionString: "postgres://postgres:pass@192.168.1.182:5433/postgres"
+  connectionString: process.env.DB_URL
 });
 
 async function connectDB() {

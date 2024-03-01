@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const express = require('express');
 const router = express.Router();
 const {storeRefreshToken, deleteToken} = require('./db')
+require('dotenv').config();
 
 // Secret keys for access and refresh tokens
 const accessSecretKey = process.env.AUTH_SECRET_KEY

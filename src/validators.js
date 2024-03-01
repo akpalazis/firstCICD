@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const {fetchRefreshToken} = require('./db')
+require('dotenv').config();
 
 // Secret keys for access and refresh tokens
 const accessSecretKey = process.env.AUTH_SECRET_KEY

@@ -51,18 +51,17 @@ pipeline {
         }
       }
     }
-    stage('Developer Docker Stop v1') {
-      when {
-        expression { env.BRANCH_NAME == 'developer' } // Only run this stage for the developer branch
-      }
-      steps {
-        // Add your deployment steps for the developer branch here
-        script {
-          sh 'docker stop my-node'
-          sh 'docker rm my-node'
-          sh 'docker rmi my_node:latest'
+    post {
+        always {
+            script {
+                // Cleanup Docker image if the environment is set to "developer"
+                if (env.BRANCH_NAME == 'developer') {
+                    sh 'docker stop my-node || true'
+                    sh 'docker rm my-node || true'
+                    sh 'docker rmi my_node:latest || true'
+                }
+            }
         }
-      }
     }
   }
 }

@@ -1,11 +1,5 @@
 pipeline {
   agent any
-  environment {
-    JENKINS = 'true'
-    AUTH_SECRET_KEY='access-secret-key'
-    REFRESH_SECRET_KEY='refresh-secret-key'
-  }
-
   tools {
     nodejs "npm"
     dockerTool "docker"

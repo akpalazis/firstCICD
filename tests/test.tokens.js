@@ -110,8 +110,13 @@ describe('Testing POST /generateTokens endpoint', () => {
 describe('Testing Token Verification', () => {
   let savedToken
   before(async () => {
-    savedToken = createTokensFor(1,"-1s","7d")
-    await storeRefreshToken(savedToken.refresh)
+    try {
+    savedToken = await createTokensFor(1, "-1s", "7d");
+    await storeRefreshToken(savedToken.refresh);
+  } catch (error) {
+    console.error("Error during setup:", error);
+    throw error; // Rethrow the error to fail the test setup
+  }
   });
 
   it('Expired Access and Valid Refresh JWT First Use: responds with valid status code',() =>{

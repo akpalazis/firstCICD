@@ -48,9 +48,9 @@ describe('Testing POST /generateTokens endpoint', () => {
         return done(err)
       })
     })
-  it('Expired Access and Valid Refresh JWT First Use: responds with valid status code',() =>{
+  it('Expired Access and Valid Refresh JWT First Use: responds with valid status code', async () =>{
     const tokens = createTokensFor(1,"-1s","7d")
-    storeRefreshToken(tokens.refresh)
+    await storeRefreshToken(tokens.refresh)
     return request(app)
       .get("/")
       .set('Authorization', `Bearer ${tokens.access}, Bearer ${tokens.refresh}`)
@@ -68,7 +68,7 @@ describe('Testing POST /generateTokens endpoint', () => {
 
   it('Expired Access and Valid Refresh JWT Already Used: responds with invalid status code',async () =>{
     const init_tokens = createTokensFor(1,"-1s","7d")
-    storeRefreshToken(init_tokens.refresh)
+    await storeRefreshToken(init_tokens.refresh)
     await delay(1050)
     const tokens = createTokensFor(1,"-1s","7d")
     return request(app)

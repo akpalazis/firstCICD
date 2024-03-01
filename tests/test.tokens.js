@@ -10,6 +10,7 @@ let app;
 
 if (isJenkins){
   app  = process.env.HOST
+  console.log(app)
 } else{
   app = require('../src/app.js');
 }

@@ -129,9 +129,12 @@ class TokenDatabase {
   async refreshTokenExists(userId){
     const fetchQuery =  'SELECT * FROM refresh_tokens WHERE user_id = $1';
     const entries = await db.query(fetchQuery,[userId])
+    console.log("After query")
     if (entries.rows.length===0){
+      console.log("Before return False")
       return false
     }
+    console.log("Before return True")
     return true
     }
 

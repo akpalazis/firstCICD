@@ -101,18 +101,12 @@ class TokenDatabase {
     const decodedToken = jwt.decode(refreshToken);
     const userId = decodedToken.userId;
     const expirationDate = new Date(decodedToken.exp * 1000);
-    console.log('Before refreshTokenExists');
     if (await this.refreshTokenExists(userId)) {
-      console.log('Before replaceRefreshToken');
       if (await this.replaceRefreshToken(userId, refreshToken, expirationDate)) {
-        console.log('replaceRefreshToken succeeded');
         return true;
       }
     }
-    console.log('Before refreshTokenNewEntry');
-    const test = !!(await this.refreshTokenNewEntry(userId, refreshToken, expirationDate));
-    console.log(test)
-     // Handle the case where neither condition is met
+    return  !!(await this.refreshTokenNewEntry(userId, refreshToken, expirationDate));
   } catch (error) {
     console.error('Error in storeToken:', error);
     throw new Error(error);
@@ -129,19 +123,15 @@ class TokenDatabase {
     const fetchQuery =  'SELECT * FROM refresh_tokens WHERE user_id = $1';
     const entries = await db.query(fetchQuery,[userId])
     if (entries.rows.length===0){
-      console.log("Before return False")
       return false
     }
-    console.log("Before return True")
     return true
     }
 
   async refreshTokenNewEntry(userId,token,date){
    try {
-     console.log("In the refres token new entry")
     const query = 'INSERT INTO refresh_tokens(user_id, token, expire_date) VALUES($1, $2, $3)'
     await db.query(query, [userId,token,date]);
-     console.log("After the query")
     return true
     } catch (err) {
       throw new Error(err)

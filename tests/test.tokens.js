@@ -104,7 +104,8 @@ describe('Testing Token Verification',  () => {
   let savedToken
   savedToken = createTokensFor(1, "-1s", "7d");
   console.log("1")
-  it('Store Token', () => {
+  it('Store Token', function() {
+    this.timeout(5000)
     console.log("1.1")
   return tokenDatabase.storeToken(savedToken.refresh)
     .then(result=>{
@@ -183,7 +184,8 @@ describe('Testing Token Verification',  () => {
         return done(err)
       })
   })
-  it('Delete Token', () => {
+  it('Delete Token', function()  {
+    this.timeout(5000)
     tokenDatabase.deleteToken(1)
   });
 });

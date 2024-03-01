@@ -12,6 +12,8 @@ if (isJenkins){
   app = require('../src/app.js');
 }
 
+console.log(process.env.JENKINS)
+console.log(process.env.HOST)
 
 describe('Testing POST /validate endpoint', () => {
   it('No Username and password: responds with invalid status code', () => {

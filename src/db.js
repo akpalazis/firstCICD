@@ -90,28 +90,32 @@ class TokenDatabase {
   async deleteToken(userId) {
     try {
       const query = 'DELETE FROM refresh_tokens WHERE user_id = $1'
-      if (db.query(query, [userId])){
-        return true
-      }
+      await db.query(query, [userId])
+      return true
     } catch (e) {
-      throw new Error(e)
+      throw new Error(e.message)
     }
   }
 
   async storeToken(refreshToken) {
-    const decodedToken = jwt.decode(refreshToken)
+  try {
+    const decodedToken = jwt.decode(refreshToken);
     const userId = decodedToken.userId;
     const expirationDate = new Date(decodedToken.exp * 1000);
-    if (await this.refreshTokenExists(userId)) {
-      if (await this.replaceRefreshToken(userId,refreshToken,expirationDate)){
-        return true
-      }
-        }
 
-    if (await this.refreshTokenNewEntry(userId,refreshToken,expirationDate)) {
-        return true
+    if (await this.refreshTokenExists(userId)) {
+      if (await this.replaceRefreshToken(userId, refreshToken, expirationDate)) {
+        return true;
       }
+    }
+
+    return !!(await this.refreshTokenNewEntry(userId, refreshToken, expirationDate));
+
+     // Handle the case where neither condition is met
+  } catch (error) {
+    throw new Error(error);
   }
+}
 
   async replaceRefreshToken(userId,token,date){
     const updateQuery = 'UPDATE refresh_tokens SET token = $2, expire_date = $3 WHERE user_id = $1';

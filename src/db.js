@@ -98,9 +98,7 @@ const storeRefreshToken = async (refreshToken) => {
     const userId = decoded.userId;
     const expirationDate = new Date(decoded.exp * 1000);
     const query = 'INSERT INTO refresh_tokens(user_id, token, expire_date) VALUES($1, $2, $3)'
-    const promise =  await db.query(query, [userId,refreshToken,expirationDate]);
-    console.log(promise)
-     return promise
+    return  await db.query(query, [userId,refreshToken,expirationDate]);
   } catch (err) {
     throw new Error(err)
   }

@@ -2,7 +2,6 @@ const {tokenDatabase} = require("../src/db")
 
 const { expect } = require('expect');
 const request = require('supertest');
-const {createTokensFor} = require('../src/token')
 
 const isJenkins = process.env.JENKINS === 'true';
 
@@ -157,8 +156,6 @@ describe('Testing Token Verification',  () => {
           .send(newTokens)
         })
 
-
-
     return request(app)
       .get("/")
       .set('Authorization', `Bearer ${tokens.access}, Bearer ${tokens.refresh}`)
@@ -171,50 +168,78 @@ describe('Testing Token Verification',  () => {
         return done(err)
       })
   })
-  it('Expired Access and Expired Refresh JWT: responds with invalid status code',() =>{
-    const tokens = createTokensFor(1,"-1s","-1s")
-    return request(app)
-      .get("/")
-      .set('Authorization', `Bearer ${tokens.access}, Bearer ${tokens.refresh}`)
-      .send()
-      .then((response)=>{
-        expect(response.status).toBe(401); // Check for expected status code
-        expect(response.text).toBe('Unauthorized - Refresh Token Expired')
+  it('Expired Access and Expired Refresh JWT: responds with invalid status code',async () => {
+    await request(app)
+      .post('/fetchToken')
+      .send({
+        userId: 1,
+        accessTime: "-1m",
+        refreshTime: "-1m"
       })
-      .catch((err)=>{
-        return done(err)
-      })
-  })
-  it('Expired Access and Invalid Refresh JWT: responds with invalid status code',() =>{
-    const tokens = createTokensFor(1,"-1s","-1s")
-    return request(app)
-      .get("/")
-      .set('Authorization', `Bearer ${tokens.access}, Bearer yyyy`)
-      .send()
-      .then((response)=>{
-        expect(response.status).toBe(401); // Check for expected status code
-        expect(response.text).toBe('Unauthorized - Invalid Refresh Token')
-      })
-      .catch((err)=>{
-        return done(err)
+      .then(async (response) => {
+        const tokens = response.body
+        return request(app)
+          .get("/")
+          .set('Authorization', `Bearer ${tokens.access}, Bearer ${tokens.refresh}`)
+          .send()
+          .then((response) => {
+            expect(response.status).toBe(401); // Check for expected status code
+            expect(response.text).toBe('Unauthorized - Refresh Token Expired')
+          })
+          .catch((err) => {
+            return done(err)
+          })
       })
   })
-  it('Invalid Access: responds with invalid status code',() =>{
-    const tokens = createTokensFor(1,"-1s","7d")
-    return request(app)
-      .get("/")
-      .set('Authorization', `Bearer xxxx, Bearer ${tokens.refresh}`)
-      .send()
-      .then((response)=>{
-        expect(response.status).toBe(401); // Check for expected status code
-        expect(response.text).toBe('Unauthorized - JWT MALFORMED')
+  it('Expired Access and Invalid Refresh JWT: responds with invalid status code',async () =>{
+    await request(app)
+      .post('/fetchToken')
+      .send({
+        userId: 1,
+        accessTime: "-1m",
+        refreshTime: "7d"
       })
-      .catch((err)=>{
-        return done(err)
+      .then(async (response) => {
+        const tokens = response.body
+        return request(app)
+          .get("/")
+          .set('Authorization', `Bearer ${tokens.access}, Bearer yyyy`)
+          .send()
+          .then((response) => {
+            expect(response.status).toBe(401); // Check for expected status code
+            expect(response.text).toBe('Unauthorized - Invalid Refresh Token')
+          })
+          .catch((err) => {
+            return done(err)
+          })
       })
   })
-  it('Delete Token', function()  {
-    this.timeout(5000)
-    tokenDatabase.deleteToken(1)
+  it('Invalid Access: responds with invalid status code',async () =>{
+    await request(app)
+      .post('/fetchToken')
+      .send({
+        userId: 1,
+        accessTime: "-1m",
+        refreshTime: "7d"
+      })
+      .then(async (response) => {
+        const tokens = response.body
+        return request(app)
+          .get("/")
+          .set('Authorization', `Bearer xxxx, Bearer ${tokens.refresh}`)
+          .send()
+          .then((response) => {
+            expect(response.status).toBe(401); // Check for expected status code
+            expect(response.text).toBe('Unauthorized - JWT MALFORMED')
+          })
+          .catch((err) => {
+            return done(err)
+          })
+      })
+  })
+  after(async ()=>{
+    await request(app)
+      .delete('/delete_token/1')
+      .send()
   });
 });

@@ -1,5 +1,4 @@
 const { Client } = require('pg');
-const bcrypt = require("bcryptjs")
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
@@ -16,71 +15,6 @@ async function connectDB() {
     throw err;
   }
 }
-
-class UserDatabase {
-  constructor() {
-    this.createQuery = 'INSERT INTO users(username, password_hash) VALUES($1, $2)';
-    this.deleteQuery = 'DELETE FROM users WHERE username = $1';
-    this.fetchQuery =  'SELECT * FROM users WHERE username = $1';
-  }
-  async createUser(username, password) {
-    try {
-      await db.query(this.createQuery,[username,password])
-    } catch (err) {
-      throw new Error(err);
-    }
-  }
-
-  async deleteUser(username) {
-    try {
-      return await db.query(this.deleteQuery,[username])
-    } catch (e) {
-      throw new Error(e);
-    }
-  }
-
-  async fetchEntries(username) {
-    try {
-      return await db.query(this.fetchQuery,[username])
-    } catch (err) {
-      throw new Error(err);
-    }
-  }
-
-  async canDelete(username){
-  const entries = await this.fetchEntries(username)
-    if(entries.rows.length===0){
-      throw new Error("Username not Found")
-    }
-  }
-
-  async isUserExists(username){
-    const entries = await this.fetchEntries(username)
-    if(entries.rows.length>0){
-      throw new Error("User Already Exists")
-    }
-  }
-
-  async isValidUser(username,password){
-    const entries = await this.fetchEntries(username)
-    if (entries.rows.length===0){
-      throw new Error("Username not Found")
-    }
-    const user = entries.rows[0]
-    if ((user.username !== username) || (!await this.validateUser(password,user.password_hash))){
-      throw new Error("Username does not match with password")
-    }
-  }
-  async validateUser(password,hash){
-    try{
-    const test = await bcrypt.compare(password, hash)
-    return test
-  } catch(e) {
-    throw new Error(e)
-  }
-  }
-}
-
 
 class TokenDatabase {
   constructor() {
@@ -150,7 +84,7 @@ class TokenDatabase {
 const tokenDatabase = new TokenDatabase()
 
 module.exports = {
+  db,
   connectDB,
-  UserDatabase,
   tokenDatabase
 }

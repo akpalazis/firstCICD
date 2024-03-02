@@ -1,5 +1,3 @@
-const {tokenDatabase} = require("../src/db")
-
 const { expect } = require('expect');
 const request = require('supertest');
 

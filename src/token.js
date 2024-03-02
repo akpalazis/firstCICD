@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const express = require('express');
 const tokenRouter = express.Router();
-const {tokenDatabase} = require('./db')
+const {tokenDatabase} = require('./token-db-tools')
 require('dotenv').config();
 
 // Secret keys for access and refresh tokens

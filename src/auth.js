@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const {userDatabaseTools} = require("./auth-db-tools")
 const {validateData} = require("./auth-validatiors")
-const {tokenValidation} = require("./validators")
+const {tokenValidation} = require("./token-validators")
 
 
 const hashPassword = async (password) => {

@@ -7,7 +7,9 @@ class UserDatabase {
     this.deleteQuery = 'DELETE FROM users WHERE username = $1';
     this.fetchQuery =  'SELECT * FROM users WHERE username = $1';
   }
-  async createUser(username, password) {
+  async createUser(credentials) {
+    const username = credentials.username
+    const password = credentials.password
     try {
       await db.query(this.createQuery,[username,password])
     } catch (err) {
@@ -45,7 +47,9 @@ class UserDatabase {
     }
   }
 
-  async isValidUser(username,password){
+  async isValidUser(credentials){
+    const username = credentials.username
+    const password = credentials.password
     const entries = await this.fetchEntries(username)
     if (entries.rows.length===0){
       throw new Error("Username not Found")

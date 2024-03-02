@@ -6,14 +6,6 @@ const {validateData} = require("./auth-validatiors")
 const {tokenValidation,allowLoginUsers} = require("./token-validators")
 
 
-const hashPassword = async (password) => {
-  try{
-    return await bcrypt.hash(password,10)
-  } catch (e) {
-    throw new Error(e)
-  }
-}
-
 authRouter.get('/',allowLoginUsers(true),tokenValidation(),async (req,res)=>{
     return res.status(200).send("JWT token is valid");
 })
@@ -25,10 +17,9 @@ authRouter.get('/login',allowLoginUsers(false),async (req,res)=>{
 
 authRouter.post('/login',allowLoginUsers(false), async (req, res) => {
   try {
-    const username = req.body.username
-    const password = req.body.password
-    await validateData(username, password)
-    await userDatabaseTools.isValidUser(username,password)
+    const credentials = req.body
+    await validateData(credentials)
+    await userDatabaseTools.isValidUser(credentials)
     return res.status(200).send('Login Successful');
   } catch (err) {
     return res.status(400).send(err.message);
@@ -37,22 +28,25 @@ authRouter.post('/login',allowLoginUsers(false), async (req, res) => {
 
 authRouter.post('/validate', async (req,res)=> {
   try {
-    const username = req.body.username
-    const password = req.body.password
-    await validateData(username, password)
+    const credentials = req.body
+    await validateData(credentials)
     return res.status(200).send('Valid User');
   } catch (err) {
     return res.status(400).send(err.message);
   }
 })
 
+async function generateHashCredentials(credentials) {
+  credentials.password = await bcrypt.hash(credentials.password,10)
+  return credentials
+}
+
 authRouter.post('/signup', async (req, res) => {
   try {
-    const username = req.body.username
-    const password = await hashPassword(req.body.password)
-    await validateData(username,password)
-    await userDatabaseTools.isUserExists(username)
-    await userDatabaseTools.createUser(username,password)
+    const credentials = await generateHashCredentials(req.body)
+    await validateData(credentials)
+    await userDatabaseTools.isUserExists(credentials.username)
+    await userDatabaseTools.createUser(credentials)
     return res.status(200).send("User Successfully Created")
   } catch (err) {
     return res.status(400).send(err.message);
@@ -74,6 +68,6 @@ authRouter.delete('/delete', async (req, res) => {
     return res.status(400).send("No User provided");
 });
 
-module.exports = {authRouter,hashPassword}
+module.exports = {authRouter}
 
 

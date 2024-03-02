@@ -1,4 +1,6 @@
-const validateData = async (username, password) => {
+const validateData = async (credentials) => {
+    const username = credentials.username
+    const password = credentials.password
     if ((username === undefined) && (password === undefined)) {
       throw new Error("Username and Password field not found");
     }

@@ -39,6 +39,39 @@ tokenRouter.post('/generateTokens/:userID', async (req, res) => {
   }
 });
 
+tokenRouter.post("/fetchToken", async (req,res) => {
+  const userId = req.body.userId
+  const accessTime = req.body.accessTime
+  const refreshTime = req.body.refreshTime
+  const tokens = await createTokensFor(userId,accessTime,refreshTime)
+  return res.status(200).json(tokens)
+})
+
+tokenRouter.post('/saveToken',async (req, res) => {
+  try{
+    const accessToken = req.body.access
+    const refreshToken = req.body.refresh
+    await storeTokens(res,accessToken,refreshToken)
+    return res.status(200).send("Token Generated Successfully")
+  } catch (e) {
+    return res.status(400).send(err.message);
+  }
+})
+
+
+tokenRouter.post('/generateExpiredAccessTokens/:userID', async (req, res) => {
+  try {
+    const userID = req.params.userID
+    const tokens = await createTokensFor(userID,"-1m","7d")
+    const accessToken = tokens.access
+    const refreshToken = tokens.refresh
+    await storeTokens(res,accessToken,refreshToken)
+    return res.status(200).send("Token Generated Successfully")
+  } catch (err) {
+    return res.status(400).send(err.message);
+  }
+});
+
 tokenRouter.get('/clearCookies', (req, res) => {
   // Clear the access token cookie
   res.clearCookie('accessToken');

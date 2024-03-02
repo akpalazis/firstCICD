@@ -64,7 +64,6 @@ const checkTokenSingleUse = async (refreshTokenData) => {
 const tokenValidation = async (req, res, next) => {
   const tokens = req.headers.authorization;
 
-
   if (!tokens) {
     return res.status(401).send('Unauthorized - JWT is missing' );
   }

@@ -15,6 +15,14 @@ if (isJenkins){
   app = require('../src/app.js');
 }
 
+
+function delay(ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+}
+
+
 describe('Testing POST /generateTokens endpoint', () => {
   it('No JWT: responds with invalid status code',() =>{
     return request(app)
@@ -99,23 +107,30 @@ describe('Testing POST /generateTokens endpoint', () => {
   });
 });
 
+
 describe('Testing Token Verification',  () => {
-  let savedToken
-  savedToken = createTokensFor(1, "-1s", "7d");
-  it('Store Token', () => {
-  return tokenDatabase.storeToken(savedToken.refresh)
-    .then(result=>{
-      expect(result).toBe(true)
-    })
-    .catch((err)=>{
-        return done(err)
+  let tokens;
+
+  before(async () => {
+    await request(app)
+      .post('/fetchToken')
+      .send({
+        userId:1,
+        accessTime:"-1m",
+        refreshTime:"7d"
       })
-  // Additional assertions or code as needed
+      .then(async (response)=>{
+        tokens = response.body
+        await request(app)
+          .post('/saveToken')
+          .send(tokens)
+        })
   });
+
   it('Expired Access and Valid Refresh JWT First Use: responds with valid status code',() =>{
     return request(app)
       .get("/")
-      .set('Authorization', `Bearer ${savedToken.access}, Bearer ${savedToken.refresh}`)
+      .set('Authorization', `Bearer ${tokens.access}, Bearer ${tokens.refresh}`)
       .send()
       .then((response)=>{
         expect(response.status).toBe(200); // Check for expected status code
@@ -126,7 +141,24 @@ describe('Testing Token Verification',  () => {
       })
   })
   it('Expired Access and Valid Refresh JWT Already Used: responds with invalid status code',async () =>{
-    const tokens = createTokensFor(1,"-1s","7d")
+    let newTokens
+    await request(app)
+      .post('/fetchToken')
+      .send({
+        userId:1,
+        accessTime:"-1m",
+        refreshTime:"7d"
+      })
+      .then(async (response)=>{
+        await delay(1500)
+        newTokens = response.body
+        await request(app)
+          .post('/saveToken')
+          .send(newTokens)
+        })
+
+
+
     return request(app)
       .get("/")
       .set('Authorization', `Bearer ${tokens.access}, Bearer ${tokens.refresh}`)
@@ -186,4 +218,3 @@ describe('Testing Token Verification',  () => {
     tokenDatabase.deleteToken(1)
   });
 });
-

@@ -2,8 +2,8 @@ const bcrypt = require("bcryptjs")
 const express = require('express');
 const router = express.Router();
 const {userDatabaseTools} = require("./auth-db-tools")
-const validateData = require("./auth-validatiors")
-const {validateJWT} = require("./validators")
+const {validateData} = require("./auth-validatiors")
+const {tokenValidation} = require("./validators")
 
 
 const hashPassword = async (password) => {
@@ -14,7 +14,7 @@ const hashPassword = async (password) => {
   }
 }
 
-router.get('/',validateJWT,async (req,res)=>{
+router.get('/',tokenValidation,async (req,res)=>{
     return res.status(200).send("JWT token is valid");
 })
 

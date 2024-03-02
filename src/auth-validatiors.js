@@ -1,4 +1,3 @@
-
 const validateData = async (username, password) => {
     if ((username === undefined) && (password === undefined)) {
       throw new Error("Username and Password field not found");
@@ -22,4 +21,4 @@ const validateData = async (username, password) => {
     }
 };
 
-module.exports = validateData
+module.exports = {validateData}

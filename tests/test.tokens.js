@@ -140,7 +140,8 @@ describe('Testing Token Verification',  () => {
         return done(err)
       })
   })
-  it('Expired Access and Valid Refresh JWT Already Used: responds with invalid status code',async () =>{
+  it('Expired Access and Valid Refresh JWT Already Used: responds with invalid status code',async function(){
+    await delay(1001)
     let newTokens
     await request(app)
       .post('/fetchToken')
@@ -150,7 +151,6 @@ describe('Testing Token Verification',  () => {
         refreshTime:"7d"
       })
       .then(async (response)=>{
-        await delay(1500)
         newTokens = response.body
         await request(app)
           .post('/saveToken')

@@ -3,7 +3,7 @@ const express = require('express');
 const authRouter = express.Router();
 const {userDatabaseTools} = require("./auth-db-tools")
 const {validateData} = require("./auth-validatiors")
-const {tokenValidation} = require("./token-validators")
+const {tokenValidation,allowLoginUsers} = require("./token-validators")
 
 
 const hashPassword = async (password) => {
@@ -14,11 +14,16 @@ const hashPassword = async (password) => {
   }
 }
 
-authRouter.get('/',tokenValidation(false),async (req,res)=>{
+authRouter.get('/',allowLoginUsers(true),tokenValidation(),async (req,res)=>{
     return res.status(200).send("JWT token is valid");
 })
 
-authRouter.post('/login', async (req, res) => {
+authRouter.get('/login',allowLoginUsers(false),async (req,res)=>{
+      return res.status(200).send("login page");
+})
+
+
+authRouter.post('/login',allowLoginUsers(false), async (req, res) => {
   try {
     const username = req.body.username
     const password = req.body.password

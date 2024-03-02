@@ -26,8 +26,8 @@ describe('Testing POST /generateTokens endpoint', () => {
       .get("/")
       .send()
       .then((response)=>{
-        expect(response.status).toBe(401); // Check for expected status code
-        expect(response.text).toBe('Unauthorized - JWT is missing')
+        expect(response.status).toBe(400); // Check for expected status code
+        expect(response.text).toBe('Unauthorized access')
       })
       .catch((err)=>{
         return done(err)

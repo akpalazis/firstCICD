@@ -1,5 +1,5 @@
 const express = require('express');
-const auth = require('./auth');
+const {authRouter} = require('./auth');
 const {tokenRouter} = require('./token');
 const {connectDB} = require('./db');
 const bodyParser = require('body-parser');
@@ -9,7 +9,7 @@ connectDB()
 
 const app = express();
 app.use(bodyParser.json());
-app.use('/',auth);
+app.use('/',authRouter);
 app.use('/',tokenRouter);
 
 // Use the imported files for different endpoints

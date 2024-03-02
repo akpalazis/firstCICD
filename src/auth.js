@@ -1,6 +1,6 @@
 const bcrypt = require("bcryptjs")
 const express = require('express');
-const router = express.Router();
+const authRouter = express.Router();
 const {userDatabaseTools} = require("./auth-db-tools")
 const {validateData} = require("./auth-validatiors")
 const {tokenValidation} = require("./token-validators")
@@ -14,11 +14,11 @@ const hashPassword = async (password) => {
   }
 }
 
-router.get('/',tokenValidation,async (req,res)=>{
+authRouter.get('/',tokenValidation(false),async (req,res)=>{
     return res.status(200).send("JWT token is valid");
 })
 
-router.post('/login', async (req, res) => {
+authRouter.post('/login', async (req, res) => {
   try {
     const username = req.body.username
     const password = req.body.password
@@ -30,7 +30,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.post('/validate', async (req,res)=> {
+authRouter.post('/validate', async (req,res)=> {
   try {
     const username = req.body.username
     const password = req.body.password
@@ -41,7 +41,7 @@ router.post('/validate', async (req,res)=> {
   }
 })
 
-router.post('/signup', async (req, res) => {
+authRouter.post('/signup', async (req, res) => {
   try {
     const username = req.body.username
     const password = await hashPassword(req.body.password)
@@ -54,7 +54,7 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-router.delete('/delete/:userId', async (req, res) => {
+authRouter.delete('/delete/:userId', async (req, res) => {
   try {
     const username = req.params.userId
     await userDatabaseTools.canDelete(username)
@@ -65,10 +65,10 @@ router.delete('/delete/:userId', async (req, res) => {
   }
 });
 
-router.delete('/delete', async (req, res) => {
+authRouter.delete('/delete', async (req, res) => {
     return res.status(400).send("No User provided");
 });
 
-module.exports = router
+module.exports = {authRouter,hashPassword}
 
 

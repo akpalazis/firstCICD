@@ -39,42 +39,44 @@ const checkTokenSingleUse = async (refreshTokenData) => {
   return (token === storedToken.token)
 }
 
-const tokenValidation = async (req, res, next) => {
-  const tokens = req.headers.authorization;
+function tokenValidation(allowAccess = false) {
+  return async function(req, res, next){
+    const tokens = req.headers.authorization;
 
-  if (!tokens) {
-    return res.status(401).send('Unauthorized - JWT is missing' );
-  }
-  try {
-    const [accessTokenCookie, refreshTokenCookie] = tokens.split(',');
-    if ((!accessTokenCookie) ||(!refreshTokenCookie)){
+    if (!tokens) {
+      return res.status(401).send('Unauthorized - JWT is missing');
+    }
+    try {
+      const [accessTokenCookie, refreshTokenCookie] = tokens.split(',');
+      if ((!accessTokenCookie) || (!refreshTokenCookie)) {
         return res.status(401).send(`Unauthorized - Found Only Single JWT`);
-    }
-    const accessToken = stripToken(accessTokenCookie)
-    const refreshToken = stripToken(refreshTokenCookie)
-    const accessTokenData = isTokenValid(accessToken,accessSecretKey)
-    const refreshTokenData = isTokenValid(refreshToken,refreshSecretKey)
-    if (accessTokenData.isExpired){
-      if(refreshTokenData.isExpired){
-        return res.status(401).send('Unauthorized - Refresh Token Expired')
       }
-      if (!refreshTokenData.isValid){
-        return res.status(401).send('Unauthorized - Invalid Refresh Token')
+      const accessToken = stripToken(accessTokenCookie)
+      const refreshToken = stripToken(refreshTokenCookie)
+      const accessTokenData = isTokenValid(accessToken, accessSecretKey)
+      const refreshTokenData = isTokenValid(refreshToken, refreshSecretKey)
+      if (accessTokenData.isExpired) {
+        if (refreshTokenData.isExpired) {
+          return res.status(401).send('Unauthorized - Refresh Token Expired')
+        }
+        if (!refreshTokenData.isValid) {
+          return res.status(401).send('Unauthorized - Invalid Refresh Token')
+        }
+        if (await checkTokenSingleUse(refreshTokenData)) {
+          // TODO: rotate keys
+          return res.status(200).send('Unauthorized - Generating new tokens');
+        }
+        return res.status(401).send('Unauthorized - Reload Token already used')
       }
-      if (await checkTokenSingleUse(refreshTokenData)){
-        // TODO: rotate keys
-        return res.status(200).send('Unauthorized - Generating new tokens');
+      if (!accessTokenData.isValid) {
+        return res.status(401).send(`Unauthorized - JWT MALFORMED`);
       }
-      return res.status(401).send('Unauthorized - Reload Token already used')
+    } catch (err) {
+      const errorMessage = err.message.toUpperCase()
+      return res.status(401).send(`Unauthorized - ${errorMessage}`);
     }
-    if (!accessTokenData.isValid){
-          return res.status(401).send(`Unauthorized - JWT MALFORMED`);
-    }
-  } catch (err) {
-    const errorMessage = err.message.toUpperCase()
-    return res.status(401).send(`Unauthorized - ${errorMessage}`);
-  }
-  next()
-};
+    next()
+  };
+}
 
 module.exports = {tokenValidation}

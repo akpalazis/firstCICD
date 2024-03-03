@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const {db} = require("../db")
+const {REFRESH_SECRET_KEY} = require("../constants")
 
 class TokenDatabase {
   constructor() {
@@ -17,7 +18,7 @@ class TokenDatabase {
 
   async storeToken(refreshToken) {
     try {
-    const decodedToken = jwt.decode(refreshToken);
+    const decodedToken = jwt.verify(refreshToken,REFRESH_SECRET_KEY);
     const userId = decodedToken.userId;
     const expirationDate = new Date(decodedToken.exp * 1000);
     if (await this.refreshTokenExists(userId)) {
@@ -27,7 +28,7 @@ class TokenDatabase {
     }
     return  !!(await this.refreshTokenNewEntry(userId, refreshToken, expirationDate));
   } catch (error) {
-    throw new Error(error);
+    throw new Error(error.message)
   }
 }
 

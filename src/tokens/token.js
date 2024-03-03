@@ -1,6 +1,5 @@
 const express = require('express');
 const tokenRouter = express.Router();
-const {tokenDatabase} = require('./token-db-tools')
 const {createTokensMiddleware,storeTokenMiddleware,manipulateToken,deleteTokenMiddleware} = require("./token-middleware")
 // Secret keys for access and refresh tokens
 

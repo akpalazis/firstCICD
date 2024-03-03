@@ -1,13 +1,12 @@
 const request = require('supertest');
 const { expect } = require('expect');
-
-const isJenkins = process.env.JENKINS === 'true';
+const {isJenkins,HOST_URL} = require('../src/constants')
 
 
 let app;
 
 if (isJenkins){
-  app  = process.env.HOST
+  app  = HOST_URL
 } else{
   app = require('../src/app.js');
 }

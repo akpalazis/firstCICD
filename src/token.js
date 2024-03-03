@@ -2,11 +2,9 @@ const jwt = require('jsonwebtoken');
 const express = require('express');
 const tokenRouter = express.Router();
 const {tokenDatabase} = require('./token-db-tools')
-require('dotenv').config();
+const {AUTH_SECRET_KEY,REFRESH_SECRET_KEY} = require('./constants')
 
 // Secret keys for access and refresh tokens
-const accessSecretKey = process.env.AUTH_SECRET_KEY
-const refreshSecretKey = process.env.REFRESH_SECRET_KEY
 
 const storeTokens = async (res,accessToken,refreshToken) =>
 {
@@ -20,8 +18,8 @@ const storeTokens = async (res,accessToken,refreshToken) =>
 }
 
 const createTokensFor =  (userId,accessTokenTime,refreshTokenTime) => {
-    const accessToken = jwt.sign({ userId:userId }, accessSecretKey, { expiresIn: accessTokenTime });
-    const refreshToken = jwt.sign({ userId: userId }, refreshSecretKey, {expiresIn: refreshTokenTime});
+    const accessToken = jwt.sign({ userId:userId }, AUTH_SECRET_KEY, { expiresIn: accessTokenTime });
+    const refreshToken = jwt.sign({ userId: userId }, REFRESH_SECRET_KEY, {expiresIn: refreshTokenTime});
     return {access:accessToken,
             refresh:refreshToken}
 }

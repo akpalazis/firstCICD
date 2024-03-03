@@ -5,6 +5,9 @@ const {userDatabaseTools} = require("./auth-db-tools")
 const {validateData} = require("./auth-validatiors")
 const {tokenValidation,allowLoginUsers} = require("./token-validators")
 
+// TODO: make all the endpoints following middleware structure
+// TODO: first test all the functions that are correct - unity test
+// TODO: then test the end points - integration test
 
 authRouter.get('/',allowLoginUsers(true),tokenValidation(),async (req,res)=>{
     return res.status(200).send("JWT token is valid");

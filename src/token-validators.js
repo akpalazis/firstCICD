@@ -1,11 +1,8 @@
 const jwt = require('jsonwebtoken');
 const {tokenDatabase} = require('./token-db-tools')
-require('dotenv').config();
+const {AUTH_SECRET_KEY,REFRESH_SECRET_KEY} = require('./constants')
 
 // Secret keys for access and refresh tokens
-const accessSecretKey = process.env.AUTH_SECRET_KEY
-const refreshSecretKey = process.env.REFRESH_SECRET_KEY
-
 
 
 const stripToken = (token) => {
@@ -63,8 +60,8 @@ function tokenValidation() {
       }
       const accessToken = stripToken(accessTokenCookie)
       const refreshToken = stripToken(refreshTokenCookie)
-      const accessTokenData = isTokenValid(accessToken, accessSecretKey)
-      const refreshTokenData = isTokenValid(refreshToken, refreshSecretKey)
+      const accessTokenData = isTokenValid(accessToken, AUTH_SECRET_KEY)
+      const refreshTokenData = isTokenValid(refreshToken, REFRESH_SECRET_KEY)
       if (accessTokenData.isExpired) {
         if (refreshTokenData.isExpired) {
           return res.status(401).send('Unauthorized - Refresh Token Expired')

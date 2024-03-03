@@ -1,8 +1,8 @@
 const { Client } = require('pg');
-require('dotenv').config();
+const {DB_URL} = require("./constants")
 
 const db = new Client({
-  connectionString: process.env.DB_URL
+  connectionString: DB_URL
 });
 
 async function connectDB() {

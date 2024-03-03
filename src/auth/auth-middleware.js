@@ -1,6 +1,17 @@
 const {validateData,generateHashCredentials} = require("./auth-tools")
 const {userDatabaseTools} = require("./auth-db-tools")
 
+
+function allowLoginUsersMiddleware(registerer){
+  return function (req,res,next) {
+    const tokens = req.headers.authorization;
+    if ((tokens && registerer) || (!tokens && !registerer)){
+      return next()
+    }
+    return res.status(400).send("Unauthorized access")
+  }
+}
+
 function dataValidationMiddleware(req, res, next) {
   const credentials = req.body;
   return validateData(credentials)
@@ -72,6 +83,7 @@ function deleteUserMiddleware(req, res, next) {
 }
 
 module.exports = {
+  allowLoginUsersMiddleware,
   dataValidationMiddleware,
   generateHashMiddleware,
   userExistsMiddleware,

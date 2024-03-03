@@ -1,6 +1,7 @@
 const express = require('express');
 const authRouter = express.Router();
-const {tokenValidation,allowLoginUsers} = require("../tokens/token-validators")
+const {tokenValidation} = require("../tokens/token-validators")
+const {allowLoginUsersMiddleware} = require("./auth-middleware")
 const {
   dataValidationMiddleware,
   generateHashMiddleware,
@@ -10,13 +11,10 @@ const {
   canDeleteMiddleware,
   deleteUserMiddleware} = require('./auth-middleware')
 
-// TODO : for the tokens plus create functions for the test and just pass the params in the functions
-// TODO: make all the endpoints following middleware structure
-// TODO: first test all the functions that are correct - unity test
 // TODO: then test the end points - integration test
 
 authRouter.get('/',
-  allowLoginUsers(true),
+  allowLoginUsersMiddleware(true),
   tokenValidation(),
   async (req,res)=>{
     return res.status(200).send("JWT token is valid");
@@ -24,14 +22,14 @@ authRouter.get('/',
 )
 
 authRouter.get('/login',
-  allowLoginUsers(false),
+  allowLoginUsersMiddleware(false),
   async (req,res)=>{
       return res.status(200).send("login page");
   }
 )
 
 authRouter.post('/login',
-  allowLoginUsers(false),
+  allowLoginUsersMiddleware(false),
   dataValidationMiddleware,
   isUserValidMiddleware,
   async (req, res) => {

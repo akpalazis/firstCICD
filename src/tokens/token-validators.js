@@ -36,16 +36,6 @@ const checkTokenSingleUse = async (refreshTokenData) => {
   return (token === storedToken.token)
 }
 
-function allowLoginUsers(registerer){
-  return function (req,res,next) {
-    const tokens = req.headers.authorization;
-    if ((tokens && registerer) || (!tokens && !registerer)){
-      return next()
-    }
-    return res.status(400).send("Unauthorized access")
-  }
-}
-
 function tokenValidation() {
   return async function(req, res, next){
     const tokens = req.headers.authorization;
@@ -86,4 +76,4 @@ function tokenValidation() {
   };
 }
 
-module.exports = {tokenValidation, allowLoginUsers}
+module.exports = {tokenValidation}

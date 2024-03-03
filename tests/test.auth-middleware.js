@@ -1,6 +1,6 @@
 const { expect } = require('expect');
 const sinon = require('sinon');
-const {dataValidationMiddleware} = require("../src/auth/auth-middleware")
+const {dataValidationMiddleware,allowLoginUsersMiddleware} = require("../src/auth/auth-middleware")
 
 async function mainTest(testParams){
   const req = {body: testParams.credentialsToCheck}
@@ -91,5 +91,56 @@ describe('Test dataValidationMiddleware', () => {
     const next = sinon.spy()
     await dataValidationMiddleware(req,res,next)
     expect(next.calledOnce).toBe(true)
+  })
+})
+
+describe("Test allowLoginUsersMiddleware", ()=>{
+  it("Test allow only non logged in with no token: expect true", ()=>{
+    const middleware = allowLoginUsersMiddleware(false)
+    const req = {headers:{authorization:""}}
+    const next = sinon.spy()
+    middleware(req,{},next)
+    expect(next.calledOnce).toBeTruthy()
+  })
+  it("Test allow only non logged in with token: expected Exception", ()=>{
+    const middleware = allowLoginUsersMiddleware(false)
+    const req = {headers:{authorization:"some token"}}
+    const res = {
+      status: (statusCode) => {
+        expect(statusCode).toBe(400);
+        return res;
+      },
+      send: (data) => {
+        expect(data).toBe("Unauthorized access");
+      },
+    };
+
+    const next = sinon.spy()
+    middleware(req,res,next)
+    expect(next.calledOnce).toBeFalsy()
+  })
+  it("Test allow only logged in with np token: expected Exception", ()=>{
+    const middleware = allowLoginUsersMiddleware(true)
+    const req = {headers:{authorization:""}}
+    const res = {
+      status: (statusCode) => {
+        expect(statusCode).toBe(400);
+        return res;
+      },
+      send: (data) => {
+        expect(data).toBe("Unauthorized access");
+      },
+    };
+
+    const next = sinon.spy()
+    middleware(req,res,next)
+    expect(next.calledOnce).toBeFalsy()
+  })
+    it("Test allow only logged in with token: expect true", ()=>{
+    const middleware = allowLoginUsersMiddleware(true)
+    const req = {headers:{authorization:"some token"}}
+    const next = sinon.spy()
+    middleware(req,{},next)
+    expect(next.calledOnce).toBeTruthy()
   })
 })

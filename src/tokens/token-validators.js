@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const {tokenDatabase} = require('./token-db-tools')
-const {AUTH_SECRET_KEY,REFRESH_SECRET_KEY} = require('./constants')
+const {AUTH_SECRET_KEY,REFRESH_SECRET_KEY} = require('../constants')
 
 // Secret keys for access and refresh tokens
 
@@ -20,7 +20,7 @@ const isTokenValid = (token,secretKey) =>{
   return jwt.verify(token,secretKey,(err,decoded)=>{
     if(err){
       if (err.name == 'TokenExpiredError'){
-        return  {isValid:false,isExpired:true}
+        return  {isValid:true,isExpired:true}
       }
       return  {isValid: false,isExpired: false}
     } else{
@@ -49,7 +49,6 @@ function allowLoginUsers(registerer){
 function tokenValidation() {
   return async function(req, res, next){
     const tokens = req.headers.authorization;
-
     if (!tokens) {
       return res.status(401).send('Unauthorized - JWT is missing');
     }
@@ -79,6 +78,7 @@ function tokenValidation() {
         return res.status(401).send(`Unauthorized - JWT MALFORMED`);
       }
     } catch (err) {
+      console.log(err)
       const errorMessage = err.message.toUpperCase()
       return res.status(401).send(`Unauthorized - ${errorMessage}`);
     }

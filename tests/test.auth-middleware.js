@@ -2,7 +2,7 @@ const { expect } = require('expect');
 const {isJenkins,HOST_URL} = require('../src/constants')
 const {connectDB} = require('../src/db');
 const sinon = require('sinon');
-const {dataValidationMiddleware} = require("../src/auth-middleware")
+const {dataValidationMiddleware} = require("../src/auth/auth-middleware")
 
 let app;
 

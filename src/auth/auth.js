@@ -1,6 +1,6 @@
 const express = require('express');
 const authRouter = express.Router();
-const {tokenValidation,allowLoginUsers} = require("./token-validators")
+const {tokenValidation,allowLoginUsers} = require("../tokens/token-validators")
 const {
   dataValidationMiddleware,
   generateHashMiddleware,

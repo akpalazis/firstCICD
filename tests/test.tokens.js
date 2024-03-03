@@ -108,7 +108,7 @@ describe('Testing Token Verification',  () => {
 
   before(async () => {
     await request(app)
-      .post('/fetchToken')
+      .post('/fetchToken/1')
       .send({
         userId:1,
         accessTime:"-1m",
@@ -139,7 +139,7 @@ describe('Testing Token Verification',  () => {
     await delay(1001)
     let newTokens
     await request(app)
-      .post('/fetchToken')
+      .post('/fetchToken/1')
       .send({
         userId:1,
         accessTime:"-1m",
@@ -166,7 +166,7 @@ describe('Testing Token Verification',  () => {
   })
   it('Expired Access and Expired Refresh JWT: responds with invalid status code',async () => {
     await request(app)
-      .post('/fetchToken')
+      .post('/fetchToken/1')
       .send({
         userId: 1,
         accessTime: "-1m",
@@ -189,7 +189,7 @@ describe('Testing Token Verification',  () => {
   })
   it('Expired Access and Invalid Refresh JWT: responds with invalid status code',async () =>{
     await request(app)
-      .post('/fetchToken')
+      .post('/fetchToken/1')
       .send({
         userId: 1,
         accessTime: "-1m",

@@ -1,6 +1,6 @@
 const express = require('express');
-const {authRouter} = require('./auth');
-const {tokenRouter} = require('./token');
+const {authRouter} = require('./auth/auth');
+const {tokenRouter} = require('./tokens/token');
 const {connectDB} = require('./db');
 const bodyParser = require('body-parser');
 

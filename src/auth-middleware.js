@@ -3,7 +3,7 @@ const {userDatabaseTools} = require("./auth-db-tools")
 
 function dataValidationMiddleware(req, res, next) {
   const credentials = req.body;
-  validateData(credentials)
+  return validateData(credentials)
     .then(() => {
       return next();
     })

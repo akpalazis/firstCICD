@@ -1,6 +1,7 @@
+
 const {validateData,generateHashCredentials} = require("./auth-tools")
 const {userDatabaseTools} = require("./auth-db-tools")
-
+const {tokenValidationMiddleware} = require("../tokens/token-middleware")
 
 function allowLoginUsersMiddleware(registerer){
   return function (req,res,next) {
@@ -82,6 +83,10 @@ function deleteUserMiddleware(req, res, next) {
     });
 }
 
+function validateTokenMiddleware(req,res,next){
+  //TODO: change that with request to the validation endpoint
+  return tokenValidationMiddleware(req,res,next)
+}
 module.exports = {
   allowLoginUsersMiddleware,
   dataValidationMiddleware,
@@ -90,4 +95,5 @@ module.exports = {
   createUserMiddleware,
   isUserValidMiddleware,
   canDeleteMiddleware,
-  deleteUserMiddleware}
+  deleteUserMiddleware,
+  validateTokenMiddleware}

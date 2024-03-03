@@ -25,7 +25,7 @@ const isTokenValid = (token,secretKey) =>{
       if (err.name === 'TokenExpiredError'){
         return  {isValid:true,isExpired:true}
       }
-      return  {isValid: false}
+      return  {isValid: false,isExpired:false}
     } else{
       return  {isValid: true,isExpired: false, decodedToken:decoded, token:token}
     }

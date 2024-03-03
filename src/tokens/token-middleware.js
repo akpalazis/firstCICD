@@ -1,5 +1,6 @@
 const {createTokensFor,stripToken,isTokenValid,checkTokenSingleUse} = require("./token-tools")
 const {tokenDatabase} = require("./token-db-tools")
+const {AUTH_SECRET_KEY,REFRESH_SECRET_KEY} = require("../constants")
 
 function manipulateToken(req,res,next){
   res.locals.tokens = req.body
@@ -48,40 +49,36 @@ function deleteTokenMiddleware(req,res,next){
 function tokenValidationMiddleware() {
   return async function(req, res, next){
     const tokens = req.headers.authorization;
-    if (!tokens) {
-      return res.status(401).send('Unauthorized - JWT is missing');
-    }
     try {
       const [accessTokenCookie, refreshTokenCookie] = tokens.split(',');
       if ((!accessTokenCookie) || (!refreshTokenCookie)) {
-        return res.status(401).send(`Unauthorized - Found Only Single JWT`);
+        return res.status(400).send(`Unauthorized - Found Only Single JWT`);
       }
       const accessToken = stripToken(accessTokenCookie)
       const refreshToken = stripToken(refreshTokenCookie)
       const accessTokenData = isTokenValid(accessToken, AUTH_SECRET_KEY)
       const refreshTokenData = isTokenValid(refreshToken, REFRESH_SECRET_KEY)
-
       if (accessTokenData.isExpired) {
         if (refreshTokenData.isExpired) {
-          return res.status(401).send('Unauthorized - Refresh Token Expired')
+          return res.status(400).send('Unauthorized - Refresh Token Expired')
         }
         if (!refreshTokenData.isValid) {
-          return res.status(401).send('Unauthorized - Invalid Refresh Token')
+          return res.status(400).send('Unauthorized - Invalid Refresh Token')
         }
         if (await checkTokenSingleUse(refreshTokenData)) {
-          // TODO: rotate keys
+          // TODO: create new tokens
           return res.status(200).send('Unauthorized - Generating new tokens');
         }
-        return res.status(401).send('Unauthorized - Reload Token already used')
+        return res.status(400).send('Unauthorized - Reload Token already used')
       }
       if (!accessTokenData.isValid) {
-        return res.status(401).send(`Unauthorized - JWT MALFORMED`);
+        return res.status(400).send(`Unauthorized - JWT MALFORMED`);
       }
     } catch (err) {
       const errorMessage = err.message.toUpperCase()
-      return res.status(401).send(`Unauthorized - ${errorMessage}`);
+      return res.status(400).send(`Unauthorized - ${errorMessage}`);
     }
-    next()
+    return next()
   };
 }
 

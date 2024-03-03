@@ -8,13 +8,15 @@ const {
   createUserMiddleware,
   isUserValidMiddleware,
   canDeleteMiddleware,
-  deleteUserMiddleware} = require('./auth-middleware')
+  deleteUserMiddleware,
+  validateTokenMiddleware} = require('./auth-middleware')
 
 // TODO: then test the end points - integration test
 
 // TODO: make request to the validate endpoint in the tokens
 authRouter.get('/',
   allowLoginUsersMiddleware(true),
+  validateTokenMiddleware,
   async (req,res)=>{
     return res.status(200).send("JWT token is valid");
   }

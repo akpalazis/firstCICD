@@ -1,7 +1,7 @@
 const request = require('supertest');
 const { expect } = require('expect');
 const {isJenkins,HOST_URL} = require('../src/constants')
-
+const {validateData} = require('../src/auth-tools')
 
 let app;
 
@@ -10,6 +10,16 @@ if (isJenkins){
 } else{
   app = require('../src/app.js');
 }
+describe('Test validateData', () => {
+  it('No Username and password: responds with invalid status code', async () => {
+    try {
+      const credentials = {};
+      await validateData(credentials);
+    } catch (e) {
+      expect(e.message).toBe('Username and Password field not found') // Check for expected status code
+    }
+  })
+})
 
 describe('Testing POST /validate endpoint', () => {
   it('No Username and password: responds with invalid status code', () => {

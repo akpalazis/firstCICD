@@ -66,8 +66,10 @@ function tokenValidationMiddleware() {
           return res.status(400).send('Unauthorized - Invalid Refresh Token')
         }
         if (await checkTokenSingleUse(refreshTokenData)) {
-          // TODO: create new tokens
-          return res.status(200).send('Unauthorized - Generating new tokens');
+          req.params.userId = refreshTokenData.decodedToken.userId
+          createTokensMiddleware(req,res,next)
+          await storeTokenMiddleware(req,res,next)
+          return next()
         }
         return res.status(400).send('Unauthorized - Reload Token already used')
       }
@@ -87,6 +89,7 @@ module.exports = {
   storeTokenMiddleware,
   manipulateToken,
   deleteTokenMiddleware,
-  tokenValidationMiddleware}
+  tokenValidationMiddleware
+}
 
 

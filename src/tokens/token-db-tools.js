@@ -28,7 +28,7 @@ class TokenDatabase {
     }
     return  !!(await this.refreshTokenNewEntry(userId, refreshToken, expirationDate));
   } catch (error) {
-    throw new Error(error.message)
+      throw new Error(error.message)
   }
 }
 

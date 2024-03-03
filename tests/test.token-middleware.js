@@ -72,8 +72,8 @@ describe('Test storeTokenMiddleware', () => {
         return res;
       },
       send: (data) => {
-        expect(data).toBe("jwt expired");
-      }
+        expect(data).toBe("jwt expired")
+      },
     };
     const next = sinon.spy()
     await storeTokenMiddleware({}, res, next)
@@ -99,39 +99,49 @@ describe('Test storeTokenMiddleware', () => {
 })
 
 describe('Test tokenValidationMiddleware', () => {
-  // TODO: ADD checks that the token is rotated as soon as the functionality is added!!!
   it('Test valid AccessToken valid RefreshToken: Expected next call and new tokens', async () => {
     const tokens = createTokensFor(1, '15m', '7d')
     await tokenDatabase.storeToken(tokens.refresh)
     const req = {
-      headers:{
-        authorization:`Bearer accessToken=${tokens.access};, Bearer refreshToken=${tokens.refresh};`
+      headers: {
+        authorization: `Bearer accessToken=${tokens.access};, Bearer refreshToken=${tokens.refresh};`
       }
     }
     const next = sinon.spy()
-    await tokenValidationMiddleware()(req,{},next)
+    await tokenValidationMiddleware()(req, {}, next)
     expect(next.calledOnce).toBeTruthy()
   })
-  it('Test expired AccessToken valid RefreshToken single used: Expected status 200 and new tokens', async () => {
+  it('Test expired AccessToken valid RefreshToken single used: Expected next call', async () => {
     const tokens = createTokensFor(1, '-1m', '7d')
     await tokenDatabase.storeToken(tokens.refresh)
+    await delay(1000)
     const req = {
-      headers:{
-        authorization:`Bearer accessToken=${tokens.access};, Bearer refreshToken=${tokens.refresh};`
-      }
+      headers: {
+        authorization: `Bearer accessToken=${tokens.access};, Bearer refreshToken=${tokens.refresh};`
+      },
+      body:{accessTime:undefined,
+            refreshTime:undefined},
+      params:{userId:undefined}
     }
     const res = {
-      status: (statusCode) => {
-        expect(statusCode).toBe(200)
-        return res;
-      },
-      send: (data) => {
-        expect(data).toBe('Unauthorized - Generating new tokens')
-      },
+      locals: {tokens:undefined},
+      cookie: sinon.spy()
     };
     const next = sinon.spy()
-    await tokenValidationMiddleware()(req,res,next)
-    expect(next.calledOnce).toBeFalsy()
+    await tokenValidationMiddleware()(req, res, next)
+    expect(next.calledThrice).toBeTruthy()
+    const newTokens = await tokenDatabase.fetchRefreshToken(1)
+    expect(tokens.refresh===newTokens.token).toBeFalsy()
+
+    const cookieAccessToken = res.cookie.firstCall.args[1]
+    const cookieRefreshToken = res.cookie.secondCall.args[1]
+    expect(cookieRefreshToken).toBe(newTokens.token)
+    const oldAcessToken = jwt.decode(tokens.access,AUTH_SECRET_KEY)
+    const oldTokenData = jwt.decode(tokens.refresh,REFRESH_SECRET_KEY)
+    const newTokenData = jwt.decode(newTokens.token,REFRESH_SECRET_KEY)
+    const cookieTokenData = jwt.decode(cookieAccessToken,AUTH_SECRET_KEY)
+    expect(cookieTokenData.exp).toBeGreaterThan(oldAcessToken.exp)
+    expect(newTokenData.exp).toBeGreaterThan(oldTokenData.exp)
   })
   it('Test expired AccessToken valid RefreshToken already used: Expected status 400', async () => {
     const tokens = createTokensFor(1, '-1m', '7d')
@@ -139,8 +149,8 @@ describe('Test tokenValidationMiddleware', () => {
     await delay(1001)
     const new_tokens = createTokensFor(1, '-1m', '7d')
     const req = {
-      headers:{
-        authorization:`Bearer accessToken=${new_tokens.access};, Bearer refreshToken=${new_tokens.refresh};`
+      headers: {
+        authorization: `Bearer accessToken=${new_tokens.access};, Bearer refreshToken=${new_tokens.refresh};`
       }
     }
     const res = {
@@ -153,16 +163,17 @@ describe('Test tokenValidationMiddleware', () => {
       },
     };
     const next = sinon.spy()
-    await tokenValidationMiddleware()(req,res,next)
+    await tokenValidationMiddleware()(req, res, next)
     expect(next.calledOnce).toBeFalsy()
+
   })
   it('Test expired AccessToken expired RefreshToken: Expected status 400', async () => {
     const tokens = createTokensFor(1, '-1m', '1s') // cannot save expired tokens
     await tokenDatabase.storeToken(tokens.refresh)
     await delay(1001) // wait for the refresh token to expire
     const req = {
-      headers:{
-        authorization:`Bearer accessToken=${tokens.access};, Bearer refreshToken=${tokens.refresh};`
+      headers: {
+        authorization: `Bearer accessToken=${tokens.access};, Bearer refreshToken=${tokens.refresh};`
       }
     }
     const res = {
@@ -175,15 +186,15 @@ describe('Test tokenValidationMiddleware', () => {
       },
     };
     const next = sinon.spy()
-    await tokenValidationMiddleware()(req,res,next)
+    await tokenValidationMiddleware()(req, res, next)
     expect(next.calledOnce).toBeFalsy()
   })
   it('Test expired AccessToken expired RefreshToken: Expected status 400', async () => {
     const tokens = createTokensFor(1, '-1m', '7d')
     await tokenDatabase.storeToken(tokens.refresh)
     const req = {
-      headers:{
-        authorization:`Bearer accessToken=${tokens.access};, Bearer refreshToken=invalid_token;`
+      headers: {
+        authorization: `Bearer accessToken=${tokens.access};, Bearer refreshToken=invalid_token;`
       }
     }
     const res = {
@@ -196,15 +207,15 @@ describe('Test tokenValidationMiddleware', () => {
       },
     };
     const next = sinon.spy()
-    await tokenValidationMiddleware()(req,res,next)
+    await tokenValidationMiddleware()(req, res, next)
     expect(next.calledOnce).toBeFalsy()
   })
   it('Test invalid AccessToken: Expected status 400', async () => {
     const tokens = createTokensFor(1, '15m', '7d')
     await tokenDatabase.storeToken(tokens.refresh)
     const req = {
-      headers:{
-        authorization:`Bearer accessToken=xxxxx;, Bearer refreshToken=${tokens.refresh};`
+      headers: {
+        authorization: `Bearer accessToken=xxxxx;, Bearer refreshToken=${tokens.refresh};`
       }
     }
     const res = {
@@ -217,10 +228,7 @@ describe('Test tokenValidationMiddleware', () => {
       },
     };
     const next = sinon.spy()
-    await tokenValidationMiddleware()(req,res,next)
+    await tokenValidationMiddleware()(req, res, next)
     expect(next.calledOnce).toBeFalsy()
   })
-
 })
-// token validation middleware !!!!
-// invalid expired auth

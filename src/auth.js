@@ -1,6 +1,5 @@
 const express = require('express');
 const authRouter = express.Router();
-const {userDatabaseTools} = require("./auth-db-tools")
 const {tokenValidation,allowLoginUsers} = require("./token-validators")
 const {
   dataValidationMiddleware,
@@ -11,6 +10,7 @@ const {
   canDeleteMiddleware,
   deleteUserMiddleware} = require('./auth-middleware')
 
+// TODO : for the tokens plus create functions for the test and just pass the params in the functions
 // TODO: make all the endpoints following middleware structure
 // TODO: first test all the functions that are correct - unity test
 // TODO: then test the end points - integration test

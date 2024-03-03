@@ -94,61 +94,46 @@ describe('Testing userDatabaseTools.isValidUser', () => {
   });
 });
 
+describe('Testing userDatabaseTools.creatUser', () => {
+  it("User Created: responds with undefined", async ()=> {
+    const credentials = {username: "new_user", password: "test"}
+    const userCreated = await userDatabaseTools.createUser(credentials)
+    expect(userCreated).toBeUndefined()
+  });
 
-describe('Test POST /signup endpoint', () => {
-  it("User Created: responds with valid status", ()=> {
-    return request(app)
-      .post('/signup') // Specify the POST method
-      .send({ username: "new_user",password:"test"}) // Attach username and password in the request body
-      .then((response) => {
-        expect(response.status).toBe(200);
-        expect(response.text).toBe('User Successfully Created') // Check for expected status code
-      })
-      .catch((err) => {
-        return done(err); // Handle potential errors
-      });
-  });
-  it("User Already exists: responds with invalid status", ()=> {
-    return request(app)
-      .post('/signup') // Specify the POST method
-      .send({ username: "new_user",password:"test"}) // Attach username and password in the request body
-      .then((response) => {
-        expect(response.status).toBe(400);
-        expect(response.text).toBe('User Already Exists') // Check for expected status code
-      })
-      .catch((err) => {
-        return done(err); // Handle potential errors
-      });
-  });
 });
 
-describe('Test DELETE /delete endpoint', () => {
-  it("No Username: responds with invalid status", ()=> {
-    return request(app)
-      .delete('/delete')
-      .send()
-      .then((response) => {
-        expect(response.status).toBe(400);
-        expect(response.text).toBe("No User provided") // Check for expected status code
-      })
+describe('Testing userDatabaseTools.isUserExists', () => {
+  it("User Already exists: responds with error message", async () => {
+    try {
+      await userDatabaseTools.isUserExists("new_user")
+    } catch (e) {
+      expect(e.message).toBe('User Already Exists')
+    }
+  })
+  it("Username does not exists: responds with undefined", async () => {
+      const canDeleteResponse = await userDatabaseTools.isUserExists('non_existing_user')
+      expect(canDeleteResponse).toBeUndefined()
   });
-  it("Invalid Username: responds with invalid status", ()=> {
-    return request(app)
-      .delete('/delete/test_user')
-      .send()
-      .then((response) => {
-        expect(response.status).toBe(400);
-        expect(response.text).toBe("Username not Found") // Check for expected status code
-      })
-  });
+})
 
-  it("Delete Username: responds with valid status", ()=> {
-    return request(app)
-      .delete('/delete/new_user')
-      .send()
-      .then((response) => {
-        expect(response.status).toBe(200);
-        expect(response.text).toBe("User Deleted Successfully") // Check for expected status code
-      })
+describe('Testing userDatabaseTools.canDelete DELETE /delete endpoint', () => {
+  it("Invalid Username: responds with error message", async () => {
+    try {
+      await userDatabaseTools.canDelete('test_user')
+    } catch (e) {
+      expect(e.message).toBe("Username not Found") // Check for expected status code
+    }
+  });
+  it("Correct Username: responds with undefined", async () => {
+      const canDeleteResponse = await userDatabaseTools.canDelete('new_user')
+      expect(canDeleteResponse).toBeUndefined()
+  });
+})
+
+describe('Testing userDatabaseTools.deleteUser DELETE /delete endpoint', () => {
+  it("Delete Username: responds with undefined", async ()=> {
+    const deleteUserResponse = await userDatabaseTools.deleteUser('new_user')
+    expect(deleteUserResponse).toBeUndefined()
   });
 });

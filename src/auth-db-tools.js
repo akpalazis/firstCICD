@@ -19,7 +19,7 @@ class UserDatabase {
 
   async deleteUser(username) {
     try {
-      return await db.query(this.deleteQuery,[username])
+      await db.query(this.deleteQuery,[username])
     } catch (e) {
       throw new Error(e);
     }

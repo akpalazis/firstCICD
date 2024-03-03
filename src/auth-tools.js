@@ -1,3 +1,5 @@
+const bcrypt = require("bcryptjs")
+
 const validateData = async (credentials) => {
     const username = credentials.username
     const password = credentials.password
@@ -23,4 +25,8 @@ const validateData = async (credentials) => {
     }
 };
 
-module.exports = {validateData}
+async function generateHashCredentials(req) {
+  req.body.password = await bcrypt.hash(req.body.password,10)
+}
+
+module.exports = {validateData,generateHashCredentials}

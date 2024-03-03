@@ -1,6 +1,6 @@
 const { expect } = require('expect');
 const {tokenDatabase} = require('../src/tokens/token-db-tools')
-const {createTokensFor} = require("../src/tokens/token-tools")
+const {createTokensFor,stripToken,isTokenValid,checkTokenSingleUse} = require("../src/tokens/token-tools")
 const jwt = require('jsonwebtoken');
 const {AUTH_SECRET_KEY,REFRESH_SECRET_KEY} = require("../src/constants")
 const {delay} = require("./test-tools")
@@ -55,3 +55,87 @@ describe('Test tokenDatabase.storeToken', () => {
 
 })
 
+describe('Test strip token',()=>{
+  let tokens
+  before(()=>{
+    tokens = createTokensFor(1,"1m","7d")
+  })
+  it("check with name token",() =>{
+    const stringToStrip = `Bearer ${tokens.access}, Bearer ${tokens.refresh}`
+    const [accessTokenCookie, refreshTokenCookie] = stringToStrip.split(',');
+    const accessToken = stripToken(accessTokenCookie)
+    const refreshToken = stripToken(refreshTokenCookie)
+    expect(accessToken).toBe(tokens.access)
+    expect(refreshToken).toBe(tokens.refresh)
+  })
+  it("check without name token",() =>{
+    const stringToStrip = `Bearer accessToken=${tokens.access};, Bearer refreshToken=${tokens.refresh};`
+    const [accessTokenCookie, refreshTokenCookie] = stringToStrip.split(',');
+    const accessToken = stripToken(accessTokenCookie)
+    const refreshToken = stripToken(refreshTokenCookie)
+    expect(accessToken).toBe(tokens.access)
+    expect(refreshToken).toBe(tokens.refresh)
+  })
+ after( async ()=>{
+   await tokenDatabase.deleteToken(1)
+ })
+})
+
+describe("Test isTokenValid", ()=>{
+  it('Test valid token: expect is valid true is expired false and token info', () =>{
+    const tokens = createTokensFor(1,"1m","7d")
+    const authTokenData = isTokenValid(tokens.access,AUTH_SECRET_KEY)
+    expect(authTokenData.isValid).toBeTruthy()
+    expect(authTokenData.isExpired).toBeFalsy()
+    expect(authTokenData.decodedToken).toBeInstanceOf(Object)
+    expect(authTokenData.token).toBe(tokens.access)
+    const refreshTokenData = isTokenValid(tokens.refresh,REFRESH_SECRET_KEY)
+    expect(refreshTokenData.isValid).toBeTruthy()
+    expect(refreshTokenData.isExpired).toBeFalsy()
+    expect(refreshTokenData.decodedToken).toBeInstanceOf(Object)
+    expect(refreshTokenData.token).toBe(tokens.refresh)
+  })
+
+  it('Test valid token but expired: expect is valid true is expired true', () =>{
+    const tokens = createTokensFor(1,"-1s","-1s")
+    const authTokenData = isTokenValid(tokens.access,AUTH_SECRET_KEY)
+    expect(authTokenData.isValid).toBeTruthy()
+    expect(authTokenData.isExpired).toBeTruthy()
+    const refreshTokenData = isTokenValid(tokens.refresh,REFRESH_SECRET_KEY)
+    expect(refreshTokenData.isValid).toBeTruthy()
+    expect(refreshTokenData.isExpired).toBeTruthy()
+  })
+  it('Test invalid token: expect is valid false is expired false', () =>{
+    const authTokenData = isTokenValid('invalid token',AUTH_SECRET_KEY)
+    expect(authTokenData.isValid).toBeFalsy()
+    const refreshTokenData = isTokenValid('invalid token',REFRESH_SECRET_KEY)
+    expect(refreshTokenData.isValid).toBeFalsy()
+  })
+   after( async ()=>{
+   await tokenDatabase.deleteToken(1)
+ })
+})
+
+describe("Test checkTokenSingleUse", () =>{
+  let tokens
+  before(async ()=>{
+    tokens = createTokensFor(1,"15m","7d")
+    await tokenDatabase.storeToken(tokens.refresh)
+  })
+  it("Test Single use token", async () => {
+    const tokenData = isTokenValid(tokens.refresh,REFRESH_SECRET_KEY)
+    const isSingle = await checkTokenSingleUse(tokenData)
+    expect(isSingle).toBeTruthy()
+  })
+  it("Test used token", async () => {
+    await delay(1001)
+    const new_token = createTokensFor(1,"15m","7d")
+    await tokenDatabase.storeToken(new_token.refresh)
+    const tokenData = isTokenValid(tokens.refresh,REFRESH_SECRET_KEY)
+    const isSingle = await checkTokenSingleUse(tokenData)
+    expect(isSingle).toBeFalsy()
+  })
+  after( async ()=>{
+   await tokenDatabase.deleteToken(1)
+ })
+})

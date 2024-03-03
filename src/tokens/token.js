@@ -1,6 +1,6 @@
 const express = require('express');
 const tokenRouter = express.Router();
-const {createTokensMiddleware,storeTokenMiddleware,manipulateToken,deleteTokenMiddleware} = require("./token-middleware")
+const {createTokensMiddleware,storeTokenMiddleware,manipulateToken,deleteTokenMiddleware,tokenValidationMiddleware} = require("./token-middleware")
 // Secret keys for access and refresh tokens
 
 
@@ -44,6 +44,10 @@ tokenRouter.delete('/delete_token/:userId',
     return res.status(200).send("Token Deleted Successfully")
 });
 
-
+tokenRouter.post('/validate/:tokens',
+  tokenValidationMiddleware,
+  async (req,res) => {
+    return res.status(200).send("Token is Valid")
+  })
 
 module.exports = {tokenRouter}

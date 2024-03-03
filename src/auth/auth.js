@@ -1,6 +1,5 @@
 const express = require('express');
 const authRouter = express.Router();
-const {tokenValidation} = require("../tokens/token-validators")
 const {allowLoginUsersMiddleware} = require("./auth-middleware")
 const {
   dataValidationMiddleware,
@@ -13,9 +12,9 @@ const {
 
 // TODO: then test the end points - integration test
 
+// TODO: make request to the validate endpoint in the tokens
 authRouter.get('/',
   allowLoginUsersMiddleware(true),
-  tokenValidation(),
   async (req,res)=>{
     return res.status(200).send("JWT token is valid");
   }

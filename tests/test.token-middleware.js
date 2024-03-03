@@ -92,5 +92,10 @@ describe('Test storeTokenMiddleware', () => {
     const newToken = await tokenDatabase.fetchRefreshToken(1)
     expect((oldToken.token===newToken.token)).toBeFalsy()
   })
+   after( async ()=>{
+   await tokenDatabase.deleteToken(1)
+ })
+
 })
 
+// token validation middleware !!!!

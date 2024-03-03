@@ -3,11 +3,13 @@ const { expect } = require('expect');
 const {isJenkins,HOST_URL} = require('../src/constants')
 const {validateData} = require('../src/auth-tools')
 const {userDatabaseTools} = require('../src/auth-db-tools')
+const {connectDB} = require('../src/db');
 
 let app;
 
 if (isJenkins){
   app  = HOST_URL
+  connectDB()
 } else{
   app = require('../src/app.js');
 }
@@ -91,6 +93,7 @@ describe('Testing userDatabaseTools.isValidUser', () => {
     }
   });
 });
+
 
 describe('Test POST /signup endpoint', () => {
   it("User Created: responds with valid status", ()=> {

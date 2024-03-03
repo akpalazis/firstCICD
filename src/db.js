@@ -8,9 +8,7 @@ const db = new Client({
 async function connectDB() {
   try {
     await db.connect();
-    console.log('Connected to PostgreSQL database');
   } catch (err) {
-    console.error('Error connecting to PostgreSQL database', err);
     throw err;
   }
 }

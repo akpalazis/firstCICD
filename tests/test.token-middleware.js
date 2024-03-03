@@ -1,6 +1,4 @@
 const { expect } = require('expect');
-const {isJenkins,HOST_URL} = require('../src/constants')
-const {connectDB} = require('../src/db');
 const {tokenDatabase} = require("../src/tokens/token-db-tools")
 const {createTokensMiddleware,storeTokenMiddleware} = require("../src/tokens/token-middleware")
 const sinon = require('sinon');
@@ -8,28 +6,7 @@ const {createTokensFor} = require("../src/tokens/token-tools")
 const jwt = require('jsonwebtoken');
 const {AUTH_SECRET_KEY,REFRESH_SECRET_KEY} = require("../src/constants")
 
-let app;
-
-if (isJenkins){
-  app  = HOST_URL
-  connectDB()
-} else{
-  app = require('../src/app.js');
-}
-function delay(ms) {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
-}
-
-
-/*
-
-function storeTokenMiddleware(req,res,next){
-
-
-function deleteTokenMiddleware(req,res,next){
- */
+const {delay} = require("./test-tools")
 
 describe('Test createTokensMiddleware', () => {
   it('Generate Valid Token', async () => {

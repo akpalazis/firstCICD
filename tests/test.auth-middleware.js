@@ -1,19 +1,6 @@
 const { expect } = require('expect');
-const {isJenkins,HOST_URL} = require('../src/constants')
-const {connectDB} = require('../src/db');
 const sinon = require('sinon');
 const {dataValidationMiddleware} = require("../src/auth/auth-middleware")
-
-let app;
-
-if (isJenkins){
-  app  = HOST_URL
-  connectDB()
-} else{
-  app = require('../src/app.js');
-}
-
-//TODO: make the test as one function and run the params
 
 async function mainTest(testParams){
   const req = {body: testParams.credentialsToCheck}

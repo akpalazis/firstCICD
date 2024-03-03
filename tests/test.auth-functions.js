@@ -1,17 +1,7 @@
 const { expect } = require('expect');
-const {isJenkins,HOST_URL} = require('../src/constants')
 const {validateData} = require('../src/auth/auth-tools')
 const {userDatabaseTools} = require('../src/auth/auth-db-tools')
-const {connectDB} = require('../src/db');
 
-let app;
-
-if (isJenkins){
-  app  = HOST_URL
-  connectDB()
-} else{
-  app = require('../src/app.js');
-}
 describe('Test validateData', () => {
   it('No Username and password: responds with error message', async () => {
     try {

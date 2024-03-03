@@ -1,24 +1,9 @@
 const { expect } = require('expect');
-const {isJenkins,HOST_URL} = require('../src/constants')
 const {tokenDatabase} = require('../src/tokens/token-db-tools')
-const {connectDB} = require('../src/db');
 const {createTokensFor} = require("../src/tokens/token-tools")
 const jwt = require('jsonwebtoken');
 const {AUTH_SECRET_KEY,REFRESH_SECRET_KEY} = require("../src/constants")
-let app;
-
-if (isJenkins){
-  app  = HOST_URL
-  connectDB()
-} else{
-  app = require('../src/app.js');
-}
-function delay(ms) {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
-}
-
+const {delay} = require("./test-tools")
 
 describe('Test createTokensFor', () => {
   it('Generate Valid Token',() => {

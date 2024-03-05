@@ -1,4 +1,4 @@
-
+const {axios} = require('axios');
 const {validateData,generateHashCredentials} = require("./auth-tools")
 const {userDatabaseTools} = require("./auth-db-tools")
 const {tokenValidationMiddleware} = require("../tokens/token-middleware")
@@ -83,10 +83,20 @@ function deleteUserMiddleware(req, res, next) {
     });
 }
 
-function validateTokenMiddleware(req,res,next){
-  //TODO: change that with request to the validation endpoint
-  return tokenValidationMiddleware(req,res,next)
+async function validateTokenMiddleware(req,res,next){
+  return await axios.post('http://localhost:3000/generateTokens/1')
+    .then((response) => {
+      console.log(response.data)
+      if ((response.status === 200) && (response.data === "Token Generated Successfully")){
+        return next()
+      }
+    })
+    .catch(error => {
+      console.log(error)
+      return res.status(500).send("Internal server error");
+    });
 }
+
 module.exports = {
   allowLoginUsersMiddleware,
   dataValidationMiddleware,

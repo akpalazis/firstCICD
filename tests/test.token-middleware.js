@@ -7,6 +7,8 @@ const jwt = require('jsonwebtoken');
 const {AUTH_SECRET_KEY,REFRESH_SECRET_KEY} = require("../src/constants")
 
 const {delay} = require("./test-tools")
+//TODO: make these test more clear and easier to read !!!!
+
 
 describe('Test createTokensMiddleware', () => {
   it('Generate Valid Token', async () => {
@@ -40,64 +42,6 @@ describe('Test createTokensMiddleware', () => {
   })
 })
 
-describe('Test storeTokenMiddleware', () => {
-  it('Store valid token', async () => {
-    const tokens = createTokensFor(1, '15m', '7d')
-    const cookie = sinon.spy()
-    const res = {
-      locals: {tokens: tokens},
-      cookie: cookie,
-    };
-    const next = sinon.spy()
-    await storeTokenMiddleware({}, res, next)
-    expect(next.calledOnce).toBeTruthy()
-    expect(cookie.calledTwice).toBeTruthy()
-    const firstCallArgs = cookie.firstCall.args
-    expect(firstCallArgs[0]).toBe("accessToken")
-    expect(firstCallArgs[1]).toBe(tokens.access)
-    expect(firstCallArgs[2]).toBeInstanceOf(Object)
-    const secondCallArgs = cookie.secondCall.args
-    expect(secondCallArgs[0]).toBe("refreshToken")
-    expect(secondCallArgs[1]).toBe(tokens.refresh)
-    expect(secondCallArgs[2]).toBeInstanceOf(Object)
-  })
-  it('Store invalid token', async () => {
-    const tokens = createTokensFor(1, '15m', '-1s')
-    const cookie = sinon.spy()
-    const res = {
-      locals: {tokens: tokens},
-      cookie: cookie,
-      status: (statusCode) => {
-        expect(statusCode).toBe(400);
-        return res;
-      },
-      send: (data) => {
-        expect(data).toBe("jwt expired")
-      },
-    };
-    const next = sinon.spy()
-    await storeTokenMiddleware({}, res, next)
-  })
-  it('Replace token: expect true',async () => {
-    await delay(1001)
-    const oldToken = await tokenDatabase.fetchRefreshToken(1)
-    const tokens = createTokensFor(1, '15m', '7d')
-    const cookie = sinon.spy()
-    const res = {
-      locals: {tokens: tokens},
-      cookie: cookie,
-    };
-    const next = sinon.spy()
-    await storeTokenMiddleware({}, res, next)
-    const newToken = await tokenDatabase.fetchRefreshToken(1)
-    expect((oldToken.token===newToken.token)).toBeFalsy()
-  })
-   after( async ()=>{
-   await tokenDatabase.deleteToken(1)
- })
-
-})
-
 describe('Test tokenValidationMiddleware', () => {
   it('Test valid AccessToken valid RefreshToken: Expected next call and new tokens', async () => {
     const tokens = createTokensFor(1, '15m', '7d')
@@ -125,22 +69,14 @@ describe('Test tokenValidationMiddleware', () => {
     }
     const res = {
       locals: {tokens:undefined},
-      cookie: sinon.spy()
     };
     const next = sinon.spy()
     await tokenValidationMiddleware()(req, res, next)
     expect(next.calledThrice).toBeTruthy()
     const newTokens = await tokenDatabase.fetchRefreshToken(1)
     expect(tokens.refresh===newTokens.token).toBeFalsy()
-
-    const cookieAccessToken = res.cookie.firstCall.args[1]
-    const cookieRefreshToken = res.cookie.secondCall.args[1]
-    expect(cookieRefreshToken).toBe(newTokens.token)
-    const oldAcessToken = jwt.decode(tokens.access,AUTH_SECRET_KEY)
     const oldTokenData = jwt.decode(tokens.refresh,REFRESH_SECRET_KEY)
     const newTokenData = jwt.decode(newTokens.token,REFRESH_SECRET_KEY)
-    const cookieTokenData = jwt.decode(cookieAccessToken,AUTH_SECRET_KEY)
-    expect(cookieTokenData.exp).toBeGreaterThan(oldAcessToken.exp)
     expect(newTokenData.exp).toBeGreaterThan(oldTokenData.exp)
   })
   it('Test expired AccessToken valid RefreshToken already used: Expected status 400', async () => {

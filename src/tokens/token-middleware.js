@@ -25,8 +25,6 @@ function storeTokenMiddleware(req,res,next){
   const tokens = res.locals.tokens
   const accessToken = tokens.access
   const refreshToken = tokens.refresh
-  res.cookie('accessToken', accessToken, {httpOnly: true, secure: false, sameSite: 'strict'});
-  res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: false, sameSite: 'strict'});
   return tokenDatabase.storeToken(refreshToken)
     .then(()=> {
       next()

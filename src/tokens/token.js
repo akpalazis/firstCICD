@@ -7,7 +7,9 @@ const {createTokensMiddleware,storeTokenMiddleware,manipulateToken,deleteTokenMi
 tokenRouter.post('/generateTokens/:userId',
   createTokensMiddleware,
   storeTokenMiddleware, async (req, res) => {
-  return res.status(200).send("Token Generated Successfully")
+  return res.status(200).json({
+    message:"Token Generated Successfully",
+    tokens:res.locals.tokens})
 });
 
 tokenRouter.post("/fetchToken/:userId",createTokensMiddleware, async (req,res) => {
@@ -44,7 +46,7 @@ tokenRouter.delete('/delete_token/:userId',
     return res.status(200).send("Token Deleted Successfully")
 });
 
-tokenRouter.post('/validate/:tokens',
+tokenRouter.post('/validate/',
   tokenValidationMiddleware,
   async (req,res) => {
     return res.status(200).send("Token is Valid")

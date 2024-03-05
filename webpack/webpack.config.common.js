@@ -2,7 +2,8 @@ const path = require('path');
 
 module.exports = {
   entry: {
-    index: './src/app.js',
+    auth: './src/auth/index.js',
+    token: './src/tokens/index.js'
   },
   output: {
     path: path.join(__dirname, '../dist'),

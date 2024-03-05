@@ -8,7 +8,7 @@ module.exports = merge(commonConfig, {
     contentBase: './dist'
   },
   output: {
-    filename: 'dev_app.js'
+    filename: 'dev_[name].js'
   },
 });
 

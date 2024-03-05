@@ -1,8 +1,6 @@
 const express = require('express');
 const tokenRouter = express.Router();
 const {createTokensMiddleware,storeTokenMiddleware,manipulateToken,deleteTokenMiddleware,tokenValidationMiddleware} = require("./token-middleware")
-// Secret keys for access and refresh tokens
-
 
 tokenRouter.post('/generateTokens/:userId',
   createTokensMiddleware,
@@ -46,9 +44,10 @@ tokenRouter.delete('/delete_token/:userId',
     return res.status(200).send("Token Deleted Successfully")
 });
 
-tokenRouter.post('/validate/',
-  tokenValidationMiddleware,
+tokenRouter.post('/validate-token/',
+  tokenValidationMiddleware(),
   async (req,res) => {
+    //TODO: Find a way to recognise if we regenerated a new token or if its the same if new it needs to store on the auth
     return res.status(200).send("Token is Valid")
   })
 

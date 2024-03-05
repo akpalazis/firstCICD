@@ -1,4 +1,4 @@
-const {axios} = require('axios');
+const axios = require('axios');
 const {validateData,generateHashCredentials} = require("./auth-tools")
 const {userDatabaseTools} = require("./auth-db-tools")
 const {tokenValidationMiddleware} = require("../tokens/token-middleware")
@@ -84,17 +84,43 @@ function deleteUserMiddleware(req, res, next) {
 }
 
 async function validateTokenMiddleware(req,res,next){
-  return await axios.post('http://localhost:3000/generateTokens/1')
+  const tokens = req.headers.authorization
+  return await axios.post('http://token:3001/validate-token',null,
+    {headers:{
+      Authorization:tokens
+      }})
     .then((response) => {
-      console.log(response.data)
-      if ((response.status === 200) && (response.data === "Token Generated Successfully")){
+      if ((response.status === 200) && (response.data === "Token is Valid")){
         return next()
       }
     })
     .catch(error => {
-      console.log(error)
       return res.status(500).send("Internal server error");
     });
+}
+
+async function fetchTokenMiddleware(req,res,next){
+  return await axios.post('http://token:3000/generateTokens/1')
+    .then(response => {
+      if ((response.status === 200) && (response.data.message === "Token Generated Successfully")){
+        res.locals.tokens = response.data.tokens
+        return next()
+      }
+    })
+    .catch((error) => {
+      return res.status(500).send(error.message);
+    });
+}
+function storeTokens(req,res,next){
+  try {
+    const tokens = res.locals.tokens
+    res.cookie('accessToken', tokens.access, {httpOnly: true, secure: false, sameSite: 'strict'});
+    res.cookie('refreshToken', tokens.refresh, {httpOnly: true, secure: false, sameSite: 'strict'});
+  } catch (e){
+    console.log(e)
+    return res.status(500).send("Internal server error")
+  }
+  next()
 }
 
 module.exports = {
@@ -106,4 +132,6 @@ module.exports = {
   isUserValidMiddleware,
   canDeleteMiddleware,
   deleteUserMiddleware,
-  validateTokenMiddleware}
+  validateTokenMiddleware,
+  fetchTokenMiddleware,
+  storeTokens}

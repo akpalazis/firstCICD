@@ -4,7 +4,7 @@ pipeline {
         AUTH_SECRET_KEY = credentials('access-token')
         REFRESH_SECRET_KEY = credentials('refresh-token')
         DB_URL = credentials('db-url')
-
+        PATH = "$PATH:/usr/local/bin/"
     }
   tools {
     nodejs "npm"
@@ -32,7 +32,7 @@ pipeline {
       steps {
         // Add your deployment steps for the developer branch here
         script {
-          sh '/usr/local/bin/docker-compose up --build'
+          sh 'docker-compose up --build'
         }
       }
     }

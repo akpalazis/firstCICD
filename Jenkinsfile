@@ -44,6 +44,8 @@ pipeline {
       steps {
         script {
           sh 'npm run test'
+          sh 'newman ./integration-test/no-token_auth.json'
+          sh 'newman ./integration-test/valid_auth.json'
         }
       }
     }

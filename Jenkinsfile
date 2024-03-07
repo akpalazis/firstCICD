@@ -32,8 +32,7 @@ pipeline {
       steps {
         // Add your deployment steps for the developer branch here
         script {
-          sh 'docker build -t my_node:latest .'
-          sh 'docker run -d -p 3000:3000 -e DB_URL=${DB_URL} -e AUTH_SECRET_KEY=${AUTH_SECRET_KEY} -e REFRESH_SECRET_KEY=${REFRESH_SECRET_KEY} --name my-node my_node:latest'
+          sh 'docker-compose up --build'
         }
       }
     }

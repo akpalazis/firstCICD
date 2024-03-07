@@ -4,7 +4,6 @@ pipeline {
         AUTH_SECRET_KEY = credentials('access-token')
         REFRESH_SECRET_KEY = credentials('refresh-token')
         DB_URL = credentials('db-url')
-        PATH = "$PATH:/usr/local/bin/"
     }
   tools {
     nodejs "npm"
@@ -32,7 +31,7 @@ pipeline {
       steps {
         // Add your deployment steps for the developer branch here
         script {
-          sh 'docker-compose up --build'
+          sh 'docker-compose up --build -d'
         }
       }
     }
@@ -53,9 +52,7 @@ pipeline {
             script {
                 // Cleanup Docker image if the environment is set to "developer"
                 if (env.BRANCH_NAME == 'developer') {
-                    sh 'docker stop my-node || true'
-                    sh 'docker rm my-node || true'
-                    sh 'docker rmi my_node:latest || true'
+                    sh 'docker-compose down || true'
                 }
             }
         }

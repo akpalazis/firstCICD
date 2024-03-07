@@ -1,7 +1,6 @@
 const axios = require('axios');
 const {validateData,generateHashCredentials} = require("./auth-tools")
 const {userDatabaseTools} = require("./auth-db-tools")
-const {TOKEN_URL} = require("../constants")
 
 function allowLoginUsersMiddleware(registerer){
   return function (req,res,next) {

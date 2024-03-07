@@ -67,6 +67,17 @@ authRouter.delete('/delete', async (req, res) => {
     return res.status(400).send("No User provided");
 });
 
+authRouter.get('/clearCookies', (req, res) => {
+  // Clear the access token cookie
+  res.clearCookie('accessToken');
+
+  // Clear the refresh token cookie
+  res.clearCookie('refreshToken');
+
+  return res.status(200).send("Cookies Cleared Successfully");
+});
+
+
 module.exports = {authRouter}
 
 

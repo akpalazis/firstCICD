@@ -28,15 +28,7 @@ tokenRouter.post('/generateExpiredAccessTokens/:userID',
     return res.status(200).send("Token Generated Successfully")
 });
 
-tokenRouter.get('/clearCookies', (req, res) => {
-  // Clear the access token cookie
-  res.clearCookie('accessToken');
 
-  // Clear the refresh token cookie
-  res.clearCookie('refreshToken');
-
-  return res.status(200).send("Cookies Cleared Successfully");
-});
 
 tokenRouter.delete('/delete_token/:userId',
   deleteTokenMiddleware,

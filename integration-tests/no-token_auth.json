@@ -1,0 +1,329 @@
+{
+	"info": {
+		"_postman_id": "fb7e5618-69f3-42ec-84e2-f5c97c0d7ef7",
+		"name": "Make requests without tokens without credentials",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33463568"
+	},
+	"item": [
+		{
+			"name": "localhost:3000",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Example test script",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Response should be s message\", function () {",
+							"var responseBody = pm.response.text(); // Fetch the response body as a string",
+							"    pm.expect(responseBody).to.be.a('string');",
+							"});",
+							"",
+							"pm.test(\"Response should contain expected data\", function () {",
+							"    var responseBody = pm.response.text(); // Fetch the response body as a string",
+							"    pm.expect(responseBody).to.be.eql('Unauthorized access');",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000",
+					"host": [
+						"localhost"
+					],
+					"port": "3000"
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3000/login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Example test script",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response should be s message\", function () {",
+							"var responseBody = pm.response.text(); // Fetch the response body as a string",
+							"    pm.expect(responseBody).to.be.a('string');",
+							"});",
+							"",
+							"pm.test(\"Response should contain expected data\", function () {",
+							"    var responseBody = pm.response.text(); // Fetch the response body as a string",
+							"    pm.expect(responseBody).to.be.eql('login page');",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/login",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3000/login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Example test script",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Response should be s message\", function () {",
+							"var responseBody = pm.response.text(); // Fetch the response body as a string",
+							"    pm.expect(responseBody).to.be.a('string');",
+							"});",
+							"",
+							"pm.test(\"Response should contain expected data\", function () {",
+							"    var responseBody = pm.response.text(); // Fetch the response body as a string",
+							"    pm.expect(responseBody).to.be.eql('Username and Password field not found');",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/login",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3000/validate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Example test script",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Response should be s message\", function () {",
+							"var responseBody = pm.response.text(); // Fetch the response body as a string",
+							"    pm.expect(responseBody).to.be.a('string');",
+							"});",
+							"",
+							"pm.test(\"Response should contain expected data\", function () {",
+							"    var responseBody = pm.response.text(); // Fetch the response body as a string",
+							"    pm.expect(responseBody).to.be.eql('Username and Password field not found');",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/login",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3000/signup",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Example test script",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Response should be s message\", function () {",
+							"var responseBody = pm.response.text(); // Fetch the response body as a string",
+							"    pm.expect(responseBody).to.be.a('string');",
+							"});",
+							"",
+							"pm.test(\"Response should contain expected data\", function () {",
+							"    var responseBody = pm.response.text(); // Fetch the response body as a string",
+							"    pm.expect(responseBody).to.be.eql('Illegal arguments: undefined, number');",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/signup",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3000/delete",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Example test script",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Response should be s message\", function () {",
+							"var responseBody = pm.response.text(); // Fetch the response body as a string",
+							"    pm.expect(responseBody).to.be.a('string');",
+							"});",
+							"",
+							"pm.test(\"Response should contain expected data\", function () {",
+							"    var responseBody = pm.response.text(); // Fetch the response body as a string",
+							"    pm.expect(responseBody).to.be.eql('No User provided');",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/delete/",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"delete",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3000/clearCookies",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Example test script",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response should be s message\", function () {",
+							"var responseBody = pm.response.text(); // Fetch the response body as a string",
+							"    pm.expect(responseBody).to.be.a('string');",
+							"});",
+							"",
+							"pm.test(\"Response should contain expected data\", function () {",
+							"    var responseBody = pm.response.text(); // Fetch the response body as a string",
+							"    pm.expect(responseBody).to.be.eql('Cookies Cleared Successfully');",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/clearCookies",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"clearCookies"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

@@ -2,34 +2,34 @@ version: '3'
 
 services:
   auth:
-    image: node:14
-    container_name: auth-container
-    command: ["node", "dev_auth.js"]
-    volumes:
-      - ./dist/dev_auth.js:/dev_auth.js
-    ports:
-      - 3000:3000
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - TARGET=auth
     environment:
+      - TARGET=auth
       - DB_URL=postgres://postgres:pass@192.168.1.182:5433/postgres
-    working_dir: /
     networks:
       - my-network
+    ports:
+    - "3000:3000"
 
   token:
-    image: node:14 # Replace with the appropriate Node.js version
-    container_name: token-container
-    command: ["node", "dev_token.js"]
-    volumes:
-      - ./dist/dev_token.js:/dev_token.js  # Copy the file into the container
-    ports:
-    - 3001:3000
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - TARGET=token
     environment:
+      - TARGET=token
       - DB_URL=postgres://postgres:pass@192.168.1.182:5433/postgres
       - AUTH_SECRET_KEY=access-secret-key
       - REFRESH_SECRET_KEY=refresh-secret-key
-    working_dir: /
     networks:
       - my-network
+    ports:
+    - "3001:3000"
 
 networks:
   my-network:

@@ -33,7 +33,7 @@ pipeline {
       steps {
         // Add your deployment steps for the developer branch here
         script {
-          sh 'docker-compose up --build'
+          sh 'docker-compose up'
         }
       }
     }

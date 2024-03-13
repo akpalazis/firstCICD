@@ -84,9 +84,10 @@ function deleteUserMiddleware(req, res, next) {
 
 async function validateTokenMiddleware(req,res,next){
   const tokens = req.headers.authorization
-  return await axios.post('http://token:3001/validate-token',null,
-    {headers:{
-      Authorization:tokens
+  return await axios.post('http://token:3000/validate-token',null,
+    {
+      headers:{
+        Authorization:tokens
       }})
     .then((response) => {
       if ((response.status === 200) && (response.data === "Token is Valid")){
@@ -94,6 +95,7 @@ async function validateTokenMiddleware(req,res,next){
       }
     })
     .catch(error => {
+      console.log(error)
       return res.status(500).send("Internal server error");
     });
 }

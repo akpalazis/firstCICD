@@ -1,0 +1,93 @@
+{
+	"info": {
+		"_postman_id": "b9e1d3aa-9daa-4612-a82f-e49d958c6c14",
+		"name": "Make requests with tokens",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33463568"
+	},
+	"item": [
+		{
+			"name": "localhost:3000",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response should be s message\", function () {",
+							"var responseBody = pm.response.text(); // Fetch the response body as a string",
+							"    pm.expect(responseBody).to.be.a('string');",
+							"});",
+							"",
+							"pm.test(\"Response should contain expected data\", function () {",
+							"    var responseBody = pm.response.text(); // Fetch the response body as a string",
+							"    pm.expect(responseBody).to.be.eql('JWT token is valid');",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.sendRequest({",
+					"    url: 'http://localhost:3000/login',",
+					"    method: 'POST',",
+					"    header: {",
+					"        'Content-Type': 'application/json'",
+					"    },",
+					"    body: {",
+					"        mode: 'raw',",
+					"        raw: JSON.stringify({",
+					"            \"username\": \"admin\",",
+					"            \"password\": \"pass\"",
+					"        })",
+					"    }",
+					"}, function(err,res){",
+					"    let accessTokenHeader = res.headers.find(header => header.key === 'Set-Cookie' && header.value.includes('accessToken')).value",
+					"    let refreshTokenHeader = res.headers.find(header => header.key === 'Set-Cookie' && header.value.includes('refreshToken')).value",
+					"    pm.request.headers.add({",
+					"        key: 'Authorization',",
+					"        value: 'Bearer ' + accessTokenHeader + \", Bearer \" + refreshTokenHeader",
+					"});",
+					"    ",
+					"});"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

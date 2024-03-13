@@ -46,6 +46,7 @@ pipeline {
           sh 'npm run test'
           sh 'newman run ./integration-tests/no-token_auth.json'
           sh 'newman run ./integration-tests/valid_auth.json'
+          sh 'newman run ./integration-tests/token_auth.json'
         }
       }
     }

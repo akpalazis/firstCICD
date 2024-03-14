@@ -8,7 +8,6 @@ function manipulateToken(req,res,next){
 }
 
 function createTokensMiddleware(req, res, next) {
-  console.log("CreateToken")
   try {
     const userID = req.params.userId
     let accessTime = '15m'
@@ -18,7 +17,6 @@ function createTokensMiddleware(req, res, next) {
     res.locals.tokens = createTokensFor(userID, accessTime, refreshTime)
     next()
   } catch(err){
-    console.log(err.message)
     return res.status(400).send(err.message)
   }
 }
@@ -26,13 +24,11 @@ function createTokensMiddleware(req, res, next) {
 function storeTokenMiddleware(req,res,next){
   const tokens = res.locals.tokens
   const refreshToken = tokens.refresh
-  console.log("StoreToken")
   return tokenDatabase.storeToken(refreshToken)
     .then(()=> {
       next()
     })
     .catch(err=>{
-    console.log(err.message)
     return res.status(400).send(err.message)
   })
 }

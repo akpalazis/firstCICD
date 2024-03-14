@@ -5,15 +5,8 @@ const {connectDB} = require('./db');
 const bodyParser = require('body-parser');
 
 
-//TODO: Separate the validation with the auth! two different APPs that will be independent
-//TODO: Call the validate token with an api not with the function
-//TODO: Create the docker compose to have 2 APPs and write the integration tests
-//TODO: Create role-permissions to a third app
-// that will validate that the user has access to the endpoint based on the role
-// Needs to create roles as mongoDB and add the role in the users database
-// Create the tests for these functions / middleware and add these to integration tests!!!
-// make the jenkins file to work as expected as soon as the validation is working push it into master
-// create the pipeline to deploy the master branch
+//TODO: The validate-token is not working as expected
+//TODO: Make the middleware that will check the tokens
 
 connectDB()
 

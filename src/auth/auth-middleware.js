@@ -95,8 +95,7 @@ async function validateTokenMiddleware(req,res,next){
       }
     })
     .catch(error => {
-      console.log(error)
-      return res.status(500).send("Internal server error");
+      return res.status(400).send(error.response.data);
     });
 }
 

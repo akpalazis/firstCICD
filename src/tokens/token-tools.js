@@ -15,7 +15,7 @@ const stripToken = (token) => {
     const tokenEndIndex = token.indexOf(';'); // Find the index before ';'
     return token.slice(tokenStartIndex, tokenEndIndex).trim();
   }else{
-    return token.replace("Bearer ","").trim()
+    return token.replace("Bearer","").trim()
   }
 }
 

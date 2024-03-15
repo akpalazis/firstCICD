@@ -104,6 +104,7 @@ async function fetchTokenMiddleware(req,res,next){
     .then(response => {
       if ((response.status === 200) && (response.data.message === "Token Generated Successfully")){
         res.locals.tokens = response.data.tokens
+        response.data.tokens = null
         return next()
       }
     })
@@ -113,9 +114,9 @@ async function fetchTokenMiddleware(req,res,next){
 }
 function storeTokens(req,res,next){
   try {
-    const tokens = res.locals.tokens
-    res.cookie('accessToken', tokens.access, {httpOnly: true, secure: false, sameSite: 'strict'});
-    res.cookie('refreshToken', tokens.refresh, {httpOnly: true, secure: false, sameSite: 'strict'});
+    res.cookie('accessToken', res.locals.tokens.access, {httpOnly: true, secure: false, sameSite: 'strict'});
+    res.cookie('refreshToken', res.locals.tokens.refresh, {httpOnly: true, secure: false, sameSite: 'strict'});
+    res.locals.tokens = null
   } catch (e){
     console.log(e)
     return res.status(500).send("Internal server error")

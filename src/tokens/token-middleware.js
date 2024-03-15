@@ -48,13 +48,14 @@ function tokenValidationMiddleware() {
     const tokens = req.headers.authorization;
     try {
       const [accessTokenCookie, refreshTokenCookie] = tokens.split(',');
-      if ((!accessTokenCookie) || (!refreshTokenCookie)) {
-        return res.status(400).send(`Unauthorized - Found Only Single JWT`);
-      }
       const accessToken = stripToken(accessTokenCookie)
       const refreshToken = stripToken(refreshTokenCookie)
       const accessTokenData = isTokenValid(accessToken, AUTH_SECRET_KEY)
       const refreshTokenData = isTokenValid(refreshToken, REFRESH_SECRET_KEY)
+
+      if ((!accessToken) || (!refreshToken)) {
+        return res.status(400).send(`Unauthorized - Found Only Single JWT`);
+      }
       if (accessTokenData.isExpired) {
         if (refreshTokenData.isExpired) {
           return res.status(400).send('Unauthorized - Refresh Token Expired')
@@ -72,6 +73,11 @@ function tokenValidationMiddleware() {
       }
       if (!accessTokenData.isValid) {
         return res.status(400).send(`Unauthorized - JWT MALFORMED`);
+      }
+      else{
+        if (!refreshTokenData.isValid) {
+          return res.status(400).send('Unauthorized - Invalid Refresh Token')
+        }
       }
     } catch (err) {
       const errorMessage = err.message.toUpperCase()

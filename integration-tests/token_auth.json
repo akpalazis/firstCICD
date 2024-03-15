@@ -7,12 +7,13 @@
 	},
 	"item": [
 		{
-			"name": "localhost:3000",
+			"name": "localhost:3000 - valid tokens",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
+							"",
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
@@ -30,13 +31,197 @@
 						],
 						"type": "text/javascript"
 					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.sendRequest({",
+							"    url: 'http://localhost:3000/login',",
+							"    method: 'POST',",
+							"    header: {",
+							"        'Content-Type': 'application/json'",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify({",
+							"            \"username\": \"admin\",",
+							"            \"password\": \"pass\"",
+							"        })",
+							"    }",
+							"}, function(err,res){",
+							"    let accessTokenHeader = res.headers.find(header => header.key === 'Set-Cookie' && header.value.includes('accessToken')).value",
+							"    let refreshTokenHeader = res.headers.find(header => header.key === 'Set-Cookie' && header.value.includes('refreshToken')).value",
+							"    pm.request.headers.add({",
+							"        key: 'Authorization',",
+							"        value: 'Bearer ' + accessTokenHeader + \", Bearer \" + refreshTokenHeader",
+							"});",
+							"    ",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
 				}
 			],
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:3000/",
+					"raw": "http://localhost:3000/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3000 - invalid refreshToken",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Response should be s message\", function () {",
+							"var responseBody = pm.response.text(); // Fetch the response body as a string",
+							"    pm.expect(responseBody).to.be.a('string');",
+							"});",
+							"",
+							"pm.test(\"Response should contain expected data\", function () {",
+							"    var responseBody = pm.response.text(); // Fetch the response body as a string",
+							"    pm.expect(responseBody).to.be.eql('Unauthorized - Invalid Refresh Token');",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.sendRequest({",
+							"    url: 'http://localhost:3000/login',",
+							"    method: 'POST',",
+							"    header: {",
+							"        'Content-Type': 'application/json'",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify({",
+							"            \"username\": \"admin\",",
+							"            \"password\": \"pass\"",
+							"        })",
+							"    }",
+							"}, function(err,res){",
+							"    let accessTokenHeader = res.headers.find(header => header.key === 'Set-Cookie' && header.value.includes('accessToken')).value",
+							"    pm.request.headers.add({",
+							"        key: 'Authorization',",
+							"        value: 'Bearer ' + accessTokenHeader + \", Bearer \" + \"sadasdsadsa\"",
+							"});",
+							"    ",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3000 - No refreshToken",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Response should be s message\", function () {",
+							"var responseBody = pm.response.text(); // Fetch the response body as a string",
+							"    pm.expect(responseBody).to.be.a('string');",
+							"});",
+							"",
+							"pm.test(\"Response should contain expected data\", function () {",
+							"    var responseBody = pm.response.text(); // Fetch the response body as a string",
+							"    pm.expect(responseBody).to.be.eql('Unauthorized - Found Only Single JWT');",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.sendRequest({",
+							"    url: 'http://localhost:3000/login',",
+							"    method: 'POST',",
+							"    header: {",
+							"        'Content-Type': 'application/json'",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify({",
+							"            \"username\": \"admin\",",
+							"            \"password\": \"pass\"",
+							"        })",
+							"    }",
+							"}, function(err,res){",
+							"    let accessTokenHeader = res.headers.find(header => header.key === 'Set-Cookie' && header.value.includes('accessToken')).value",
+							"    pm.request.headers.add({",
+							"        key: 'Authorization',",
+							"        value: 'Bearer ' + accessTokenHeader + \", Bearer \" + \"\"",
+							"});",
+							"    ",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/",
+					"protocol": "http",
 					"host": [
 						"localhost"
 					],
@@ -55,28 +240,7 @@
 			"script": {
 				"type": "text/javascript",
 				"exec": [
-					"pm.sendRequest({",
-					"    url: 'http://localhost:3000/login',",
-					"    method: 'POST',",
-					"    header: {",
-					"        'Content-Type': 'application/json'",
-					"    },",
-					"    body: {",
-					"        mode: 'raw',",
-					"        raw: JSON.stringify({",
-					"            \"username\": \"admin\",",
-					"            \"password\": \"pass\"",
-					"        })",
-					"    }",
-					"}, function(err,res){",
-					"    let accessTokenHeader = res.headers.find(header => header.key === 'Set-Cookie' && header.value.includes('accessToken')).value",
-					"    let refreshTokenHeader = res.headers.find(header => header.key === 'Set-Cookie' && header.value.includes('refreshToken')).value",
-					"    pm.request.headers.add({",
-					"        key: 'Authorization',",
-					"        value: 'Bearer ' + accessTokenHeader + \", Bearer \" + refreshTokenHeader",
-					"});",
-					"    ",
-					"});"
+					""
 				]
 			}
 		},

@@ -5,9 +5,11 @@ const {createTokensMiddleware,storeTokenMiddleware,manipulateToken,deleteTokenMi
 tokenRouter.post('/generateTokens/:userId',
   createTokensMiddleware,
   storeTokenMiddleware, async (req, res) => {
-  return res.status(200).json({
-    message:"Token Generated Successfully",
-    tokens:res.locals.tokens})
+    const tokens = res.locals.tokens
+    res.locals.tokens = null
+    return res.status(200).json({
+      message:"Token Generated Successfully",
+      tokens:tokens})
 });
 
 tokenRouter.post("/fetchToken/:userId",createTokensMiddleware, async (req,res) => {

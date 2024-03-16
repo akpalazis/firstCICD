@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "b9e1d3aa-9daa-4612-a82f-e49d958c6c14",
+		"_postman_id": "0368cb77-2685-400c-95f5-0704622fc916",
 		"name": "Make requests with tokens",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "33463568"
@@ -82,7 +82,7 @@
 			"response": []
 		},
 		{
-			"name": "localhost:3000 - invalid refreshToken",
+			"name": "localhost:3000 - expired access invalid refreshToken",
 			"event": [
 				{
 					"listen": "test",
@@ -113,26 +113,20 @@
 					"script": {
 						"exec": [
 							"pm.sendRequest({",
-							"    url: 'http://localhost:3000/login',",
-							"    method: 'POST',",
-							"    header: {",
-							"        'Content-Type': 'application/json'",
-							"    },",
-							"    body: {",
-							"        mode: 'raw',",
-							"        raw: JSON.stringify({",
-							"            \"username\": \"admin\",",
-							"            \"password\": \"pass\"",
-							"        })",
-							"    }",
-							"}, function(err,res){",
-							"    let accessTokenHeader = res.headers.find(header => header.key === 'Set-Cookie' && header.value.includes('accessToken')).value",
-							"    pm.request.headers.add({",
-							"        key: 'Authorization',",
-							"        value: 'Bearer ' + accessTokenHeader + \", Bearer \" + \"sadasdsadsa\"",
-							"});",
-							"    ",
-							"});",
+							"        url: 'http://localhost:3001/generateExpiredAccessTokens/1',",
+							"        method: 'POST',",
+							"        header: {",
+							"            'Content-Type': 'application/json'",
+							"        }",
+							"    }, function(err,res){",
+							"        accessTokenHeader = res.json().access ",
+							"        refreshTokenHeader = res.json().refresh ",
+							"        pm.request.headers.add({",
+							"            key: 'Authorization',",
+							"            value: 'Bearer ' + accessTokenHeader + \", Bearer \" + \"adasdsad\"",
+							"        });",
+							"",
+							"    });",
 							""
 						],
 						"type": "text/javascript",
@@ -189,25 +183,198 @@
 					"script": {
 						"exec": [
 							"pm.sendRequest({",
-							"    url: 'http://localhost:3000/login',",
-							"    method: 'POST',",
-							"    header: {",
-							"        'Content-Type': 'application/json'",
+							"        url: 'http://localhost:3001/generateExpiredAccessTokens/1',",
+							"        method: 'POST',",
+							"        header: {",
+							"            'Content-Type': 'application/json'",
+							"        }",
 							"    },",
-							"    body: {",
-							"        mode: 'raw',",
-							"        raw: JSON.stringify({",
-							"            \"username\": \"admin\",",
-							"            \"password\": \"pass\"",
-							"        })",
-							"    }",
-							"}, function(err,res){",
-							"    let accessTokenHeader = res.headers.find(header => header.key === 'Set-Cookie' && header.value.includes('accessToken')).value",
+							"     function(err,res){",
+							"        let accessTokenHeader = res.json().access",
 							"    pm.request.headers.add({",
 							"        key: 'Authorization',",
 							"        value: 'Bearer ' + accessTokenHeader + \", Bearer \" + \"\"",
 							"});",
 							"    ",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3000 - expired access expired refreshtoken",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Response should be s message\", function () {",
+							"var responseBody = pm.response.text(); // Fetch the response body as a string",
+							"    pm.expect(responseBody).to.be.a('string');",
+							"});",
+							"",
+							"pm.test(\"Response should contain expected data\", function () {",
+							"    var responseBody = pm.response.text(); // Fetch the response body as a string",
+							"    pm.expect(responseBody).to.be.eql('Unauthorized - Refresh Token Expired');",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.sendRequest({",
+							"    url: 'http://localhost:3001/fetchToken/1',",
+							"    method: 'POST',",
+							"    header: {",
+							"        'Content-Type': 'application/json'",
+							"    }",
+							"}, function(err,res){",
+							"    pm.sendRequest({",
+							"        url: 'http://localhost:3001/generateExpiredAccessTokens/1',",
+							"        method: 'POST',",
+							"        header: {",
+							"            'Content-Type': 'application/json'",
+							"        }",
+							"    }, function(err,res){",
+							"        accessTokenHeader = res.json().access ",
+							"        refreshTokenHeader = res.json().refresh ",
+							"        pm.request.headers.add({",
+							"            key: 'Authorization',",
+							"            value: 'Bearer ' + accessTokenHeader + \", Bearer \" + refreshTokenHeader",
+							"        });",
+							"",
+							"    });",
+							"});",
+							"",
+							"",
+							"",
+							"",
+							"    ",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3000 - already used refresh token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Response should be s message\", function () {",
+							"var responseBody = pm.response.text(); // Fetch the response body as a string",
+							"    pm.expect(responseBody).to.be.a('string');",
+							"});",
+							"",
+							"pm.test(\"Response should contain expected data\", function () {",
+							"    var responseBody = pm.response.text(); // Fetch the response body as a string",
+							"    pm.expect(responseBody).to.be.eql('Unauthorized - Reload Token already used');",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Send the first request to fetch the access token",
+							"pm.sendRequest({",
+							"    url: 'http://localhost:3001/fetchToken/1',",
+							"    method: 'POST',",
+							"    header: {",
+							"        'Content-Type': 'application/json'",
+							"    }",
+							"}, function(err, res) {",
+							"    // Extract the access token from the response",
+							"    refreshTokenHeader = res.json().refresh;",
+							"",
+							"    // Wait for 1 second",
+							"    setTimeout(function() {",
+							"        // Send the second request to generate the expired access token after 1 second",
+							"        pm.sendRequest({",
+							"            url: 'http://localhost:3001/generateExpiredAccessTokens/1',",
+							"            method: 'POST',",
+							"            header: {",
+							"                'Content-Type': 'application/json'",
+							"            }",
+							"        }, function(err, res) {",
+							"            // Extract the access token from the response",
+							"            accessTokenHeader = res.json().access;",
+							"",
+							"            // Send the third request to generate new access and refresh tokens",
+							"            pm.sendRequest({",
+							"                url: 'http://localhost:3001/generateTokens/1',",
+							"                method: 'POST',",
+							"                header: {",
+							"                    'Content-Type': 'application/json'",
+							"                }",
+							"            }, function(err, res) {",
+							"                // Add both tokens to the request headers",
+							"                pm.request.headers.add({",
+							"                    key: 'Authorization',",
+							"                    value: 'Bearer ' + accessTokenHeader + \", Bearer \" + refreshTokenHeader",
+							"                });",
+							"            });",
+							"        });",
+							"    }, 1000); // Delay for 1 second (1000 milliseconds)",
 							"});",
 							""
 						],

@@ -7,6 +7,20 @@ function manipulateToken(req,res,next){
   next()
 }
 
+function createExpiredTokensMiddleware(req, res, next) {
+  try {
+    const userID = req.params.userId
+    let accessTime = '-1s'
+    let refreshTime = '-1s'
+    if (req.body.accessTime){accessTime=req.body.accessTime}
+    if (req.body.refreshTime){refreshTime=req.body.refreshTime}
+    res.locals.tokens = createTokensFor(userID, accessTime, refreshTime)
+    next()
+  } catch(err){
+    return res.status(400).send(err.message)
+  }
+}
+
 function createTokensMiddleware(req, res, next) {
   try {
     const userID = req.params.userId
@@ -74,11 +88,6 @@ function tokenValidationMiddleware() {
       if (!accessTokenData.isValid) {
         return res.status(400).send(`Unauthorized - JWT MALFORMED`);
       }
-      else{
-        if (!refreshTokenData.isValid) {
-          return res.status(400).send('Unauthorized - Invalid Refresh Token')
-        }
-      }
     } catch (err) {
       const errorMessage = err.message.toUpperCase()
       return res.status(400).send(`Unauthorized - ${errorMessage}`);
@@ -88,6 +97,7 @@ function tokenValidationMiddleware() {
 }
 
 module.exports = {
+  createExpiredTokensMiddleware,
   createTokensMiddleware,
   storeTokenMiddleware,
   manipulateToken,

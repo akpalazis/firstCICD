@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "0368cb77-2685-400c-95f5-0704622fc916",
+		"_postman_id": "be4adb69-4293-4ea2-906d-1dba94687061",
 		"name": "Make requests with tokens",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "33463568"
@@ -264,7 +264,12 @@
 							"        method: 'POST',",
 							"        header: {",
 							"            'Content-Type': 'application/json'",
-							"        }",
+							"        },",
+							"        body: JSON.stringify({",
+							"                accessTime: \"-1s\",",
+							"                refreshTime: \"-1s\"",
+							"                ",
+							"            })",
 							"    }, function(err,res){",
 							"        accessTokenHeader = res.json().access ",
 							"        refreshTokenHeader = res.json().refresh ",
@@ -377,6 +382,103 @@
 							"    }, 1000); // Delay for 1 second (1000 milliseconds)",
 							"});",
 							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3000 - expired access token valid refresh token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response should be s message\", function () {",
+							"var responseBody = pm.response.text(); // Fetch the response body as a string",
+							"    pm.expect(responseBody).to.be.a('string');",
+							"});",
+							"",
+							"pm.test(\"Response should contain expected data\", function () {",
+							"    var responseBody = pm.response.text(); // Fetch the response body as a string",
+							"    pm.expect(responseBody).to.be.eql('JWT token is valid');",
+							"});",
+							"",
+							"pm.test(\"Check that the tokens are changed\", function(){",
+							"    const cookies = pm.cookies.all();",
+							"    pm.expect(cookies[0].value).to.not.be.eql(pm.environment.get(\"accessPrev\"))",
+							"    pm.expect(cookies[1].value).to.not.be.eql(pm.environment.get(\"refreshPrev\"))",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Login to get the current access and refress tokens ",
+							"pm.sendRequest({",
+							"    url: 'http://localhost:3001/fetchToken/1',",
+							"    method: 'POST',",
+							"    header: {",
+							"        'Content-Type': 'application/json'",
+							"    }",
+							"}, function(err, res) {",
+							"    // Extract the access token from the response",
+							"    pm.environment.set(\"accessPrev\", res.json().access);",
+							"    pm.environment.set(\"refreshPrev\", res.json().refresh);",
+							"    pm.sendRequest({",
+							"        url: 'http://localhost:3001/generateExpiredAccessTokens/1',",
+							"        method: 'POST',",
+							"        header: {",
+							"            'Content-Type': 'application/json'",
+							"        },",
+							"        body: JSON.stringify({",
+							"                accessTime: \"-1s\",",
+							"                refreshTime: \"7d\"",
+							"                })",
+							"        }, function(err, res) {",
+							"            accessTokenHeader = res.json().access;",
+							"            refreshTokenHeader = res.json().refresh;",
+							"            pm.sendRequest({",
+							"                url: 'http://localhost:3001/generateTokens/1',",
+							"                method: 'POST',",
+							"                header: {",
+							"                    'Content-Type': 'application/json'",
+							"                }",
+							"            }, function(err, res) {",
+							"                pm.request.headers.add({",
+							"                    key: 'Authorization',",
+							"                    value: 'Bearer ' + accessTokenHeader + \", Bearer \" + refreshTokenHeader",
+							"                });",
+							"            });",
+							"        });",
+							"})"
 						],
 						"type": "text/javascript",
 						"packages": {}

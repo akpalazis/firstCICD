@@ -9,7 +9,7 @@ function manipulateToken(req,res,next){
 
 function createExpiredTokensMiddleware(req, res, next) {
   try {
-    const userID = req.params.userId
+    const {userID} = req.params
     let accessTime = '-1s'
     let refreshTime = '-1s'
     if (req.body.accessTime){accessTime=req.body.accessTime}
@@ -66,7 +66,6 @@ function tokenValidationMiddleware() {
       const refreshToken = stripToken(refreshTokenCookie)
       const accessTokenData = isTokenValid(accessToken, AUTH_SECRET_KEY)
       const refreshTokenData = isTokenValid(refreshToken, REFRESH_SECRET_KEY)
-
       if ((!accessToken) || (!refreshToken)) {
         return res.status(400).send(`Unauthorized - Found Only Single JWT`);
       }

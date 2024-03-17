@@ -3,6 +3,7 @@ pipeline {
   environment {
         AUTH_SECRET_KEY = credentials('access-token')
         REFRESH_SECRET_KEY = credentials('refresh-token')
+        SERVER_SECRET_KEY = credentials('server-token')
         DB_URL = credentials('db-url')
         PATH = "$PATH:/usr/local/bin/"
     }

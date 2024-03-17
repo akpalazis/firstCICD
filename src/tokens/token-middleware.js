@@ -67,8 +67,7 @@ function deleteTokenMiddleware(req,res,next){
 
 }
 
-function tokenValidationMiddleware() {
-  return async function(req, res, next){
+async function tokenValidationMiddleware(req,res,next) {
     const tokens = req.headers.authorization;
     try {
       const [accessTokenCookie, refreshTokenCookie] = tokens.split(',');
@@ -87,9 +86,6 @@ function tokenValidationMiddleware() {
           return res.status(400).send('Unauthorized - Invalid Refresh Token')
         }
         if (await checkTokenSingleUse(refreshTokenData)) {
-          req.params.userId = refreshTokenData.decodedToken.userId
-          createTokensMiddleware(req,res,next)
-          await storeTokenMiddleware(req,res,next)
           return next()
         }
         return res.status(400).send('Unauthorized - Reload Token already used')
@@ -102,7 +98,6 @@ function tokenValidationMiddleware() {
       return res.status(400).send(`Unauthorized - ${errorMessage}`);
     }
     return next()
-  };
 }
 
 module.exports = {

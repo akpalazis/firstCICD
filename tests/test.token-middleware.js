@@ -52,7 +52,7 @@ describe('Test tokenValidationMiddleware', () => {
       }
     }
     const next = sinon.spy()
-    await tokenValidationMiddleware()(req, {}, next)
+    await tokenValidationMiddleware(req, {}, next)
     expect(next.calledOnce).toBeTruthy()
   })
   it('Test expired AccessToken valid RefreshToken single used: Expected next call', async () => {
@@ -71,13 +71,8 @@ describe('Test tokenValidationMiddleware', () => {
       locals: {tokens:undefined},
     };
     const next = sinon.spy()
-    await tokenValidationMiddleware()(req, res, next)
-    expect(next.calledThrice).toBeTruthy()
-    const newTokens = await tokenDatabase.fetchRefreshToken(1)
-    expect(tokens.refresh===newTokens.token).toBeFalsy()
-    const oldTokenData = jwt.decode(tokens.refresh,REFRESH_SECRET_KEY)
-    const newTokenData = jwt.decode(newTokens.token,REFRESH_SECRET_KEY)
-    expect(newTokenData.exp).toBeGreaterThan(oldTokenData.exp)
+    await tokenValidationMiddleware(req, res, next)
+    expect(next.calledOnce).toBeTruthy()
   })
   it('Test expired AccessToken valid RefreshToken already used: Expected status 400', async () => {
     const tokens = createTokensFor(1, '-1m', '7d')
@@ -99,7 +94,7 @@ describe('Test tokenValidationMiddleware', () => {
       },
     };
     const next = sinon.spy()
-    await tokenValidationMiddleware()(req, res, next)
+    await tokenValidationMiddleware(req, res, next)
     expect(next.calledOnce).toBeFalsy()
 
   })
@@ -122,7 +117,7 @@ describe('Test tokenValidationMiddleware', () => {
       },
     };
     const next = sinon.spy()
-    await tokenValidationMiddleware()(req, res, next)
+    await tokenValidationMiddleware(req, res, next)
     expect(next.calledOnce).toBeFalsy()
   })
   it('Test expired AccessToken expired RefreshToken: Expected status 400', async () => {
@@ -143,7 +138,7 @@ describe('Test tokenValidationMiddleware', () => {
       },
     };
     const next = sinon.spy()
-    await tokenValidationMiddleware()(req, res, next)
+    await tokenValidationMiddleware(req, res, next)
     expect(next.calledOnce).toBeFalsy()
   })
   it('Test invalid AccessToken: Expected status 400', async () => {
@@ -164,7 +159,7 @@ describe('Test tokenValidationMiddleware', () => {
       },
     };
     const next = sinon.spy()
-    await tokenValidationMiddleware()(req, res, next)
+    await tokenValidationMiddleware(req, res, next)
     expect(next.calledOnce).toBeFalsy()
   })
 })

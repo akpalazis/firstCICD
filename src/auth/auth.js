@@ -13,10 +13,10 @@ const {
   fetchTokenMiddleware,
   storeTokens} = require('./auth-middleware')
 
-// TODO: then test the end points - integration test
 authRouter.get('/',
   allowLoginUsersMiddleware(true),
   validateTokenMiddleware,
+  //TODO: save the newly received tokens
   async (req,res)=>{
     return res.status(200).send("JWT token is valid");
   }

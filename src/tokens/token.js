@@ -22,6 +22,9 @@ tokenRouter.post('/generateTokens/:userId',
 
 
 tokenRouter.post('/generateExpiredAccessTokens/:userID',
+  //check the role based on authToken
+  //tokenValidationMiddleware(),
+  //checkRole
   createExpiredTokensMiddleware,
   async (req, res) => {
     return res.status(200).send(res.locals.tokens)
@@ -36,7 +39,9 @@ tokenRouter.delete('/delete_token/:userId',
 
 tokenRouter.post('/validate-token/',
   validateServerTokenMiddleware,
-  tokenValidationMiddleware(),
+  tokenValidationMiddleware,
+  createTokensMiddleware,
+  storeTokenMiddleware,
   async (req,res) => {
     return res.status(200).send("Token is Valid")
   })

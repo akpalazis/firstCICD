@@ -95,6 +95,7 @@ async function validateTokenMiddleware(req,res,next){
       }})
     .then((response) => {
       if ((response.status === 200) && (response.data === "Token is Valid")){
+        // TODO: return the tokens to the next so i can save them
         return next()
       }
     })

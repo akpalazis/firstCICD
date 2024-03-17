@@ -2,10 +2,6 @@ const {createTokensFor,stripToken,isTokenValid,checkTokenSingleUse} = require(".
 const {tokenDatabase} = require("./token-db-tools")
 const {AUTH_SECRET_KEY,REFRESH_SECRET_KEY} = require("../constants")
 
-function manipulateToken(req,res,next){
-  res.locals.tokens = req.body
-  next()
-}
 
 function createExpiredTokensMiddleware(req, res, next) {
   try {
@@ -99,7 +95,6 @@ module.exports = {
   createExpiredTokensMiddleware,
   createTokensMiddleware,
   storeTokenMiddleware,
-  manipulateToken,
   deleteTokenMiddleware,
   tokenValidationMiddleware
 }

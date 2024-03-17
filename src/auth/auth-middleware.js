@@ -86,10 +86,12 @@ function deleteUserMiddleware(req, res, next) {
 }
 
 async function validateTokenMiddleware(req,res,next){
+  const serverToken = jwt.sign({serverId:"auth-login"}, SERVER_SECRET_KEY, { expiresIn: "10s" });
   return await axios.post('http://token:3000/validate-token',null,
     {
       headers:{
-        Authorization:req.headers.authorization
+        Authorization:req.headers.authorization,
+        serverToken:serverToken
       }})
     .then((response) => {
       if ((response.status === 200) && (response.data === "Token is Valid")){
@@ -107,7 +109,7 @@ async function fetchTokenMiddleware(req,res,next){
   return await axios.post(`http://token:3000/generateTokens/${userId}`,null,
     {
       headers:{
-        Authorization: serverToken
+        serverToken:serverToken
       }
     })
     .then(response => {

@@ -33,8 +33,8 @@ function createTokensMiddleware(req, res, next) {
 }
 
 function validateServerTokenMiddleware(req,res,next){
-  const {authorization} = req.headers;
-  jwt.verify(authorization,SERVER_SECRET_KEY,(err,decoded)=> {
+  const serverToken = req.headers.servertoken;
+  jwt.verify(serverToken,SERVER_SECRET_KEY,(err,decoded)=> {
   if (err) {
     console.log(err)
     return res.status(400).send("Unauthorized Access")

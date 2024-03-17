@@ -35,6 +35,7 @@ tokenRouter.delete('/delete_token/:userId',
 });
 
 tokenRouter.post('/validate-token/',
+  validateServerTokenMiddleware,
   tokenValidationMiddleware(),
   async (req,res) => {
     return res.status(200).send("Token is Valid")

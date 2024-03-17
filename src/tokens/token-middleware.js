@@ -1,6 +1,7 @@
 const {createTokensFor,stripToken,isTokenValid,checkTokenSingleUse} = require("./token-tools")
 const {tokenDatabase} = require("./token-db-tools")
-const {AUTH_SECRET_KEY,REFRESH_SECRET_KEY} = require("../constants")
+const {AUTH_SECRET_KEY,REFRESH_SECRET_KEY,SERVER_SECRET_KEY} = require("../constants")
+const jwt = require('jsonwebtoken');
 
 
 function createExpiredTokensMiddleware(req, res, next) {
@@ -29,6 +30,19 @@ function createTokensMiddleware(req, res, next) {
   } catch(err){
     return res.status(400).send(err.message)
   }
+}
+
+function validateServerTokenMiddleware(req,res,next){
+  const {authorization} = req.headers;
+  jwt.verify(authorization,SERVER_SECRET_KEY,(err,decoded)=> {
+  if (err) {
+    console.log(err)
+    return res.status(400).send("Unauthorized Access")
+  }
+  else{
+    next()
+  }
+})
 }
 
 function storeTokenMiddleware(req,res,next){
@@ -92,6 +106,7 @@ function tokenValidationMiddleware() {
 }
 
 module.exports = {
+  validateServerTokenMiddleware,
   createExpiredTokensMiddleware,
   createTokensMiddleware,
   storeTokenMiddleware,

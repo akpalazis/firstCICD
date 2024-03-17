@@ -1,6 +1,7 @@
 const express = require('express');
 const tokenRouter = express.Router();
 const {
+  validateServerTokenMiddleware,
   createExpiredTokensMiddleware,
   createTokensMiddleware,
   storeTokenMiddleware,
@@ -8,8 +9,10 @@ const {
   tokenValidationMiddleware} = require("./token-middleware")
 
 tokenRouter.post('/generateTokens/:userId',
+  validateServerTokenMiddleware,
   createTokensMiddleware,
-  storeTokenMiddleware, async (req, res) => {
+  storeTokenMiddleware,
+  async (req, res) => {
     const tokens = res.locals.tokens
     res.locals.tokens = null
     return res.status(200).json({

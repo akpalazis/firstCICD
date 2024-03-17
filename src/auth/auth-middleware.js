@@ -1,6 +1,8 @@
 const axios = require('axios');
+const jwt = require('jsonwebtoken');
 const {validateData,generateHashCredentials} = require("./auth-tools")
 const {userDatabaseTools} = require("./auth-db-tools")
+const {SERVER_SECRET_KEY} = require("../constants")
 
 function allowLoginUsersMiddleware(registerer){
   return function (req,res,next) {
@@ -101,10 +103,11 @@ async function validateTokenMiddleware(req,res,next){
 
 async function fetchTokenMiddleware(req,res,next){
   const userId = res.locals.userId
+  const serverToken = jwt.sign({serverId:"auth-login"}, SERVER_SECRET_KEY, { expiresIn: "10s" });
   return await axios.post(`http://token:3000/generateTokens/${userId}`,null,
     {
       headers:{
-        Authorization:req.headers.authorization
+        Authorization: serverToken
       }
     })
     .then(response => {

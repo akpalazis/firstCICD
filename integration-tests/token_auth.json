@@ -428,7 +428,6 @@
 							"});",
 							"",
 							"pm.test(\"Check that the tokens are changed\", function(){",
-							"    console.log(pm.cookies)",
 							"    const cookies = pm.cookies.all();",
 							"    pm.expect(cookies[0].value).to.not.be.eql(pm.environment.get(\"accessPrev\"))",
 							"    pm.expect(cookies[1].value).to.not.be.eql(pm.environment.get(\"refreshPrev\"))",

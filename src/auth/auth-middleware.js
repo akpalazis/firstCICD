@@ -53,9 +53,10 @@ function createUserMiddleware(req, res, next) {
     });
 }
 
-function isUserValidMiddleware(req, res, next) {
+async function isUserValidMiddleware(req, res, next) {
   userDatabaseTools.isValidUser(req.body)
-    .then(() => {
+    .then((response) => {
+      res.locals.userId = response
       return next();
     })
     .catch(err => {
@@ -83,11 +84,10 @@ function deleteUserMiddleware(req, res, next) {
 }
 
 async function validateTokenMiddleware(req,res,next){
-  const tokens = req.headers.authorization
   return await axios.post('http://token:3000/validate-token',null,
     {
       headers:{
-        Authorization:tokens
+        Authorization:req.headers.authorization
       }})
     .then((response) => {
       if ((response.status === 200) && (response.data === "Token is Valid")){
@@ -100,7 +100,13 @@ async function validateTokenMiddleware(req,res,next){
 }
 
 async function fetchTokenMiddleware(req,res,next){
-  return await axios.post('http://token:3000/generateTokens/1')
+  const userId = res.locals.userId
+  return await axios.post(`http://token:3000/generateTokens/${userId}`,null,
+    {
+      headers:{
+        Authorization:req.headers.authorization
+      }
+    })
     .then(response => {
       if ((response.status === 200) && (response.data.message === "Token Generated Successfully")){
         res.locals.tokens = response.data.tokens

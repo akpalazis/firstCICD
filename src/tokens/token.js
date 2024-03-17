@@ -25,7 +25,6 @@ tokenRouter.post('/generateExpiredAccessTokens/:userID',
 });
 
 
-
 tokenRouter.delete('/delete_token/:userId',
   deleteTokenMiddleware,
   async (req, res) => {

@@ -58,6 +58,7 @@ class UserDatabase {
     if ((user.username !== username) || (!await this.validateUser(password,user.password_hash))){
       throw new Error("Username does not match with password")
     }
+    return user.user_id
   }
   async validateUser(password,hash){
     try{

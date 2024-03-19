@@ -94,10 +94,14 @@ async function validateTokenMiddleware(req,res,next){
         serverToken:serverToken
       }})
     .then((response) => {
-      if ((response.status === 200) && (response.data === "Token is Valid")){
-        // TODO: return the tokens to the next so i can save them
-        return next()
+      res.locals.newTokens = false
+      if ((response.status === 200) && (response.data.message === "Token is Valid")){
+        if (response.data.tokens){
+          res.locals.tokens = response.data.tokens
+          res.locals.newTokens = true
+        }
       }
+      return next()
     })
     .catch(error => {
       return res.status(400).send(error.response.data);
@@ -114,24 +118,29 @@ async function fetchTokenMiddleware(req,res,next){
       }
     })
     .then(response => {
+      res.locals.newTokens = false
       if ((response.status === 200) && (response.data.message === "Token Generated Successfully")){
-        res.locals.tokens = response.data.tokens
-        response.data.tokens = null
-        return next()
+        if (response.data.tokens){
+          res.locals.tokens = response.data.tokens
+          res.locals.newTokens = true
+        }
       }
+      return next()
     })
     .catch((error) => {
       return res.status(500).send(error.message);
     });
 }
 function storeTokens(req,res,next){
-  try {
-    res.cookie('accessToken', res.locals.tokens.access, {httpOnly: true, secure: false, sameSite: 'strict'});
-    res.cookie('refreshToken', res.locals.tokens.refresh, {httpOnly: true, secure: false, sameSite: 'strict'});
-    res.locals.tokens = null
-  } catch (e){
-    console.log(e)
-    return res.status(500).send("Internal server error")
+  if (res.locals.newTokens){
+    try {
+      res.cookie('accessToken', res.locals.tokens.access, {httpOnly: true, secure: false, sameSite: 'strict'});
+      res.cookie('refreshToken', res.locals.tokens.refresh, {httpOnly: true, secure: false, sameSite: 'strict'});
+      res.locals.tokens = null
+    } catch (e){
+      console.log(e)
+      return res.status(500).send("Internal server error")
+    }
   }
   next()
 }

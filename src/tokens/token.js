@@ -6,10 +6,12 @@ const {
   createTokensMiddleware,
   storeTokenMiddleware,
   deleteTokenMiddleware,
-  tokenValidationMiddleware} = require("./token-middleware")
+  tokenValidationMiddleware,
+  tokenCondition} = require("./token-middleware")
 
 tokenRouter.post('/generateTokens/:userId',
   validateServerTokenMiddleware,
+  tokenCondition,
   createTokensMiddleware,
   storeTokenMiddleware,
   async (req, res) => {
@@ -43,7 +45,11 @@ tokenRouter.post('/validate-token/',
   createTokensMiddleware,
   storeTokenMiddleware,
   async (req,res) => {
-    return res.status(200).send("Token is Valid")
+    const tokens = res.locals.tokens
+    res.locals.tokens = null
+    return res.status(200).json({
+      message:"Token is Valid",
+      tokens:tokens})
   })
 
 module.exports = {tokenRouter}

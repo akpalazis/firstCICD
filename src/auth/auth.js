@@ -16,7 +16,7 @@ const {
 authRouter.get('/',
   allowLoginUsersMiddleware(true),
   validateTokenMiddleware,
-  //TODO: save the newly received tokens
+  storeTokens,
   async (req,res)=>{
     return res.status(200).send("JWT token is valid");
   }

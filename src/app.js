@@ -5,9 +5,6 @@ const {connectDB} = require('./db');
 const bodyParser = require('body-parser');
 
 
-//TODO: The validate-token is not working as expected
-//TODO: Make the middleware that will check the tokens
-
 connectDB()
 
 const app = express();

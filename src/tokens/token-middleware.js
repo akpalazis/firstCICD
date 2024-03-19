@@ -19,24 +19,30 @@ function createExpiredTokensMiddleware(req, res, next) {
 }
 
 function createTokensMiddleware(req, res, next) {
-  try {
-    const userID = req.params.userId
-    let accessTime = '15m'
-    let refreshTime = '7d'
-    if (req.body.accessTime){accessTime=req.body.accessTime}
-    if (req.body.refreshTime){refreshTime=req.body.refreshTime}
-    res.locals.tokens = createTokensFor(userID, accessTime, refreshTime)
-    next()
-  } catch(err){
-    return res.status(400).send(err.message)
+  if(res.locals.newTokens){
+    try {
+      const userID = req.params.userId
+      let accessTime = '15m'
+      let refreshTime = '7d'
+      if (req.body.accessTime){accessTime=req.body.accessTime}
+      if (req.body.refreshTime){refreshTime=req.body.refreshTime}
+      res.locals.tokens = createTokensFor(userID, accessTime, refreshTime)
+    } catch(err){
+      return res.status(400).send(err.message)
+    }
   }
+  return next()
+}
+
+function tokenCondition(req,res,next) {
+  res.locals.newTokens = true
+  return next()
 }
 
 function validateServerTokenMiddleware(req,res,next){
   const serverToken = req.headers.servertoken;
   jwt.verify(serverToken,SERVER_SECRET_KEY,(err,decoded)=> {
   if (err) {
-    console.log(err)
     return res.status(400).send("Unauthorized Access")
   }
   else{
@@ -45,16 +51,17 @@ function validateServerTokenMiddleware(req,res,next){
 })
 }
 
-function storeTokenMiddleware(req,res,next){
-  const tokens = res.locals.tokens
-  const refreshToken = tokens.refresh
-  return tokenDatabase.storeToken(refreshToken)
-    .then(()=> {
-      next()
-    })
-    .catch(err=>{
-    return res.status(400).send(err.message)
-  })
+async function storeTokenMiddleware(req,res,next){
+  if (res.locals.newTokens){
+    const tokens = res.locals.tokens
+    const refreshToken = tokens.refresh
+    try {
+      await tokenDatabase.storeToken(refreshToken)
+    }catch (err) {
+      return res.status(400).send(err.message)
+    }
+  }
+  return next()
 }
 
 function deleteTokenMiddleware(req,res,next){
@@ -86,6 +93,8 @@ async function tokenValidationMiddleware(req,res,next) {
           return res.status(400).send('Unauthorized - Invalid Refresh Token')
         }
         if (await checkTokenSingleUse(refreshTokenData)) {
+          req.params.userId = refreshTokenData.decodedToken.userId
+          res.locals.newTokens = true
           return next()
         }
         return res.status(400).send('Unauthorized - Reload Token already used')
@@ -97,6 +106,7 @@ async function tokenValidationMiddleware(req,res,next) {
       const errorMessage = err.message.toUpperCase()
       return res.status(400).send(`Unauthorized - ${errorMessage}`);
     }
+    res.locals.newTokens = false
     return next()
 }
 
@@ -106,7 +116,8 @@ module.exports = {
   createTokensMiddleware,
   storeTokenMiddleware,
   deleteTokenMiddleware,
-  tokenValidationMiddleware
+  tokenValidationMiddleware,
+  tokenCondition
 }
 
 

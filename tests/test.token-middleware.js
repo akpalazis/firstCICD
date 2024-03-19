@@ -14,7 +14,9 @@ describe('Test createTokensMiddleware', () => {
   it('Generate Valid Token', async () => {
     const req = {params:{userId:1},body:{}}
     const res = {
-      locals:{}
+      locals:{
+        newTokens:true
+      },
     };
     const next = sinon.spy()
     await createTokensMiddleware(req,res,next)
@@ -28,7 +30,9 @@ describe('Test createTokensMiddleware', () => {
   it('Generate Expired Token',async () => {
     const req = {params:{userId:1},body:{accessTime:'-1s'}}
     const res = {
-      locals:{}
+      locals:{
+        newTokens:true
+      }
     };
     const next = sinon.spy()
     await createTokensMiddleware(req,res,next)
@@ -52,7 +56,12 @@ describe('Test tokenValidationMiddleware', () => {
       }
     }
     const next = sinon.spy()
-    await tokenValidationMiddleware(req, {}, next)
+    const res = {
+      locals:{
+        newTokens:true
+      }
+    };
+    await tokenValidationMiddleware(req, res, next)
     expect(next.calledOnce).toBeTruthy()
   })
   it('Test expired AccessToken valid RefreshToken single used: Expected next call', async () => {

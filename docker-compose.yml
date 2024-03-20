@@ -33,6 +33,19 @@ services:
     ports:
     - "3001:3000"
 
+  admin:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - TARGET=admin
+    environment:
+      - TARGET=admin
+    networks:
+      - my-network
+    ports:
+      - "3002:3000"
+
 networks:
   my-network:
     driver: bridge

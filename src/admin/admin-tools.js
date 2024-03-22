@@ -60,7 +60,7 @@ async function updateUserRole(username, id, role) {
     } else {
       db.query(sqlQuery, params, (err, results) => {
         if (err) {
-          reject(err);
+          reject(new Error('QB error'));
         } else {
           if (results.rowCount > 0) {
             resolve(true); // Send the number of rows affected

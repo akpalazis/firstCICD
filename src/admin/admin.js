@@ -13,7 +13,7 @@ adminRouter.get('/admin/users',
 adminRouter.get('/admin/alter_role',
   updateRoleQueryMiddleware,
   async (req,res)=> {
-    res.status(200).json("Role updated successfully")
+    res.status(200).json("Role updated successfully.")
   }
 )
 

@@ -1,4 +1,4 @@
-const {fetchQuery} = require("./admin-tools")
+const {fetchQuery,updateUserRole} = require("./admin-tools")
 
 async function userQueryMiddleware(req, res, next) {
   const username = req.query.username
@@ -11,4 +11,18 @@ async function userQueryMiddleware(req, res, next) {
   return next()
 }
 
-module.exports = {userQueryMiddleware}
+async function updateRoleQueryMiddleware(req, res, next) {
+  const username = req.query.username
+  const id = req.query.id
+  const role = req.query.role
+
+  try {
+    await updateUserRole(username, id, role)
+    next()
+  } catch(error){
+          return res.status(400).send('Query not Valid')
+  }
+}
+
+
+module.exports = {userQueryMiddleware,updateRoleQueryMiddleware}

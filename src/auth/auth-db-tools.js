@@ -3,15 +3,16 @@ const bcrypt = require("bcryptjs")
 
 class UserDatabase {
   constructor() {
-    this.createQuery = 'INSERT INTO users(username, password_hash) VALUES($1, $2)';
+    this.createQuery = 'INSERT INTO users(username, password_hash,role) VALUES($1, $2, $3)';
     this.deleteQuery = 'DELETE FROM users WHERE username = $1';
     this.fetchQuery =  'SELECT * FROM users WHERE username = $1';
   }
   async createUser(credentials) {
     const username = credentials.username
     const password = credentials.password
+    const role = "user"
     try {
-      await db.query(this.createQuery,[username,password])
+      await db.query(this.createQuery,[username,password,role])
     } catch (err) {
       throw new Error(err);
     }

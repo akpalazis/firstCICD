@@ -41,6 +41,7 @@ services:
         - TARGET=admin
     environment:
       - TARGET=admin
+      - DB_URL=postgres://postgres:pass@192.168.1.182:5433/postgres
     networks:
       - my-network
     ports:

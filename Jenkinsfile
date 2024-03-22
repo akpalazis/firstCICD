@@ -38,19 +38,29 @@ pipeline {
       }
     }
     // Stage for test on the developer branch
-    stage('Developer Test v1') {
+    stage('Developer Test') {
       when {
         expression { env.BRANCH_NAME == 'developer' } // Only run this stage for the developer branch
       }
       steps {
         script {
           sh 'npm run test'
+        }
+      }
+    }
+    stage('Developer Integration Test') {
+      when {
+        expression { env.BRANCH_NAME == 'developer' } // Only run this stage for the developer branch
+      }
+      steps {
+        script {
           sh 'newman run ./integration-tests/no-token_auth.json'
           sh 'newman run ./integration-tests/valid_auth.json'
           sh 'newman run ./integration-tests/token_auth.json'
         }
       }
     }
+
   }
     post {
         always {

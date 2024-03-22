@@ -31,13 +31,30 @@ async function fetchQuery(username,id) {
   })
 }
 
+async function isRoleValid(role){
+  if(role==="NO"){
+    return false
+  }
+  return true
+}
+
 async function updateUserRole(username, id, role) {
   let sqlQuery = `UPDATE users SET role = $1 WHERE`;
   const params = [];
 
   // Add conditions to the SQL query for each provided parameter
   if (role) {
-    params.push(role);
+    await isRoleValid(role)
+      .then((result) => {
+        if (result) {
+          params.push(role);
+        }else{
+          throw new Error("Role is not valid.")
+        }
+      })
+      .catch((err)=>{
+        return Promise.reject(err)
+      })
   } else {
     return Promise.reject(new Error('No role provided.'));
   }
@@ -73,4 +90,4 @@ async function updateUserRole(username, id, role) {
 }
 
 
-module.exports={fetchQuery,updateUserRole}
+module.exports={fetchQuery,updateUserRole,isRoleValid}

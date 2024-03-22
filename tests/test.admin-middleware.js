@@ -270,6 +270,28 @@ describe('updateRoleQueryMiddleware tests', () => {
       await validParamsProvided(...elements)
     }
   })
+
+  it("invalid role", async ()=> {
+    const req = {
+      query: {
+        username: "admin",
+        id:1,
+        role:"NO"
+      }
+    }
+    const next = sinon.spy()
+    const res = {
+      status: (statusCode) => {
+        expect(statusCode).toBe(400)
+        return res;
+      },
+      send: (data) => {
+        expect(data).toBe('Role is not valid.')
+      }
+    };
+    await updateRoleQueryMiddleware(req, res, next)
+    expect(next.notCalled).toBeTruthy()
+  })
 });
 
 

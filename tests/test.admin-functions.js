@@ -1,5 +1,5 @@
 const { expect } = require('expect');
-const {fetchQuery,updateUserRole} = require('../src/admin/admin-tools')
+const {fetchQuery,updateUserRole,isRoleValid} = require('../src/admin/admin-tools')
 
 describe('fetchQuery tests', () => {
   it("Valid Username only", async ()=> {
@@ -116,3 +116,19 @@ describe('updateUserRole tests', () => {
   })
 });
 
+describe("Check role", () =>{
+  it("Valid role", async ()=> {
+    await isRoleValid("user")
+      .then((response)=>{
+        expect(response).toBeTruthy()
+        }
+      )
+  })
+  it("Invalid role", async () => {
+    await isRoleValid("NO")
+      .then((response)=>{
+        expect(response).toBeFalsy()
+        }
+      )
+  })
+})

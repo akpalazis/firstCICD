@@ -12,7 +12,8 @@ const {delay} = require("./test-tools")
 
 describe('Test createTokensMiddleware', () => {
   it('Generate Valid Token', async () => {
-    const req = {params:{userId:1},body:{}}
+    const req = {body:{userId:1,role:"admin"}
+    }
     const res = {
       locals:{
         newTokens:true
@@ -48,7 +49,8 @@ describe('Test createTokensMiddleware', () => {
 
 describe('Test tokenValidationMiddleware', () => {
   it('Test valid AccessToken valid RefreshToken: Expected next call and new tokens', async () => {
-    const tokens = createTokensFor(1, '15m', '7d')
+    const userData = {userId:1,role:"admin"}
+    const tokens = createTokensFor(userData, '15m', '7d')
     await tokenDatabase.storeToken(tokens.refresh)
     const req = {
       headers: {
@@ -65,7 +67,8 @@ describe('Test tokenValidationMiddleware', () => {
     expect(next.calledOnce).toBeTruthy()
   })
   it('Test expired AccessToken valid RefreshToken single used: Expected next call', async () => {
-    const tokens = createTokensFor(1, '-1m', '7d')
+    const userData = {userId:1,role:"admin"}
+    const tokens = createTokensFor(userData, '-1m', '7d')
     await tokenDatabase.storeToken(tokens.refresh)
     await delay(1000)
     const req = {
@@ -84,10 +87,11 @@ describe('Test tokenValidationMiddleware', () => {
     expect(next.calledOnce).toBeTruthy()
   })
   it('Test expired AccessToken valid RefreshToken already used: Expected status 400', async () => {
-    const tokens = createTokensFor(1, '-1m', '7d')
+    const userData = {userId:1,role:"admin"}
+    const tokens = createTokensFor(userData, '-1m', '7d')
     await tokenDatabase.storeToken(tokens.refresh)
     await delay(1001)
-    const new_tokens = createTokensFor(1, '-1m', '7d')
+    const new_tokens = createTokensFor(userData, '-1m', '7d')
     const req = {
       headers: {
         authorization: `Bearer accessToken=${new_tokens.access};, Bearer refreshToken=${new_tokens.refresh};`
@@ -108,7 +112,8 @@ describe('Test tokenValidationMiddleware', () => {
 
   })
   it('Test expired AccessToken expired RefreshToken: Expected status 400', async () => {
-    const tokens = createTokensFor(1, '-1m', '1s') // cannot save expired tokens
+    const userData = {userId:1,role:"admin"}
+    const tokens = createTokensFor(userData, '-1m', '1s') // cannot save expired tokens
     await tokenDatabase.storeToken(tokens.refresh)
     await delay(1001) // wait for the refresh token to expire
     const req = {
@@ -130,7 +135,8 @@ describe('Test tokenValidationMiddleware', () => {
     expect(next.calledOnce).toBeFalsy()
   })
   it('Test expired AccessToken expired RefreshToken: Expected status 400', async () => {
-    const tokens = createTokensFor(1, '-1m', '7d')
+    const userData = {userId:1,role:"admin"}
+    const tokens = createTokensFor(userData, '-1m', '7d')
     await tokenDatabase.storeToken(tokens.refresh)
     const req = {
       headers: {
@@ -151,7 +157,8 @@ describe('Test tokenValidationMiddleware', () => {
     expect(next.calledOnce).toBeFalsy()
   })
   it('Test invalid AccessToken: Expected status 400', async () => {
-    const tokens = createTokensFor(1, '15m', '7d')
+    const userData = {userId:1,role:"admin"}
+    const tokens = createTokensFor(userData, '15m', '7d')
     await tokenDatabase.storeToken(tokens.refresh)
     const req = {
       headers: {

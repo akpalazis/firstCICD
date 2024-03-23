@@ -58,7 +58,8 @@ function createUserMiddleware(req, res, next) {
 async function isUserValidMiddleware(req, res, next) {
   userDatabaseTools.isValidUser(req.body)
     .then((response) => {
-      res.locals.userId = response
+      res.locals.userId = response.id
+      res.locals.role = response.role
       return next();
     })
     .catch(err => {
@@ -111,7 +112,8 @@ async function validateTokenMiddleware(req,res,next){
 async function fetchTokenMiddleware(req,res,next){
   const userId = res.locals.userId
   const serverToken = jwt.sign({serverId:"auth-login"}, SERVER_SECRET_KEY, { expiresIn: "10s" });
-  return await axios.post(`http://token:3000/generateTokens/${userId}`,null,
+  //TODO: pass as dictionary not as params
+  return await axios.post(`http://token:3000/generateTokens/`,res.locals,
     {
       headers:{
         serverToken:serverToken

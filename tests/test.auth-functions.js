@@ -60,10 +60,11 @@ describe('Test validateData', () => {
 });
 
 describe('Testing userDatabaseTools.isValidUser', () => {
-  it('Login Successful: responds with number', async () => {
+  it('Login Successful: responds with json', async () => {
     const credentials = { username: "admin",password:"pass"}
     const validUser = await userDatabaseTools.isValidUser(credentials)
-    expect(validUser).toBeGreaterThan(0)
+    expect(validUser.id).toBeGreaterThan(0)
+    expect(typeof validUser.role==='string').toBeTruthy()
   });
   it('Incorrect Password: responds with error message', async () => {
     try {

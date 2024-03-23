@@ -7,20 +7,20 @@ const {delay} = require("./test-tools")
 
 describe('Test createTokensFor', () => {
   it('Generate Valid Token',() => {
-    const userId = 1
+    const userData = {userId:1,role:"admin"}
     const accessTokenTime = '15m'
     const refreshTokenTime = '7d'
-    const tokens = createTokensFor(userId,accessTokenTime,refreshTokenTime)
+    const tokens = createTokensFor(userData,accessTokenTime,refreshTokenTime)
     expect(tokens).toBeInstanceOf(Object)
     expect(jwt.verify(tokens.access,AUTH_SECRET_KEY)).toBeInstanceOf(Object)
     expect(jwt.verify(tokens.refresh,REFRESH_SECRET_KEY)).toBeInstanceOf(Object)
   })
   it('Generate Expired Token',() => {
-    const userId = 1
+    const userData = {userId:1,role:"admin"}
     const accessTokenTime = '-15m'
     const refreshTokenTime = '7d'
 
-    const tokens = createTokensFor(userId,accessTokenTime,refreshTokenTime)
+    const tokens = createTokensFor(userData,accessTokenTime,refreshTokenTime)
     expect(tokens).toBeInstanceOf(Object)
     const verifyFunction = () => {
         jwt.verify(tokens.access, AUTH_SECRET_KEY);
@@ -32,12 +32,14 @@ describe('Test createTokensFor', () => {
 
 describe('Test tokenDatabase.storeToken', () => {
   it('Store valid token: expect true',async () => {
-    const tokens = createTokensFor(1,'15m','7d')
+    const userData = {userId:1,role:"admin"}
+    const tokens = createTokensFor(userData,'15m','7d')
     const stored = await tokenDatabase.storeToken(tokens.refresh)
     expect(stored).toBeTruthy()
   })
   it('Store invalid token: expect error',async () => {
-    const tokens = createTokensFor(1,'15m','-1s')
+    const userData = {userId:1,role:"admin"}
+    const tokens = createTokensFor(userData,'15m','-1s')
     const verifyFunction = async () => {
         await tokenDatabase.storeToken(tokens.refresh)
     };
@@ -47,7 +49,8 @@ describe('Test tokenDatabase.storeToken', () => {
   it('Replace token: expect true',async () => {
     await delay(1001)
     const oldToken = await tokenDatabase.fetchRefreshToken(1)
-    const tokens = createTokensFor(1,'15m','7d')
+    const userData = {userId:1,role:"admin"}
+    const tokens = createTokensFor(userData,'15m','7d')
     await tokenDatabase.storeToken(tokens.refresh)
     const newToken = await tokenDatabase.fetchRefreshToken(1)
     expect((oldToken.token===newToken.token)).toBeFalsy()
@@ -58,7 +61,8 @@ describe('Test tokenDatabase.storeToken', () => {
 describe('Test strip token',()=>{
   let tokens
   before(()=>{
-    tokens = createTokensFor(1,"1m","7d")
+    const userData = {userId:1,role:"admin"}
+    tokens = createTokensFor(userData,"1m","7d")
   })
   it("check with name token",() =>{
     const stringToStrip = `Bearer ${tokens.access}, Bearer ${tokens.refresh}`
@@ -83,7 +87,8 @@ describe('Test strip token',()=>{
 
 describe("Test isTokenValid", ()=>{
   it('Test valid token: expect is valid true is expired false and token info', () =>{
-    const tokens = createTokensFor(1,"1m","7d")
+    const userData = {userId:1,role:"admin"}
+    const tokens = createTokensFor(userData,"1m","7d")
     const authTokenData = isTokenValid(tokens.access,AUTH_SECRET_KEY)
     expect(authTokenData.isValid).toBeTruthy()
     expect(authTokenData.isExpired).toBeFalsy()
@@ -97,7 +102,8 @@ describe("Test isTokenValid", ()=>{
   })
 
   it('Test valid token but expired: expect is valid true is expired true', () =>{
-    const tokens = createTokensFor(1,"-1s","-1s")
+    const userData = {userId:1,role:"admin"}
+    const tokens = createTokensFor(userData,"-1s","-1s")
     const authTokenData = isTokenValid(tokens.access,AUTH_SECRET_KEY)
     expect(authTokenData.isValid).toBeTruthy()
     expect(authTokenData.isExpired).toBeTruthy()
@@ -119,7 +125,8 @@ describe("Test isTokenValid", ()=>{
 describe("Test checkTokenSingleUse", () =>{
   let tokens
   before(async ()=>{
-    tokens = createTokensFor(1,"15m","7d")
+    const userData = {userId:1,role:"admin"}
+    tokens = createTokensFor(userData,"15m","7d")
     await tokenDatabase.storeToken(tokens.refresh)
   })
   it("Test Single use token", async () => {
@@ -129,7 +136,8 @@ describe("Test checkTokenSingleUse", () =>{
   })
   it("Test used token", async () => {
     await delay(1001)
-    const new_token = createTokensFor(1,"15m","7d")
+    const userData = {userId:1,role:"admin"}
+    const new_token = createTokensFor(userData,"15m","7d")
     await tokenDatabase.storeToken(new_token.refresh)
     const tokenData = isTokenValid(tokens.refresh,REFRESH_SECRET_KEY)
     const isSingle = await checkTokenSingleUse(tokenData)

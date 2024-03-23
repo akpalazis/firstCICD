@@ -6,12 +6,12 @@ const jwt = require('jsonwebtoken');
 
 function createExpiredTokensMiddleware(req, res, next) {
   try {
-    const {userID} = req.params
+    const userData = req.body.userData
     let accessTime = '-1s'
     let refreshTime = '-1s'
     if (req.body.accessTime){accessTime=req.body.accessTime}
     if (req.body.refreshTime){refreshTime=req.body.refreshTime}
-    res.locals.tokens = createTokensFor(userID, accessTime, refreshTime)
+    res.locals.tokens = createTokensFor(userData, accessTime, refreshTime)
     next()
   } catch(err){
     return res.status(400).send(err.message)
@@ -21,12 +21,12 @@ function createExpiredTokensMiddleware(req, res, next) {
 function createTokensMiddleware(req, res, next) {
   if(res.locals.newTokens){
     try {
-      const userID = req.params.userId
+      const userData = req.body
       let accessTime = '15m'
       let refreshTime = '7d'
       if (req.body.accessTime){accessTime=req.body.accessTime}
       if (req.body.refreshTime){refreshTime=req.body.refreshTime}
-      res.locals.tokens = createTokensFor(userID, accessTime, refreshTime)
+      res.locals.tokens = createTokensFor(userData, accessTime, refreshTime)
     } catch(err){
       return res.status(400).send(err.message)
     }
@@ -93,7 +93,10 @@ async function tokenValidationMiddleware(req,res,next) {
           return res.status(400).send('Unauthorized - Invalid Refresh Token')
         }
         if (await checkTokenSingleUse(refreshTokenData)) {
-          req.params.userId = refreshTokenData.decodedToken.userId
+          req.body = {
+            userId:refreshTokenData.decodedToken.userId,
+            role: refreshTokenData.decodedToken.role
+          }
           res.locals.newTokens = true
           return next()
         }

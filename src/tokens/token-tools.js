@@ -2,9 +2,9 @@ const jwt = require('jsonwebtoken');
 const {tokenDatabase} = require('./token-db-tools')
 const {AUTH_SECRET_KEY,REFRESH_SECRET_KEY} = require('../constants')
 
-function createTokensFor(userId,accessTokenTime,refreshTokenTime){
-    const accessToken = jwt.sign({ userId:userId }, AUTH_SECRET_KEY, { expiresIn: accessTokenTime });
-    const refreshToken = jwt.sign({ userId: userId }, REFRESH_SECRET_KEY, {expiresIn: refreshTokenTime});
+function createTokensFor(userData,accessTokenTime,refreshTokenTime){
+    const accessToken = jwt.sign(userData, AUTH_SECRET_KEY, { expiresIn: accessTokenTime });
+    const refreshToken = jwt.sign(userData, REFRESH_SECRET_KEY, {expiresIn: refreshTokenTime});
     return {access:accessToken,
             refresh:refreshToken}
 }

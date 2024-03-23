@@ -9,7 +9,7 @@ const {
   tokenValidationMiddleware,
   tokenCondition} = require("./token-middleware")
 
-tokenRouter.post('/generateTokens/:userId',
+tokenRouter.post('/generateTokens/',
   validateServerTokenMiddleware,
   tokenCondition,
   createTokensMiddleware,
@@ -23,7 +23,7 @@ tokenRouter.post('/generateTokens/:userId',
 });
 
 
-tokenRouter.post('/generateExpiredAccessTokens/:userID',
+tokenRouter.post('/generateExpiredAccessTokens/',
   //check the role based on authToken
   //tokenValidationMiddleware(),
   //checkRole

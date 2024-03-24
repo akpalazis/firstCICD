@@ -110,7 +110,6 @@ async function validateTokenMiddleware(req,res,next){
 }
 
 async function fetchTokenMiddleware(req,res,next){
-  const userId = res.locals.userId
   const serverToken = jwt.sign({serverId:"auth-login"}, SERVER_SECRET_KEY, { expiresIn: "10s" });
   //TODO: pass as dictionary not as params
   return await axios.post(`http://token:3000/generateTokens/`,res.locals,

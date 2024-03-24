@@ -1,5 +1,5 @@
 # Start with a minimal Node.js image
-FROM node:14-alpine
+FROM node:21-alpine
 
 # Set the working directory in the container
 WORKDIR .

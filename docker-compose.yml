@@ -10,6 +10,7 @@ services:
     environment:
       - TARGET=auth
       - DB_URL=postgres://postgres:pass@192.168.1.182:5433/postgres
+      - MONGO_URL=mongodb://mongo:pass@192.168.1.182:27018/
       - SERVER_SECRET_KEY=server-secret-key
     networks:
       - my-network
@@ -25,6 +26,7 @@ services:
     environment:
       - TARGET=token
       - DB_URL=postgres://postgres:pass@192.168.1.182:5433/postgres
+      - MONGO_URL=mongodb://mongo:pass@192.168.1.182:27018/
       - AUTH_SECRET_KEY=access-secret-key
       - REFRESH_SECRET_KEY=refresh-secret-key
       - SERVER_SECRET_KEY=server-secret-key
@@ -42,6 +44,7 @@ services:
     environment:
       - TARGET=admin
       - DB_URL=postgres://postgres:pass@192.168.1.182:5433/postgres
+      - MONGO_URL=mongodb://mongo:pass@192.168.1.182:27018/
     networks:
       - my-network
     ports:

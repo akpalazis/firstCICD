@@ -5,6 +5,7 @@ pipeline {
         REFRESH_SECRET_KEY = credentials('refresh-token')
         SERVER_SECRET_KEY = credentials('server-token')
         DB_URL = credentials('db-url')
+        MONGO_URL = credentials('mongo-url')
         PATH = "$PATH:/usr/local/bin/"
     }
   tools {

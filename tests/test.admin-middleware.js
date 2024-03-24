@@ -228,7 +228,7 @@ describe('updateRoleQueryMiddleware tests', () => {
 
   it("No parameter exists", async ()=> {
     const testArray = [
-    [undefined,undefined,"user"],
+    [undefined,undefined,"admin"],
     ]
     for (const elements of testArray) {
       await noParamsProvided(...elements)
@@ -250,10 +250,10 @@ describe('updateRoleQueryMiddleware tests', () => {
 
   it("Role exists but invalid params", async ()=> {
     const testArray = [
-    ["admin",2,"user"],
-    ["admin",-123,"user"],
-    ["ad",1,"user"],
-    ["ad",-231,"user"],
+    ["admin",2,"admin"],
+    ["admin",-123,"admin"],
+    ["ad",1,"admin"],
+    ["ad",-231,"admin"],
     ]
     for (const elements of testArray) {
       await invalidParamsProvided(...elements)

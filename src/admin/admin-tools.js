@@ -1,4 +1,4 @@
-const {db} = require("../db")
+const {db,mongo} = require("../db")
 
 async function fetchQuery(username,id) {
   let sqlQuery = 'SELECT * FROM users WHERE';
@@ -32,10 +32,13 @@ async function fetchQuery(username,id) {
 }
 
 async function isRoleValid(role){
-  if(role==="NO"){
-    return false
+  const mongo_db = mongo.db("admin")
+  const collections = mongo_db.collection("permissions")
+  const result = await collections.findOne({ role:role });
+  if(result){
+    return true
   }
-  return true
+  return false
 }
 
 async function updateUserRole(username, id, role) {

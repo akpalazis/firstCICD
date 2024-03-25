@@ -1,6 +1,5 @@
 const express = require('express');
 const authRouter = express.Router();
-const {allowLoginUsersMiddleware} = require("./auth-middleware")
 const {
   dataValidationMiddleware,
   generateHashMiddleware,
@@ -9,11 +8,9 @@ const {
   isUserValidMiddleware,
   canDeleteMiddleware,
   deleteUserMiddleware,
-  validateTokenMiddleware,
-  fetchTokenMiddleware,
-  storeTokens} = require('./auth-middleware')
+  fetchTokenMiddleware} = require('./auth-middleware')
 
-const {roleManager} = require("../commonMiddleware")
+const {roleManager,storeTokens,validateTokenMiddleware,allowLoginUsersMiddleware} = require("../commonMiddleware")
 
 authRouter.get('/',
   allowLoginUsersMiddleware(true),

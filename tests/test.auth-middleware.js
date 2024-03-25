@@ -1,6 +1,7 @@
 const { expect } = require('expect');
 const sinon = require('sinon');
-const {dataValidationMiddleware,allowLoginUsersMiddleware} = require("../src/auth/auth-middleware")
+const {dataValidationMiddleware} = require("../src/auth/auth-middleware")
+const {allowLoginUsersMiddleware} = require("../src/commonMiddleware")
 
 async function mainTest(testParams){
   const req = {body: testParams.credentialsToCheck}

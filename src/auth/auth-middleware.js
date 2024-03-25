@@ -4,15 +4,6 @@ const {validateData,generateHashCredentials} = require("./auth-tools")
 const {userDatabaseTools} = require("./auth-db-tools")
 const {SERVER_SECRET_KEY} = require("../constants")
 
-function allowLoginUsersMiddleware(registerer){
-  return function (req,res,next) {
-    const tokens = req.headers.authorization;
-    if ((tokens && registerer) || (!tokens && !registerer)){
-      return next()
-    }
-    return res.status(400).send("Unauthorized access")
-  }
-}
 
 function dataValidationMiddleware(req, res, next) {
   const credentials = req.body;
@@ -86,32 +77,9 @@ function deleteUserMiddleware(req, res, next) {
     });
 }
 
-async function validateTokenMiddleware(req,res,next){
-  const serverToken = jwt.sign({serverId:"auth-login"}, SERVER_SECRET_KEY, { expiresIn: "10s" });
-  return await axios.post('http://token:3000/validate-token',null,
-    {
-      headers:{
-        Authorization:req.headers.authorization,
-        serverToken:serverToken
-      }})
-    .then((response) => {
-      res.locals.newTokens = false
-      if ((response.status === 200) && (response.data.message === "Token is Valid")){
-        if (response.data.tokens){
-          res.locals.tokens = response.data.tokens
-          res.locals.newTokens = true
-        }
-      }
-      return next()
-    })
-    .catch(error => {
-      return res.status(400).send(error.response.data);
-    });
-}
 
 async function fetchTokenMiddleware(req,res,next){
   const serverToken = jwt.sign({serverId:"auth-login"}, SERVER_SECRET_KEY, { expiresIn: "10s" });
-  //TODO: pass as dictionary not as params
   return await axios.post(`http://token:3000/generateTokens/`,res.locals,
     {
       headers:{
@@ -132,22 +100,8 @@ async function fetchTokenMiddleware(req,res,next){
       return res.status(500).send(error.message);
     });
 }
-function storeTokens(req,res,next){
-  if (res.locals.newTokens){
-    try {
-      res.cookie('accessToken', res.locals.tokens.access, {httpOnly: true, secure: false, sameSite: 'strict'});
-      res.cookie('refreshToken', res.locals.tokens.refresh, {httpOnly: true, secure: false, sameSite: 'strict'});
-      res.locals.tokens = null
-    } catch (e){
-      console.log(e)
-      return res.status(500).send("Internal server error")
-    }
-  }
-  next()
-}
 
 module.exports = {
-  allowLoginUsersMiddleware,
   dataValidationMiddleware,
   generateHashMiddleware,
   userExistsMiddleware,
@@ -155,6 +109,4 @@ module.exports = {
   isUserValidMiddleware,
   canDeleteMiddleware,
   deleteUserMiddleware,
-  validateTokenMiddleware,
-  fetchTokenMiddleware,
-  storeTokens}
+  fetchTokenMiddleware}

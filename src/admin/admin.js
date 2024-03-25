@@ -1,9 +1,7 @@
-const {storeTokens, validateTokenMiddleware,allowLoginUsersMiddleware} = require("../auth/auth-middleware")
-
 const express = require('express');
 const adminRouter = express.Router();
 const {userQueryMiddleware,updateRoleQueryMiddleware} = require('./admin-middleware')
-const {roleManager} = require("../commonMiddleware")
+const {storeTokens,roleManager,validateTokenMiddleware,allowLoginUsersMiddleware} = require("../commonMiddleware")
 
 adminRouter.get('/admin/users',
   allowLoginUsersMiddleware(true),

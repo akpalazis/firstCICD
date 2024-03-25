@@ -1,6 +1,6 @@
 const { expect } = require('expect');
 const {tokenDatabase} = require("../src/tokens/token-db-tools")
-const {createTokensMiddleware,storeTokenMiddleware,tokenValidationMiddleware} = require("../src/tokens/token-middleware")
+const {createTokensMiddleware,tokenValidationMiddleware} = require("../src/tokens/token-middleware")
 const sinon = require('sinon');
 const {createTokensFor} = require("../src/tokens/token-tools")
 const jwt = require('jsonwebtoken');

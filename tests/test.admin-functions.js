@@ -62,10 +62,8 @@ describe('updateUserRole tests', () => {
 
   async function validParamsProvided(username,id,role){
     const old_entry = await fetchQuery(username,id)
-    console.log(old_entry)
     await updateUserRole(username,id,role)
     const new_entry = await fetchQuery(username,id)
-    console.log(new_entry)
     expect(old_entry[0].role===new_entry[0].role).toBeFalsy()
     await updateUserRole(username,id,"admin")
   }

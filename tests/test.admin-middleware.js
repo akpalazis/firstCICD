@@ -2,6 +2,8 @@ const { expect } = require('expect');
 const sinon = require('sinon');
 const {userQueryMiddleware,updateRoleQueryMiddleware} = require("../src/admin/admin-middleware")
 const {fetchQuery,updateUserRole} = require("../src/admin/admin-tools")
+const {roleManager} = require("../src/commonMiddleware")
+const {createTokensFor} = require("../src/tokens/token-tools")
 
 describe('userQueryMiddleware tests', () => {
   it("Valid Username only", async ()=> {
@@ -293,5 +295,43 @@ describe('updateRoleQueryMiddleware tests', () => {
     expect(next.notCalled).toBeTruthy()
   })
 });
+
+describe("Check role access middleware", () => {
+  it("Role has access", async  () =>{
+    const userData = {userId:1,role:"admin"}
+    const tokens = await createTokensFor(userData, '15m', '7d')
+    const req = {
+      headers: {
+        authorization: `Bearer accessToken=${tokens.access};, Bearer refreshToken=${tokens.refresh};`
+      },
+      url:"/admin/users"
+    }
+    const next = sinon.spy()
+    await roleManager(req,{},next)
+    expect(next.calledOnce).toBeTruthy()
+  })
+  it("Role Does not has access", async  () =>{
+    const userData = {userId:1,role:"user"}
+    const tokens = await createTokensFor(userData, '15m', '7d')
+    const req = {
+      headers: {
+        authorization: `Bearer accessToken=${tokens.access};, Bearer refreshToken=${tokens.refresh};`
+      },
+      url:"/admin/users"
+    }
+    const next = sinon.spy()
+    const res = {
+      status: (statusCode) => {
+        expect(statusCode).toBe(400)
+        return res;
+      },
+      send: (data) => {
+        expect(data).toBe('Access Denied. No Permission.')
+      }
+    };
+    await roleManager(req,res,next)
+    expect(next.notCalled).toBeTruthy()
+})
+})
 
 

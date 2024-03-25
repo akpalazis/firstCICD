@@ -13,10 +13,13 @@ const {
   fetchTokenMiddleware,
   storeTokens} = require('./auth-middleware')
 
+const {roleManager} = require("../commonMiddleware")
+
 authRouter.get('/',
   allowLoginUsersMiddleware(true),
   validateTokenMiddleware,
   storeTokens,
+  roleManager,
   async (req,res)=>{
     return res.status(200).send("JWT token is valid");
   }
@@ -70,7 +73,6 @@ authRouter.delete('/delete', async (req, res) => {
 authRouter.get('/clearCookies', (req, res) => {
   // Clear the access token cookie
   res.clearCookie('accessToken');
-
   // Clear the refresh token cookie
   res.clearCookie('refreshToken');
 

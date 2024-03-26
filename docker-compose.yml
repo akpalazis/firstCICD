@@ -9,6 +9,7 @@ services:
         - TARGET=auth
     environment:
       - TARGET=auth
+      - AUTH_SECRET_KEY=access-secret-key
       - DB_URL=postgres://postgres:pass@192.168.1.182:5433/postgres
       - MONGO_URL=mongodb://mongo:pass@192.168.1.182:27018/
       - SERVER_SECRET_KEY=server-secret-key

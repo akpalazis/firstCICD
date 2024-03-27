@@ -79,60 +79,67 @@ authRouter.get('/clearCookies', (req, res) => {
 });
 
 
-
+//TODO: Tests
 function generateSignedURL(username) {
-  const url = `/reset-password`
   const timestamp = Math.floor(Date.now() / 1000); // Current timestamp in seconds
   const expiryTimestamp = timestamp + 600;
 
   const signature = createHmac('sha256', AUTH_SECRET_KEY)
-                             .update(`${url}?user=${username}&expiry=${expiryTimestamp}`)
+                             .update(`user=${username}&expiry=${expiryTimestamp}`)
                              .digest('hex');
-    return `${url}?user=${username}&expiry=${expiryTimestamp}&signature=${signature}`;
+    return `user=${username}&expiry=${expiryTimestamp}&signature=${signature}`;
 }
 
 
-function verifySignedURL(params) {
+function middlewareSignedURL(req, res, next) {
+    const signed = generateSignedURL("admin")
+    res.locals.url = req.protocol + '://' + req.headers.host + '/change-password?'+signed
+    return next()
+}
+
+
+async function verifySignedURL(params) {
     const currentTimestamp = Math.floor(Date.now() / 1000);
     if (currentTimestamp > params.expiry) {
         return false; // URL has expired
     }
-    const expectedSignature = createHmac('sha256', AUTH_SECRET_KEY)
-                                   .update(`/reset-password?user=${params.user}&expiry=${params.expiry}`)
+    const expectedSignature = await createHmac('sha256', AUTH_SECRET_KEY)
+                                   .update(`user=${params.user}&expiry=${params.expiry}`)
                                    .digest('hex');
     return params.signature === expectedSignature;
 }
 
-function middlewareSignedURL(req, res, next) {
-    if (Object.keys(req.query).length === 0) {
-      const signed = generateSignedURL("admin")
-      res.locals.signed = true
-      res.locals.url = req.protocol + '://' + req.headers.host + signed
-    }else {
-      res.locals.signed = false
-    }
-    return next()
-}
-
-function middlewareVerifySignedURL(req,res,next){
+async function middlewareVerifySignedURL(req,res,next){
   if (Object.keys(req.query).length !== 0) {
-    if(verifySignedURL(req.query)){
-      next()
+    const result = await verifySignedURL(req.query)
+    if(result){
+        return next()
+      }
+      return res.status(400).send("Invalid url");
     }
-    return res.status(400).send("Invalid url");
-  }
   return next()
 }
 
 authRouter.get('/reset-password',
   middlewareSignedURL,
+  async (req,res)=>{
+    return res.status(200).send(res.locals.url);
+})
+
+authRouter.get('/change-password',
   middlewareVerifySignedURL,
   async (req,res)=>{
-  if(res.locals.signed) {
-    return res.status(200).send(res.locals.url);
-  }
-  return res.status(200).send("Password changed successfully");
+    return res.status(200).send("Password change page");
 })
+
+authRouter.post('/change-password',
+  middlewareVerifySignedURL,
+  async (req,res)=>{
+    console.log(req.body.pass, req.query.user)
+    return res.status(200).send("Password changed successfully");
+})
+
+
 module.exports = {authRouter}
 
 

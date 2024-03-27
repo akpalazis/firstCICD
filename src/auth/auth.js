@@ -69,8 +69,17 @@ authRouter.delete('/delete', async (req, res) => {
     return res.status(400).send("No User provided");
 });
 
+authRouter.get('/clearCookies', (req, res) => {
+  // Clear the access token cookie
+  res.clearCookie('accessToken');
+  // Clear the refresh token cookie
+  res.clearCookie('refreshToken');
 
-//TODO: Tests
+  return res.status(200).send("Cookies Cleared Successfully");
+});
+
+
+
 function generateSignedURL(username) {
   const timestamp = Math.floor(Date.now() / 1000); // Current timestamp in seconds
   const expiryTimestamp = timestamp + 600;
